@@ -1,0 +1,145 @@
+icd_code	icd_desc	sex
+A34	Obstetrical tetanus	female
+C51	Malignant neoplasm of vulva	female
+C52	Malignant neoplasm of vagina	female
+C53	Malignant neoplasm of cervix uteri	female
+C54	"Malignant neoplasm of uterus, part unspecified"	female
+C55	"Malignant neoplasm of uterus, part unspecified"	female
+C56	Malignant neoplasm of ovary	female
+C57	Malignant neoplasm of other and unspecified female genital organs	female
+C58	Malignant neoplasm of placenta	female
+C60	Malignant neoplasm of penis	male
+C61	Malignant neoplasm of prostate	male
+C62	Malignant neoplasm of testis	male
+C63	Malignant neoplasm of other and unspecified male genital organs	male
+D06	Carcinoma in situ of cervix uteri	female
+D25	Leiomyoma of uterus	female
+D26	Other benign neoplasms of uterus	female
+D27	Benign neoplasm of ovary	female
+D28	Benign neoplasm of other and unspecified female genital organs	female
+D29	Benign neoplasm of male genital organs	male
+D39	Neoplasm of uncertain behavior of female genital organs	female
+D40	Neoplasm of uncertain behavior of male genital organs	male
+E28	Ovarian dysfunction	female
+E29	Testicular dysfunction	male
+F53	"mental and behavioural disorders associated with the puerperium, not elsewhere classified[F53]"	female
+N40	Benign prostatic hyperplasia	male
+N41	Inflammatory diseases of prostate	male
+N42	Other and unspecified disorders of prostate	male
+N43	Hydrocele and spermatocele	male
+N44	Noninflammatory disorders of testis	male
+N45	Orchitis and epididymitis	male
+N46	Male infertility	male
+N47	Disorders of prepuce	male
+N48	Other disorders of penis	male
+N49	"Inflammatory disorders of male genital organs, not elsewhere classified"	male
+N50	Other and unspecified disorders of male genital organs	male
+N51	Disorders of male genital organs in diseases classified elsewhere	male
+N52	Male erectile dysfunction	male
+N53	Other male sexual dysfunction	male
+N70	Salpingitis and oophoritis	female
+N71	"Inflammatory disease of uterus, except cervix"	female
+N72	Inflammatory disease of cervix uteri	female
+N73	Other female pelvic inflammatory diseases	female
+N74	Female pelvic inflammatory disorders in diseases classified elsewhere	female
+N75	Diseases of Bartholin's gland	female
+N76	Other inflammation of vagina and vulva	female
+N77	Vulvovaginal ulceration and inflammation in diseases classified elsewhere	female
+N80	Endometriosis	female
+N81	Female genital prolapse	female
+N82	Fistulae involving female genital tract	female
+N83	"Noninflammatory disorders of ovary, fallopian tube and broad ligament"	female
+N84	Polyp of female genital tract	female
+N85	"Other noninflammatory disorders of uterus, except cervix"	female
+N86	Erosion and ectropion of cervix uteri	female
+N87	Dysplasia of cervix uteri	female
+N88	Other noninflammatory disorders of cervix uteri	female
+N89	Other noninflammatory disorders of vagina	female
+N90	Other noninflammatory disorders of vulva and perineum	female
+N91	"Absent, scanty and rare menstruation"	female
+N92	"Excessive, frequent and irregular menstruation"	female
+N93	Other abnormal uterine and vaginal bleeding	female
+N94	Pain and other conditions associated with female genital organs and menstrual cycle	female
+N95	Menopausal and other perimenopausal disorders	female
+N96	Recurrent pregnancy loss	female
+N97	Female infertility	female
+N98	Complications associated with artificial fertilization	female
+O00	Ectopic pregnancy	female
+O01	Hydatidiform mole	female
+O02	Other abnormal products of conception	female
+O03	Spontaneous abortion	female
+O04	Complications following (induced) termination of pregnancy	female
+O06	unspecified abortion	female
+O07	Failed attempted termination of pregnancy	female
+O08	Complications following ectopic and molar pregnancy	female
+O09	Supervision of high risk pregnancy	female
+O10	"Pre-existing hypertension complicating pregnancy, childbirth and the puerperium"	female
+O11	Pre-existing hypertension with pre-eclampsia	female
+O12	Gestational [pregnancy-induced] edema and proteinuria without hypertension	female
+O13	Gestational [pregnancy-induced] hypertension without significant proteinuria	female
+O14	Pre-eclampsia	female
+O15	Eclampsia	female
+O16	Unspecified maternal hypertension	female
+O20	Hemorrhage in early pregnancy	female
+O21	Excessive vomiting in pregnancy	female
+O22	Venous complications and hemorrhoids in pregnancy	female
+O23	Infections of genitourinary tract in pregnancy	female
+O24	"Diabetes mellitus in pregnancy, childbirth, and the puerperium"	female
+O25	"Malnutrition in pregnancy, childbirth and the puerperium"	female
+O26	Maternal care for other conditions predominantly related to pregnancy	female
+O28	Abnormal findings on antenatal screening of mother	female
+O29	Complications of anesthesia during pregnancy	female
+O30	Multiple gestation	female
+O31	Complications specific to multiple gestation	female
+O32	Maternal care for malpresentation of fetus	female
+O33	Maternal care for disproportion	female
+O34	Maternal care for abnormality of pelvic organs	female
+O35	Maternal care for known or suspected fetal abnormality and damage	female
+O36	Maternal care for other fetal problems	female
+O40	Polyhydramnios	female
+O41	Other disorders of amniotic fluid and membranes	female
+O42	Premature rupture of membranes	female
+O43	Placental disorders	female
+O44	Placenta previa	female
+O45	Premature separation of placenta [abruptio placentae]	female
+O46	"Antepartum hemorrhage, not elsewhere classified"	female
+O47	False labor	female
+O48	Late pregnancy	female
+O60	Preterm labor	female
+O61	Failed induction of labor	female
+O62	Abnormalities of forces of labor	female
+O63	Long labor	female
+O64	Obstructed labor due to malposition and malpresentation of fetus	female
+O65	Obstructed labor due to maternal pelvic abnormality	female
+O66	Other obstructed labor	female
+O67	"Labor and delivery complicated by intrapartum hemorrhage, not elsewhere classified"	female
+O68	Labor and delivery complicated by abnormality of fetal acid-base balance	female
+O69	Labor and delivery complicated by umbilical cord complications	female
+O70	Perineal laceration during delivery	female
+O71	Other obstetric trauma	female
+O72	Postpartum hemorrhage	female
+O73	"Retained placenta and membranes, without hemorrhage"	female
+O74	Complications of anesthesia during labor and delivery	female
+O75	"Other complications of labor and delivery, not elsewhere classified"	female
+O76	Abnormality in fetal heart rate and rhythm complicating labor and delivery	female
+O77	Other fetal stress complicating labor and delivery	female
+O80	Encounter for full-term uncomplicated delivery	female
+O81	single delivery by forceps and vacuum extractor	female
+O82	Encounter for cesarean delivery without indication	female
+O85	Puerperal sepsis	female
+O86	Other puerperal infections	female
+O87	Venous complications and hemorrhoids in the puerperium	female
+O88	Obstetric embolism	female
+O89	Complications of anesthesia during the puerperium	female
+O90	"Complications of the puerperium, not elsewhere classified"	female
+O91	"Infections of breast associated with pregnancy, the puerperium and lactation"	female
+O92	Other disorders of breast and disorders of lactation associated with pregnancy and the puerperium	female
+O94	"Sequelae of complication of pregnancy, childbirth, and the puerperium"	female
+O98	"Maternal infectious and parasitic diseases classifiable elsewhere but complicating pregnancy, childbirth and the puerperium"	female
+O99	"Other maternal diseases classifiable elsewhere but complicating pregnancy, childbirth and the puerperium"	female
+O9A	"Maternal malignant neoplasms, traumatic injuries and abuse classifiable elsewhere but complicating pregnancy, childbirth and the puerperium"	female
+Q53	Undescended and ectopic testicle	male
+Q50	"Congenital malformations of ovaries, fallopian tubes and broad ligaments"	female
+Q51	Congenital malformations of uterus and cervix	female
+Q52	Other congenital malformations of female genitalia	female
+Q55	Other congenital malformations of male genital organs	male
