@@ -19,7 +19,7 @@ curr_icd = args['icd']
 print(f"Starting work on {curr_icd}")
 
 # Create the list of ICDs and LOINC codes
-BASE_DIR = "***REMOVED***/other/trinetx"
+BASE_DIR = "/data/pathogen_ncd/other/trinetx"
 meta_dir = BASE_DIR
 icd_dir = f"{BASE_DIR}/new_dataset/icd_data"
 lab_dir = f"{BASE_DIR}/new_dataset/lab_data"
