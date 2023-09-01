@@ -1,0 +1,9 @@
+# newer xlrd has dropped support for .xlsx, leaving csvkit hanging
+xlrd==1.2.*
+csvkit
+Jinja2
+# https://github.com/snakemake/snakemake/issues/1989
+pulp<2.8
+snakemake
+# tomllib is in Python 3.11; but for now…
+tomli

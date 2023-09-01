@@ -1,0 +1,7 @@
+# editor detritus
+.*sw?
+*~
+
+# Office lock files
+~$*.*
+.~lock.*

@@ -1,0 +1,29 @@
+# for https://github.com/hyperupcall/autoenv; basically just runs
+# `venv/bin/active`, so not super-useful to anyone else right now
+.env
+
+# exclude generated data files (except the MD5SUMS and the TSV)
+public/data/*.sqlite*
+public/data/*.html
+public/data/*.zip
+public/data/*.tar.gz
+
+# checkpoint files used by the Makefile
+.jsoncols*
+.tsvcols*
+.table*.done
+.metachecked
+
+# NPM libraries; just 'npm install' to get them back
+public/node_modules
+
+# any Excel files
+*.xls*
+# .tsv's generated from Excel files
+*.tsv
+
+# Python virtualenvs and other detritus
+venv
+api/venv
+__pycache__
+*.pyc

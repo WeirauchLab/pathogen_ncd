@@ -1,0 +1,43 @@
+#!/usr/bin/awk -f
+##
+##  Bump a version number in x.y.z (semver) format; defaults to incrementing
+##  the patchlevel (the 'z' part in the example) by one.
+##
+##  Usage:     $ bumpver x.y.z [{major|minor|patch}]
+##
+##  Author:    Kevin Ernst <kevin.ernst@cchmc.org>
+##  Date:      11 February 2020
+##
+
+BEGIN {
+    FS = "."
+
+    split(ARGV[1], parts)
+
+    if (length(parts) != 3) {
+        print "ERROR: expected a semver-compliant version string like x.y.z"
+        exit 1
+    }
+
+    #for (i=1; i<=length(parts); i++) {
+    #    printf "\tparts[%d]\t= %d\n", i, parts[i]
+    #}
+
+    which = ARGV[2]
+    if (which == "") which = "patch"
+
+    if (which ~ /^maj/) {
+        parts[1] += 1
+    } else if (which ~ /^min/) {
+        parts[2] += 1
+    } else if (which ~ /^patch/) {
+        parts[3] += 1
+    } else {
+        print "ERROR: expected one of 'major', 'minor', or 'patch'"
+        exit 1
+    }
+
+    printf "%d.%d.%d\n", parts[1], parts[2], parts[3]
+}
+
+# bumpver

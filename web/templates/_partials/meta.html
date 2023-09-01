@@ -1,0 +1,13 @@
+{% for g in site.meta.generators %}
+  <meta name="generator" content="{{ g }}">
+{%- endfor %}
+{% for a in pub.authors %}
+  <meta name="author" content="{{ a.given_name }} {% if a.mi %}{{ a.mi }}. {% endif %}{{ a.surname }}">
+{%- endfor %}
+{% for c in site.meta.creators %}
+  <meta name="creator" content="{{ c }}">
+{%- endfor %}
+  <meta name="keywords" content="{{ site.meta.keywords|join(',') }}">
+{#-
+vim: ft=jinja
+#}

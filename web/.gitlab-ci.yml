@@ -1,0 +1,6 @@
+# see https://docs.gitlab.com/ce/ci/yaml/README.html for all available options
+
+is_it_up:
+  stage: test
+  script:
+    - make site-is-up

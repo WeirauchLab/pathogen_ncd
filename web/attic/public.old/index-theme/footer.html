@@ -1,0 +1,67 @@
+    <div id="footer-md" class="block full-justify">
+      <!-- replaced with README.md with XMLHttpRequest, below -->
+    </div>
+
+    <div class="block">
+      Questions? You can
+      <a id="admin-contact" class="ul-link" href="mailto:tftoolsadmin@cchmc.org">
+        email the administrator
+      </a>
+      if you want.
+    </div><!--/.postlisting-->
+  </div><!--/.wrapper-->
+
+  <div id="apaxy-credit" class="footer" style="display:none">
+    <a href="http://adamwhitcroft.com/apaxy/" title="Apaxy theme home page">
+      Apaxy
+    </a> theme by <a href="https://twitter.com/adamwhitcroft">@adamwhitcroft</a>
+  </div><!--/.footer-->
+
+  <!-- don't use 'slim', it's missing the 'ajax' module -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.0.3/lib/marked.umd.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      var footermd = 'footer.md';
+      var affil;
+
+      // wire up tooltips for all of the affiliations
+      $('#authors sup a')
+        .click(function(e) {
+          e.preventDefault();
+        })
+        .mouseover(function() {
+          // get associated a.footnote > span
+          affil = $($(this).attr('href'));
+          affil.addClass('highlight');
+        })
+        .mouseout(function() {
+          affil = $($(this).attr('href'));
+          affil.removeClass('highlight');
+        });
+
+      // hide the "Parent" row in the index list
+      //$('#indexlist tr.indexhead + tr').addClass('parent');
+      //.hide():
+
+      // render div#footer-md with Marked.js
+      var jqxhr = $.ajax({ url: footermd })
+        .done(function(data, status, xhr) {
+          console.info("Fetched '" + footermd + "'; HTTP status " +
+                       xhr.status);
+          console.info(marked);
+          marked.setOptions({ sanitize: true });
+          $('#footer-md').html(marked.parse(data));
+        }) // done
+
+        .fail(function(data, status, xhr) {
+          console.error("Error loading '" + footermd + "'; HTTP status " +
+                        xhr.status + " (" + status + ")");
+        });
+
+    }); // document.ready
+  </script>
+<!--
+vim: ts=2 sw=2 tw=80 expandtab
+-->
