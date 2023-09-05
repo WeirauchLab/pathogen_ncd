@@ -89,3 +89,21 @@ Python v3.7.8
 
 ## Results Post-processing
 <img src="./flow_diagram_of_code/post_proc.SVG" alt="TNX Data Prep" width="600"/>
+
+
+
+## Feedback
+
+Please report any issues with the code in our
+[GitHub issue tracker][gi].
+
+With other questions, you may contact [Dr. Matthew Weirauch][matt] via email.
+
+## Contributors
+
+| Name              | Institution                    | Remarks
+|-------------------|--------------------------------|--------
+| Mike Lape  | University of Cincinnati | _primary author_
+
+
+## License
