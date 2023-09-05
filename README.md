@@ -55,11 +55,3 @@ All patient identifiers are generic and don't correpsond to actual identifiers f
 
 ## Results Post-processing
 <img src="./flow_diagram_of_code/post_proc.SVG" alt="TNX Data Prep" width="600"/>
-
-
-
-# VIRTUS Analysis
-
-
-
-# RELI Analysis
