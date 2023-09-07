@@ -35,6 +35,9 @@ Python v3.7.8
 
 ### Other 3rd party software
 * GNU Parallel v20220122
+>        Tange, O. (2022, January 22). GNU Parallel 20220122 ('20 years').  
+>        Zenodo. https://doi.org/10.5281/zenodo.5893336
+
 
 # Flowcharts for main analysis using diagnoses and serology data
 ## Key for Diagrams
