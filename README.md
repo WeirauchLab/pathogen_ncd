@@ -3,8 +3,9 @@
 Analysis code to complement Lape, _et al._ (2023) (in review).
 
 This code is made available along with explanatory flowcharts to enable
-replication of the results reported in the associated manuscript. UK Biobank
-data and TriNetX data must be obtained from the respective organizations.
+replication of the results reported in the associated manuscript.
+[UK Biobank][ukb] data and [TriNetX][] data must be obtained from the
+respective organizations.
 
 ## Abstract 
 
@@ -42,9 +43,9 @@ Python v3.7.8
 
 ### R Libraries
 
-* MASS v7.3-58.1      
+* MASS v7.3-58.1
 * performance v0.10.2
-* logistf v1.24.1  
+* logistf v1.24.1
 * dplyr v1.1.0
 * data.table v1.14.8
 * openxlsx v4.2.5.2
@@ -70,7 +71,7 @@ Python v3.7.8
 
 * [GNU Parallel][parallel] v20220122
 
-        Tange, O. (2022, January 22). GNU Parallel 20220122 ('20 years').  
+        Tange, O. (2022, January 22). GNU Parallel 20220122 ('20 years').
         Zenodo. https://doi.org/10.5281/zenodo.5893336
 
 
@@ -169,6 +170,8 @@ Mike Lape.
 Released under the terms of the GNU General Public License, Version 3. See
 [`LICENSE.txt`](LICENSE.txt)
 
+[ukb]: https://trinetx.com
+[trinetx]: https://www.ukbiobank.ac.uk
 [parallel]: https://www.gnu.org/software/parallel
 [gi]: https://github.com/WeirauchLab/pathogen_ncd/issues
 [matt]: mailto:Matthew.Weirauch@cchmc.org
