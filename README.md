@@ -7,7 +7,7 @@ replication of the results reported in the associated manuscript.
 [UK Biobank][ukb] data and [TriNetX][] data must be obtained from the
 respective organizations.
 
-## Abstract 
+## Abstract
 
 > There are many well-established relationships between pathogens and human
 > disease, but far fewer when focusing on non-communicable diseases (NCDs). We
@@ -26,7 +26,7 @@ respective organizations.
 > expression upon CMV infection. Collectively, these results form a foundation
 > for future investigations into mechanistic roles played by pathogens in
 > disease.
-  
+
 
 ## General Notes
 
@@ -38,8 +38,8 @@ easier to follow what input and output files will look like.
 
 ### Code languages employed
 
-R v4.2.2
-Python v3.7.8
+* R v4.2.2
+* Python v3.7.8
 
 ### R Libraries
 
@@ -74,25 +74,20 @@ Python v3.7.8
         Tange, O. (2022, January 22). GNU Parallel 20220122 ('20 years').
         Zenodo. https://doi.org/10.5281/zenodo.5893336
 
-
 # Flowcharts for main analysis using diagnoses and serology data
 
 ## Key for Diagrams
 
-</table>
-<style type="text/css">
-</style>
 <table class="tg">
 <thead>
-  <tr>
+  <tr valign-"top">
     <th>Color</th>
     <th>Shape</th>
   </tr>
 </thead>
 <tbody>
-  <tr>
-    <td class="tg-c3ow"><img src="./flow_diagram_of_code/color_key.jpg" alt="Color Key" width="150"/>
-    </td>
+  <tr valign="top">
+    <td class="tg-c3ow"><img src="./flow_diagram_of_code/color_key.jpg" alt="Color Key" width="150"/></td>
     <td class="tg-c3ow"><img src="./flow_diagram_of_code/shape_key.jpg" alt="Shape Key" width="250"/></td>
   </tr>
 </tbody>
@@ -113,7 +108,7 @@ Python v3.7.8
 
 ## Analysis
 
-### UK Biobank 
+### UK Biobank
 
 <img src="./flow_diagram_of_code/ukb_analysis.SVG" alt="UKB analysis" width="600"/>
 
@@ -122,22 +117,18 @@ Python v3.7.8
 #### Permutations and Empirical P-values
 
 <img src="./flow_diagram_of_code/ukb_perm_1.SVG" alt="UKB Permutations" width="600"/>
-
-<br />  
-
+<br />
 <img src="./flow_diagram_of_code/ukb_perm_2.SVG" alt="UKB Permutations Continued" width="600"/>
 
 ---
 
-### TriNetX 
+### TriNetX
 
 <img src="./flow_diagram_of_code/tnx_analysis.SVG" alt="TNX Data Prep" width="600"/>
 
 ## Results Post-processing
 
-
 <img src="./flow_diagram_of_code/post_proc.SVG" alt="TNX Data Prep" width="600"/>
-
 
 ## How to Cite
 
@@ -147,7 +138,9 @@ Code from this repository may be cited as:
     GitHub repository, https://github.com/WeirauchLab/pathogen_ncd
 
 <!-- FIXME -->
-_The associated manuscript is currently under review._
+_The associated manuscript is currently under review. In the meantime, you may
+cite [the preprint on medRxiv][medrxiv]._
+
 
 ## Feedback
 
@@ -175,3 +168,4 @@ Released under the terms of the GNU General Public License, Version 3. See
 [parallel]: https://www.gnu.org/software/parallel
 [gi]: https://github.com/WeirauchLab/pathogen_ncd/issues
 [matt]: mailto:Matthew.Weirauch@cchmc.org
+[medrxiv]: https://doi.org/10.1101/2023.09.14.23295428
