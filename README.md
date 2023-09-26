@@ -144,9 +144,8 @@ cite [the preprint on medRxiv][medrxiv]._
 
 ## Feedback
 
-Please report any issues with the code in our [GitHub issue tracker][gi].
-
-With other questions, you may contact [Dr. Matthew Weirauch][matt] via email.
+Please contact [Dr. Matthew Weirauch][matt] via email with any questions or
+concerns.
 
 ## Contributors
 
@@ -166,6 +165,5 @@ Released under the terms of the GNU General Public License, Version 3. See
 [ukb]: https://trinetx.com
 [trinetx]: https://www.ukbiobank.ac.uk
 [parallel]: https://www.gnu.org/software/parallel
-[gi]: https://github.com/WeirauchLab/pathogen_ncd/issues
 [matt]: mailto:Matthew.Weirauch@cchmc.org
 [medrxiv]: https://doi.org/10.1101/2023.09.14.23295428
