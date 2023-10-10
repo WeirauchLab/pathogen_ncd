@@ -137,12 +137,15 @@ easier to follow what input and output files will look like.
 
 Code from this repository may be cited as:
 
-    Michael Lape, Pathogens and Non-communicable Human Disease Survey, (2023),
-    GitHub repository, https://github.com/WeirauchLab/pathogen_ncd
+    Michael Lape, _et al_.(2023). WeirauchLab/pathogen_ncd: Preprint release
+    (preprint). Zenodo. https://doi.org/10.5281/zenodo.8423556
 
-<!-- FIXME -->
-_The associated manuscript is currently under review. In the meantime, you may
-cite [the preprint on medRxiv][medrxiv]._
+The associated manuscript is pending publication. In the meantime, you may
+cite [the preprint on medRxiv][medrxiv]:
+
+    After the Infection: A Survey of Pathogens and Non-communicable Human Disease
+    Michael Lape, _et al. medRxiv 2023.09.14.23295428;
+    doi: https://doi.org/10.1101/2023.09.14.23295428 
 
 
 ## Feedback
