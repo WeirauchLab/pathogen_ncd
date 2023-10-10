@@ -1,7 +1,9 @@
 # Pathogens and Non-communicable Human Disease Survey
 [![DOI](https://zenodo.org/badge/688303993.svg)](https://zenodo.org/badge/latestdoi/688303993)
 
-Analysis code to complement Lape, _et al._ (2023) (in review).
+Analysis code to complement Lape, _et al._ "After the Infection: A Survey of
+Pathogens and Non-communicable Human Disease" (2023). See [below](#how-to-cite)
+for citation information.
 
 This code is made available along with explanatory flowcharts to enable
 replication of the results reported in the associated manuscript.
