@@ -1,0 +1,81 @@
+# used as the last path element in the URL
+shortname = "lape2023"
+# deploy.<deployto>.urlbase becomes the value of site.urlbase for templates
+# see helpers/config.py:load_config()
+# FIXME: read from environment
+deployto = "local"
+# whether to live-reload assets with Live.js
+livereload = false
+sourceurl = "https://tfinternal.research.cchmc.org/gitlab/mike/pathogen_ncd"
+issuesurl = "{sourceurl}/issues"
+# version string for the repository (code + web site)
+sourcever = "0.1.0"
+adminemail = "tftoolsadmin@cchmc.org"
+emailsubject = "Pathogenic Organism / NCD web site"
+
+[meta]
+lab = "Weirauch Lab"
+labhome = "https://weirauchlab.org"
+org = "Cincinnati Children's Hospital Medical Center"
+orghome = "https://cincinnatichildrens.org"
+generators = ["Vim", "GNU Make", "Python", "Jinja2"]
+creators = [
+  "Michael Lape",
+  "Kevin Ernst",
+  "Weirauch Transcription Factor Research Laboratory",
+  "Center for Autoimmune Genomics and Etiology",
+  "Cincinnati Children's Hospital Medical Center",
+]
+keywords = [
+    "bioinformatics", "genomics", "research", "paper", "publication", "survey",
+    "human", "virus", "gene regulation", "transcription factor", "disease",
+    "weirauch lab", "cincinnati children's hospital",
+]
+
+[deploy.local]
+host = "localhost"
+# when deployed, where is this site relative to the web server root?
+urlbase = ""
+publicurl = "https://localhost:8000{urlbase}"
+deploydir = "local.deploy"
+
+[deploy.dev]
+host = "bmitfwebd1"
+urlbase = "/pubs/{shortname}"
+# gets transformed to `site.host`, `site.publicurl`, and so on
+publicurl = "https://tfwebdev.research.cchmc.org{urlbase}"
+deploydir = "/var/www/html{urlbase}"
+
+[deploy.prod]
+host = "bmitfwebp1"
+urlbase = "/pubs/{shortname}"
+publicurl = "https://tf.cchmc.org{urlbase}"
+deploydir = "/var/www/html{urlbase}"
+#{
+#  "#TODO": "use this, someday",
+#
+#  "htacess": {
+#    "authname":
+#      "Pathogenic Organisms and Non-communicable Diseases - Reviewer Access",
+#    "authuserfile":
+#      "/etc/httpd24/htpasswd.pathncd",
+#
+#    "indexignores": [
+#      ".htaccess",
+#      "api",
+#      "img",
+#      "bin",
+#      "css",
+#      "font",
+#      "vendor",
+#      "Makefile",
+#      "header.html",
+#      "footer.html",
+#      "*.bak",
+#      "*.md",
+#      "*.json",
+#      "*.xls",
+#      "*.ini"
+#    ]
+#  }
+#}

@@ -5,11 +5,14 @@ Deployment steps (from a fresh clone):
 
 ```bash
 cd web                     # you're probably already here
-python3 -m venv venv       # create virtualenv if not already done
-source venv/bin/activate   # activate the virtualenv for this shell
-pip install csvkit         # required to convert Excel sheets to TSV
-cp path/to/samples.xlsx .  # there needs to be a <something>.xlsx
-make -B site               # -B = "force rebuild all"; inspect for errors
-make drebuild              # (re)build .zip and .tar.gz DB releases
-make deploy                # copy necessary files to production web server
+python3 -m venv venv       # create and activate a Python3 virtualenv,
+source venv/bin/activate   # then install required Python dependencies
+pip install -r requirements.txt
+make site                  # build the site into `local.deploy`
+make serve                 # bring up a web server in a Docker container
+make browse                # opens the local web server in your browser
 ```
+
+There is some duplication among `docker.yml`, the `Makefile`, and `site.toml`
+with regard to the local web server port, but this could probably be resolved
+in time.

@@ -1,0 +1,101 @@
+{
+  "creators": [
+    "Kevin Ernst",
+    "Weirauch Transcription Factor Research Laboratory",
+    "Center for Autoimmune Genomics and Etiology",
+    "Cincinnati Children's Hospital Medical Center"
+  ],
+  "generators": ["Vim", "GNU m4"],
+  "keywords": [
+    "bioinformatics",
+    "genomics",
+    "research",
+    "paper",
+    "publication",
+    "survey",
+    "human",
+    "virus",
+    "gene regulation",
+    "transcription factor",
+    "disease",
+    "weirauch lab",
+    "cincinnati children's hospital"
+  ],
+  "authors": [
+    {
+      "given_name": "Michael",
+      "surname": "Lape",
+      "affiliations": [1, 3, 4]
+    },
+    {
+      "given_name": "Daniel",
+      "surname": "Schnell",
+      "affiliations": [3]
+    },
+    {
+      "given_name": "Sreeja",
+      "surname": "Parameswaran",
+      "affiliations": [4, 6]
+    },
+    {
+      "given_name": "Nathan",
+      "surname": "Salomonis",
+      "affiliations": [1, 2, 3]
+    },
+    {
+      "given_name": "Lisa",
+      "mi": "J",
+      "surname": "Martin",
+      "affiliations": [2, 6]
+    },
+    {
+      "given_name": "Brett",
+      "mi": "M",
+      "surname": "Harnett",
+      "affiliations": [1]
+    },
+    {
+      "given_name": "Leah",
+      "mi": "C",
+      "surname": "Kottyan",
+      "email": "Leah.Kottyan@cchmc.org",
+      "affiliations": [2, 4, 6, "*"]
+    },
+    {
+      "given_name": "Matthew",
+      "mi": "T",
+      "surname": "Weirauch",
+      "email": "Matthew.Weirauch@cchmc.org",
+      "affiliations": [2, 3, 4, 5, 6, "*"]
+    }
+  ],
+  "affiliations": [
+    { "id": "1",
+      "name": "Department of Biomedical Informatics, University of Cincinnati College of Medicine, Cincinnati, Ohio, USA",
+      "url": "https://med.uc.edu/depart/bmi/home"
+    },
+    { "id": "2",
+      "name": "Department of Pediatrics, University of Cincinnati College of Medicine, Cincinnati, Ohio, USA"
+    },
+    { "id": "3",
+      "name": "Division of Biomedical Informatics, Cincinnati Children’s Hospital Medical Center, Cincinnati, Ohio, USA" ,
+      "url": "https://bmi.cchmc.org"
+    },
+    { "id": "4",
+      "name": "Center for Autoimmune Genomics and Etiology, Cincinnati Children’s Hospital Medical Center, Cincinnati, Ohio, USA",
+      "url": "https://www.cincinnatichildrens.org/research/divisions/a/genomics-etiology"
+    },
+    { "id": "5",
+      "name": "Division of Developmental Biology, Cincinnati Children’s Hospital Medical Center, Cincinnati, OH, USA"
+    },
+    { "id": "6",
+      "name": "Division of Human Genetics, Cincinnati Children’s Hospital Medical Center, Cincinnati, OH, USA"
+    },
+    { "id": "*",
+      "name": "Co-corresponding authors"
+    },
+    { "id": "#",
+      "name": "Contributed equally"
+    }
+  ]
+}

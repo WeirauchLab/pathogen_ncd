@@ -1,0 +1,164 @@
+build = "1.0.0"
+releasedate = "30 December 2024"
+# what to tag new DB builds in Git (build # is appended)
+buildtagprefix = ""
+# commit message for new DB build (build # is appended)
+buildcommitmsg = "Data release v"
+basename = "{shortname}"
+# the basename for most of the data files (build # is appended)
+archivebasename = "{shortname}-{buildtagprefix}"
+
+[tabs.ICD]
+# how to turn the Excel spreadsheet into the TSV; wildcards allowed
+xlsfile = "ICD_*.xlsx"
+# the default sheet name unless supplied
+xlssheet = "Results"
+
+[tabs.PHE]
+xlsfile = "PHE_*.xlsx"
+xlssheet = "Results"
+
+# > …it is strongly discouraged to break an inline table onto multiples lines.
+# > If you find yourself gripped with this desire, it means you should be using
+# > standard tables. -- https://toml.io/en/v1.0.0#inline-table
+[[tabs.ICD.columns]]
+# details control (empty column)
+targets = 0
+name = "details"
+description = "Click the disclosure triangle to show all hidden fields"
+width = "1%"
+visible = false
+
+[[tabs.ICD.columns]]
+targets = 1
+name = "rowid"
+title = "Row ID"
+description = "Database idenitifer"
+visible = false
+
+[[tabs.ICD.columns]]
+targets = 2
+name = "Disease"
+title = "Disease"
+description = "Disease name"
+width = "25%"
+
+[[tabs.ICD.columns]]
+targets = 3
+name = "ICD10"
+title = "ICD10"
+description = "ICD10 3-character code from UKB"
+width = "8%"
+
+[[tabs.ICD.columns]]
+targets = 4
+name = "Organism"
+title = "Organism"
+description = "Organism abbreviation"
+width = "10%"
+
+[[tabs.ICD.columns]]
+targets = 5
+name = "Antibody"
+title = "Antibody"
+description = "Antibody with best UKB association result"
+width = "8%"
+
+[[tabs.ICD.columns]]
+targets = 6
+name = "Pair_is_Associated"
+title = "Pair is assoc?"
+description = "Boolean indicating whether this pair is considered replicated"
+width = "10%"
+
+[[tabs.ICD.columns]]
+targets = 7
+name = "Standard_Level"
+title = "Std. lev."
+description = "Standard group this pair is part of [Unknown (unk), Tier 1, Tier 2, Expected Negative (exp_neg)]"
+width = "8%"
+
+[[tabs.ICD.columns]]
+targets = 8
+name = "UKB_adj_p"
+title = "UKB adj. p"
+description = "Per-disease BH FDR adjusted UKB nominal p-value"
+width = "8%"
+
+[[tabs.ICD.columns]]
+targets = 9
+name = "TNX_adj_p"
+title = "TNX adj. p"
+description = "Per-disease BH FDR adjusted TNX nominal p-value"
+width = "10%"
+
+[[tabs.ICD.columns]]
+targets = 10
+name = "UKB_OR"
+title = "UKB OR"
+description = "Odds ratio for UKB titer [continuous]"
+width = "5%"
+
+[[tabs.ICD.columns]]
+targets = 11
+name = "TNX_OR"
+title = "TNX OR"
+description = "Odds ratio for TNX association test [categorical]"
+width = "5%"
+
+[[tabs.ICD.columns]]
+targets = 12
+name = "Replication_Status"
+title = "Replication status"
+description = "The UKB-TNX replication status for this dis-org pair [could_not: UKB sig, not enough TNX data to try replication; did_not_attempt: UKB not sig, so no replication attempted; did_not: UKB sig, TNX not sig; rep: UKB sig, TNX sig]"
+visible = false
+
+[[tabs.ICD.columns]]
+targets = 13
+name = "UKB_nCase"
+title = "UKB number of cases"
+description = "Number of cases in UKB analysis"
+visible = false
+
+[[tabs.ICD.columns]]
+targets = 14
+name = "UKB_nControl"
+title = "UKB number of controls"
+description = "Number of controls in UKB analysis"
+visible = false
+
+[[tabs.ICD.columns]]
+targets = 15
+name = "TNX_nCase"
+title = "TNX number of cases"
+description = "Number of cases in TNX analysis"
+visible = false
+
+[[tabs.ICD.columns]]
+targets = 16
+name = "TNX_nControl"
+title = "TNX number of controls"
+description = "Number of controls in TNX analysis"
+visible = false
+
+[organisms]
+"BKV" = "https://en.wikipedia.org/wiki/BK_virus"
+"C. trachomatis" = "https://en.wikipedia.org/wiki/Chlamydia_trachomatis"
+"CMV" = "https://en.wikipedia.org/wiki/Cytomegalovirus"
+"EBV" = "https://en.wikipedia.org/wiki/Epstein%E2%80%93Barr_virus"
+"HBV" = "https://en.wikipedia.org/wiki/Hepatitis_B_virus"
+"HCV" = "https://en.wikipedia.org/wiki/Hepatitis_C_virus"
+"HHV-6" = "https://en.wikipedia.org/wiki/Human_herpesvirus_6"
+"HHV-7" = "https://en.wikipedia.org/wiki/Human_betaherpesvirus_7"
+"HPV-16" = "https://en.wikipedia.org/wiki/Papillomaviridae"
+"HPV-18" = "https://en.wikipedia.org/wiki/Papillomaviridae"
+"H. pylori" = "https://en.wikipedia.org/wiki/Helicobacter_pylori"
+"HSV-1" = "https://en.wikipedia.org/wiki/Human_alphaherpesvirus_1"
+"HSV-2" = "https://en.wikipedia.org/wiki/Human_alphaherpesvirus_2"
+"HTLV-1" = "https://en.wikipedia.org/wiki/Human_T-lymphotropic_virus_1"
+"JCV" = "https://en.wikipedia.org/wiki/Human_polyomavirus_2"
+"KSHV" = "https://en.wikipedia.org/wiki/Kaposi%27s_sarcoma-associated_herpesvirus"
+"MCV" = "https://en.wikipedia.org/wiki/Merkel_cell_polyomavirus"
+"T. gondii" = "https://en.wikipedia.org/wiki/Toxoplasma_gondii"
+"VZV" = "https://en.wikipedia.org/wiki/Varicella_zoster_virus"
+"HIV" = "https://en.wikipedia.org/wiki/HIV"

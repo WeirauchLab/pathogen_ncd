@@ -1,37 +1,95 @@
 TITLE = Makefile tasks for Mike’s Pathogen/NCD project
-SHELL = python
-THIS = $(firstword $(MAKEFILE_LIST))
-comma = ,
-# these are the defaults
-#TEMPLATES = templates
-#PUBLIC = public
-#SITECFG = site.toml
-#PUBCFG = publication.toml
-.ONESHELL:
+SHELL = bash
+THISMAKEFILE = $(firstword $(MAKEFILE_LIST))
+DEPLOYDIR = local.deploy
+PYTHON = venv/bin/python3
+BIND = 127.0.0.1
+PORT = 8080
+CONTAINER = web
+# the UID of the user running this Makefile; used to `chown` the bind mount for
+# DEPLOYDIR so you can update it from the host side with `make deploy`; can't
+# just read this from the environment because it's not exported by default; see
+# https://unix.stackexchange.com/q/541417
+#
+# this whole rigmarole just to get a variable inside a Dockerfile is irritating
+#LOCALUID = $(shell id -u)
 
-help:  # prints this help
-	@from helpers import make_help
-	make_help('$(THIS)')
+help: venv  # prints this help
+	@$(PYTHON) -c 'from helpers import make_help; make_help("$(THISMAKEFILE)")'
 
-site:  # make public web site
-	from helpers import process_templates
-	process_templates()
+config: venv  # pretty-print the parsed site and publication configs
+	@$(PYTHON) -c 'import pprint; from helpers.config import load_config; c=load_config(); pprint.pprint(c)'
 
-serve:  # serve the site locally
-	from helpers import serve
-	serve($(if $(PORT),port='$(PORT)'))
+site: static process_templates  # build public web site
 
-devsetup: SHELL=bash
-devsetup:  # set up a fresh local dev environment
-	[[ -d venv ]] || python3 -m venv venv
-	source venv/bin/activate
-	pip install -r requirements.txt
-	# FIXME: add to "dev" section of `pyproject.toml` or `setup.py` someday
-	pip install ipython visidata
-	
-clean: SHELL=bash
+static: node_modules sync_static  # put static assets in place
+node_modules:
+	cd static && npm install
+sync_static:
+	rsync -av --copy-links --exclude=".*.swp" --exclude=node_modules \
+		--exclude="package.json*" --no-perms$(if $(DRYRUN), --dry-run) \
+		static/ $(DEPLOYDIR)
+
+process_templates: venv
+	$(PYTHON) -c 'from helpers import process_templates; process_templates()'
+	# create a symlink from theme/dot-htaccess to anywhere that needs it
+	cd $(DEPLOYDIR)/data && ln -sf ../theme/dot-htaccess .htaccess
+
+up: serve
+## not currently used; see comments in `Dockerfile`
+serve: venv  # (alias: up) serve site locally
+ifneq ($(BUILD)$(REBUILD),)
+	@#docker compose build --build-arg LOCALUID=$(LOCALUID) $(CONTAINER)
+	docker compose build $(CONTAINER)
+endif
+	docker compose up $(CONTAINER)
+	#venv/bin/watchfiles \
+	#	'sh -c "make site && python3 -m http.server -b $(BIND) -d $(DEPLOYDIR) $(PORT)"' \
+	#	templates static
+
+down: venv
+	docker compose down $(CONTAINER)
+
+s: shell
+shell: venv  # (alias: s) start a root shell in the container
+	docker compose exec $(CONTAINER) /bin/sh
+
+b: browse
+browse: venv  # (alias: b) open a web browser to the (local) server
+	@# python -m webbrowser prints a '\g' (BEL) to the terminal -- huff!
+	$(PYTHON) -m webbrowser -t http://$(BIND):$(PORT) >/dev/null
+
+
+check: venv  # check all Python source files for syntax errors
+	$(PYTHON) -m compileall -f helpers
+
 clean:  # remove compiled bytecode and other detritus
-	find . -path venv -prune -name "*.pyc"
+	-find . -path venv -prune -name "*.pyc"
+
+reallyclean: clean  # also remove the local deploy directory
+	-rm -rf $(DEPLOYDIR)/*
+
+
+.PHONY: venv
+venv:
+	@if ! [[ -x $(PYTHON) ]]; then \
+		echo "Setting up virtual environment and installing dependencies…" >&2; \
+		if [[ $$(python3 --version) =~ 3.([789]|[1-9][0-9]) ]]; then \
+			python3 -m venv venv; \
+		else \
+			if [[ $$(uname -s) != Linux ]] || ! scl enable rh-python38 -- python3 -m venv venv; then \
+				echo "ERROR: Please manually create a Python ≥3.7 virtualenv at 'venv' and try again." >&2; \
+				exit 1; \
+			fi; \
+		fi; \
+		if source venv/bin/activate && pip install -r requirements.txt; then \
+			echo "Finished setting up virtualenv" >&2; \
+		else \
+			echo "ERROR: Unable to create the virtualenv. Please troubleshoot." >&2; \
+			exit 1; \
+		fi; \
+	fi
+
 
 ##
 ##  internals
@@ -449,10 +507,6 @@ db-build-not-dupe:
 		exit 1; \
 	fi
 
-# vim: ts=4 sw=4 noet
-=======
-#
-#
 ## read the TSV into SQLite
 #define IMPORTSQL
 #.mode tab
@@ -541,4 +595,4 @@ db-build-not-dupe:
 #		     "already exists." >&2; \
 #		exit 1; \
 #	fi
-# vim: ft=python sw=4 ts=4 noet
+# vim: ft=make sw=4 ts=4 noet

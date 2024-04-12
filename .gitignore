@@ -2,6 +2,14 @@
 .*sw?
 *~
 
+# turds left behind by the operating system
+Thumbs.db
+.DS_Store
+
 # Office lock files
 ~$*.*
 .~lock.*
+
+# IDE settings
+.idea
+.vscode

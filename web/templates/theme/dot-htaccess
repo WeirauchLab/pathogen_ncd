@@ -1,0 +1,87 @@
+#
+# Apaxy by @adamwhitcroft
+# Very small modifications for the Weirauch TF Research Lab by @ernstki.
+#
+# For a full breakdown of the mod_autoindex module:
+# http://apache.org/docs/2.2/mod/mod_autoindex.html
+#
+
+	# ENABLE INDEXING
+	Options +Indexes
+
+	# INDEX OPTIONS IndexOptions +Charset=UTF-8 +FancyIndexing +IconsAreLinks +IgnoreCase +FoldersFirst +XHTML +HTMLTable +SuppressRules +NameWidth=* +SuppressDescription
+    #+DescriptionWidth=*
+
+	# HIDE PARTS OF THE THEME (config.json, footer.md, etc.)
+	IndexIgnore .htaccess header.html footer.html Makefile *.md *.json
+
+#
+# GENERAL ICONS (BLANK, DIRECTORY, PARENT DIRECTORY)
+#
+
+#
+# Replace {FOLDERNAME} with your directory URL eg:
+# If your directory is http://mywebsite.com/share/
+# you would change to:
+#
+# AddIcon /sharetheme/icons/blank.png ^^BLANKICON^^
+#
+
+	AddIcon {{ site.urlbase }}/theme/icons/blank.png ^^BLANKICON^^
+	AddIcon {{ site.urlbase }}/theme/icons/folder.png ^^DIRECTORY^^
+	AddIcon {{ site.urlbase }}/theme/icons/folder-home.png ..
+
+#
+# EXTENSION SPECIFIC ICONS
+#
+
+	AddIcon {{ site.urlbase }}/theme/icons/archive.png .tar.bz2 .tar.xz .tar.gz
+	AddIcon {{ site.urlbase }}/theme/icons/audio.png .aif .iff .m3u .m4a .mid .mp3 .mpa .ra .wav .wma .f4a .f4b .oga .ogg
+	AddIcon {{ site.urlbase }}/theme/icons/bin.png .bin
+	AddIcon {{ site.urlbase }}/theme/icons/c.png .c
+	AddIcon {{ site.urlbase }}/theme/icons/calc.png .xlsx .xlsm .xltx .xltm .xlam .xlr .xls .csv .tsv
+	AddIcon {{ site.urlbase }}/theme/icons/css.png .css
+	AddIcon {{ site.urlbase }}/theme/icons/deb.png .deb
+	AddIcon {{ site.urlbase }}/theme/icons/doc.png .doc .docx .docm .dot .dotx .dotm .log .msg .odt .pages .rtf .tex .wpd .wps
+	AddIcon {{ site.urlbase }}/theme/icons/draw.png .svg
+	AddIcon {{ site.urlbase }}/theme/icons/eps.png .ai .eps
+	AddIcon {{ site.urlbase }}/theme/icons/gif.png .gif
+	AddIcon {{ site.urlbase }}/theme/icons/html.png .html .xhtml .shtml .htm
+	AddIcon {{ site.urlbase }}/theme/icons/ico.png .ico
+	AddIcon {{ site.urlbase }}/theme/icons/java.png .jar
+	AddIcon {{ site.urlbase }}/theme/icons/jpg.png .jpg .jpeg
+	AddIcon {{ site.urlbase }}/theme/icons/js.png .js .json
+	AddIcon {{ site.urlbase }}/theme/icons/log.png SUM SUMS
+	AddIcon {{ site.urlbase }}/theme/icons/makefile.png Makefile
+	AddIcon {{ site.urlbase }}/theme/icons/markdown.png .md
+	AddIcon {{ site.urlbase }}/theme/icons/package.png .pkg .dmg
+	AddIcon {{ site.urlbase }}/theme/icons/pdf.png .pdf
+	AddIcon {{ site.urlbase }}/theme/icons/php.png .php .phtml
+	AddIcon {{ site.urlbase }}/theme/icons/png.png .png
+	AddIcon {{ site.urlbase }}/theme/icons/ps.png .ps
+	AddIcon {{ site.urlbase }}/theme/icons/psd.png .psd
+	AddIcon {{ site.urlbase }}/theme/icons/rar.png .rar
+	AddIcon {{ site.urlbase }}/theme/icons/rb.png .rb
+	AddIcon {{ site.urlbase }}/theme/icons/rpm.png .rpm
+	AddIcon {{ site.urlbase }}/theme/icons/rss.png .rss
+	AddIcon {{ site.urlbase }}/theme/icons/script.png .sh .csh .ksh
+	AddIcon {{ site.urlbase }}/theme/icons/sql.png .sql .sqlite .sqlite3 .db
+	AddIcon {{ site.urlbase }}/theme/icons/tiff.png .tiff
+	AddIcon {{ site.urlbase }}/theme/icons/text.png .txt .nfo
+	AddIcon {{ site.urlbase }}/theme/icons/video.png .asf .asx .avi .flv .mkv .mov .mp4 .mpg .rm .srt .swf .vob .wmv .m4v .f4v .f4p .ogv
+	AddIcon {{ site.urlbase }}/theme/icons/xml.png .xml
+	AddIcon {{ site.urlbase }}/theme/icons/zip.png .zip
+	DefaultIcon {{ site.urlbase }}/theme/icons/default.png
+
+#
+# THEME FILES
+#
+
+	HeaderName {{ site.urlbase }}/theme/header.html
+	ReadmeName {{ site.urlbase }}/theme/footer.html
+	IndexStyleSheet {{ site.urlbase }}/theme/style.css
+
+#
+# MIME OVERRIDES
+#
+    AddType text/plain .tsv 

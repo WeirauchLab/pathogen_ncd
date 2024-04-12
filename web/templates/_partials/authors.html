@@ -16,7 +16,7 @@
         <a class="footnote" id="fn-star"><sup>#</sup><span>Contributed equally</span></a>
         {%- endif %}
         {%- for a in pub.affiliations if not a.id in ['*', '#'] %}
-        <a class="footnote" id="fn-{{ a.id }}"><sup>{{ a.id }}</sup><span>{{ a.name }}</span>{% if not loop.last %}; {% endif %}
+        <a class="footnote" id="fn-{{ a.id }}"><sup>{{ a.id }}</sup><span>{{ a.name }}</span></a>{% if not loop.last %}; {% endif %}
         {%- endfor %}
         {%- if stars %}
         {% set subject = pub.emailsubject | urlencode %}

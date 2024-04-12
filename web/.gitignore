@@ -15,7 +15,20 @@ public/data/*.tar.gz
 .metachecked
 
 # NPM libraries; just 'npm install' to get them back
-public/node_modules
+static/node_modules
+# I'm sure there are good reasons to check the lock file into version control
+# under some circumstances, but they probably don't apply to this project
+static/package-lock.json
+
+# the local deployment directory; everything is rebuild by 'make' anyway
+local.deploy/**
+!local.deploy/
+!local.deploy/.gitkeep
+
+# exclude generated data files (except the MD5SUMS and the TSV)
+**/data/*.sqlite*
+**/data/*.zip
+**/data/*.tar.gz
 
 # any Excel files
 *.xls*

@@ -2,44 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{ site.meta.lab }} - {{ pub.propername }}</title>
-  <link rel="stylesheet" href="css/style.css" media="all">
-  <meta name="application-name"
-        content="PUBPROPERNAME">
-  <meta name="description"
-        content="PUBPROPERNAME">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" media="all">
-  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.1.6/css/fixedHeader.dataTables.min.css" media="all">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ site.meta.lab }} - {{ pub.title }}</title>
+  <link rel="stylesheet" href="theme/style.css" media="all">
+  <link rel="stylesheet" href="vendor/dataTables.dataTables.min.css" media="all">
+  <link rel="stylesheet" href="vendor/fixedHeader.dataTables.min.css" media="all">
+{% include "_partials/meta.html" %}
 </head>
 <body>
   <div id="top" class="top">
     <div id="logos">
-      <figure>
-        <a href="{{ site.meta.labhome }}" title="Visit the {{ site.meta.lab }} home page">
-          <img src="img/cchmc.png" alt="Children's Hospital logo">
-        </a>
-        <figcaption>{{ site.meta.labhome }}</figcaption>
-      </figure>
+      <a href="{{ site.meta.labhome }}" title="Visit the {{ site.meta.lab }} home page">
+        <img src="img/cchmc.png" alt="Children's Hospital logo">
+      </a>
     </div>
 
     <div id="header">
       <h1 id="headline">{{ pub.title }}</h1>
       <!--h3 id="tagline"></h3-->
-      {% include "_partials/authors.html" %}
+{% include "_partials/authors.html" %}
 
       <div class="actions actions-top">
         <!-- the 'onclick' is necessary to make the ENTIRE button clickable -->
-        <button id="download-btn" onclick="location.href='DEPLOYDATADIR/PUBDBTARBALL'"
-                title="Download database build PUBDBVER, released PUBDBRELEASEDATE (PUBDBTARBALLSIZE); gzipped Unix tar format, LF line endings">
-          <a href="DEPLOYDATADIR/PUBDBTARBALL">
-            <strong>Download Database Build PUBDBVER</strong>
-            <small>Released PUBDBRELEASEDATE (PUBDBTARBALLSIZE)</small>
+        {% set tarfile = 'data/' ~ data.archivebasename ~ data.build ~ '.tar.gz' -%}
+        {%- set tarfilesize = '{{' ~ tarfile ~ ' | filesize }}' -%}
+        <button id="download-btn" onclick="location.href='{{ tarfile }}'"
+                title="Download database build {{ data.build }}, released {{ releasedate }} ({{ tarfilesize }}); gzipped Unix tar format, LF line endings"
+        >
+          <a href="{{ tarfile }}">
+            <strong>Download Database Build {{ data.build }}</strong>
+            <small>Released {{ releasedate }} ({{ '{{' }} {{ tarfile }} | filesize {{ '}}' }})</small>
           </a>
         </button>
 
         <button type="button" title="Download supplemental tables from the publication (as a .zip archive)"
-                onclick="location.href='DEPLOYDATADIR/vtrsurvey-supplement.zip'">
-          <a href="DEPLOYDATADIR/vtrsurvey-supplement.zip">
+                onclick="location.href='{{ zipfile }}'">
+          <a href="{{ zipfile }}">
             Download Supplemental Tables
             <small>Supplement from the PUBPUBLICATIONNAME (PUBYEAR) paper</small>
           </a>
@@ -55,91 +53,75 @@
 #}
         <div class="subtle-link" id="links-to-footer">
           <p>
-            <a href="DEPLOYDATADIR/PUBDBZIP"
-               title="Download database build PUBDBVER, released PUBDBRELEASEDATE (PUBDBZIPSIZE); ZIP format, CR+LF line endings"
+            {% set zipfile = 'data/' ~ data.archivebasename ~ data.build ~ '.zip' -%}
+            {%- set zipfilesize = '{{' ~ zipfile ~ ' | filesize }}' -%}
+            <a href="{{ zipfile }}"
+               title="Download database build {{ data.build }}, released {{ releasedate }} ({{ zipfilesize }}); ZIP format"
             >Windows format</a>
             &nbsp;|&nbsp;
-            <a href="DEPLOYDATADIR/MD5SUMS"
+            <a href="data/MD5SUMS"
                title="MD5 checksums, for verifying download integrity"
             >Checksums</a>
             &nbsp;|&nbsp;
-            <a href="DEPLOYDATADIR" title="View all available downloads">All downloads</a>
+            <a href="data" title="View all available downloads">All downloads</a>
           </p>
         </div>
       </div><!--/.actions.actions-top-->
     </div><!--/#header-->
-
 
     <hr>
 
     <div id="abstract">
       <h2>Abstract</h2>
       <p>
-        There are many well-established relationships between pathogens and
-        human disease, but far fewer when focusing on non-communicable diseases
-        (NCDs). We leverage data from The UK Biobank and TriNetX to perform a
-        systematic survey across 20 pathogens and 426 diseases, focused
-        primarily on NCDs. To this end, we assess association between disease
-        status and infection history proxies. We identify 206 pathogen-disease
-        pairs that replicated in both cohorts. We replicated established
-        relationships to validate our method, including Helicobacter pylori with
-        several gastroenterological diseases, and connections between
-        Epstein-Barr virus with multiple sclerosis and lupus. Our approach
-        identified evidence of association for 15 of the pathogens and 96
-        distinct diseases, including a strong link between human cytomegalovirus
-        (CMV) and ulcerative colitis (UC). We validate this connection through
-        two orthogonal analyses, revealing increased CMV gene expression in UC
-        patients and enrichment for UC genetic risk signal near human genes that
-        have altered expression upon CMV infection. Collectively, these results
-        form a foundation for future investigations into mechanistic roles
-        played by pathogens in disease.
+{% include "_partials/abstract.html" %}
       </p>
 
       <h2 id="how-to-cite">How to cite</h2>
       <p>
-        Please cite this article as: PUBAUTHORLASTNAME <em>et al.</em>, 
-        PUBTITLE, PUBPUBLICATIONNAME (PUBYEAR),
-        <a href="PUBURL">PUBURL</a>
+      Please cite this article as: {{ pub.surname}} <em>et al.</em>, 
+        {{ pub.title }}, {{ pub.journal }} ({{ pub.year }}),
+        <a href="{{ pub.url }}">{{ pub.url }}</a>
       </p>
 
       <h2 id="feedback">Feedback</h2>
       <p>
         Have feedback on how we can make this resource better?
-        <a href="mailto:tftoolsadmin@cchmc.org?subject=PUBEMAILSUBJECT">
+        <a href="mailto:{{ adminemail }}?subject={{ emailsubject | urlencode }}">
           Let us know</a>.
       </p>
       <br>
 
-m4_dnl <h2>Database release history</h2>
-m4_dnl <p>
-m4_dnl   The latest database build is
-m4_dnl   <a title="Download database build PUBDBVER as .zip bundle (PUBDBZIPSIZE)" href="PUBDBZIP"><strong>PUBDBVER</strong></a>,
-m4_dnl   released <strong>PUBDBRELEASEDATE</strong>.
-m4_dnl   m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', `A description of previous builds follows:')
-m4_dnl  A description of previous builds follows:
-m4_dnl </p>
-m4_dnl
-m4_dnl <!-- generated by 'git tag -n' -->
-m4_dnl m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', PUBDBRELEASEHISTORY)
-m4_dnl
-m4_dnl <p>
-m4_dnl   The data searchable in the table below is also
-m4_dnl   <a href="data">provided for download</a> in several different formats,
-m4_dnl   including tab-delimited (suitable for import into a spreadsheet program
-m4_dnl   like Excel or LibreOffice Calc) and SQLite.
-m4_dnl  <!-- (confusing, having two links) --> The <a href="PUBDBZIP"><code>.zip</code> archive</a> simply
-m4_dnl  contains all of them in one compressed bundle.
-m4_dnl </p>
-m4_dnl
-m4_dnl <div class="actions">
-m4_dnl   <button type="button"title="Download data in other formats such as tab-delimited, SQLite database" onclick="location.href='data'">
-m4_dnl     <a href="data">Download Other Formats<small>Tab-delimited, SQLite database</small></a>
-m4_dnl   </button>
-m4_dnl </div><!--/.actions-->
-m4_dnl
-    </div><!--/#abstract-->
+      <h2>Database release history</h2>
+      <p>
+        The latest database build is
+        <a title="Download database build PUBDBVER as .zip bundle (PUBDBZIPSIZE)" href="PUBDBZIP"><strong>PUBDBVER</strong></a>,
+        released <strong>PUBDBRELEASEDATE</strong>.
+        m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', `A description of previous builds follows:')
+       A description of previous builds follows:
+      </p>
 
-    <hr>
+      <!-- generated by 'git tag -n' -->
+      m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', PUBDBRELEASEHISTORY)
+
+      <p>
+        The data searchable in the table below is also
+        <a href="data">provided for download</a> in several different formats,
+        including tab-delimited (suitable for import into a spreadsheet program
+        like Excel or LibreOffice Calc) and SQLite.
+       <!-- (confusing, having two links) --> The <a href="PUBDBZIP"><code>.zip</code> archive</a> simply
+       contains all of them in one compressed bundle.
+      </p>
+
+      <div class="actions">
+        <button type="button" title="Download data in other formats such as tab-delimited, SQLite database" onclick="location.href='data'">
+          <a href="data">Download Other Formats<small>Tab-delimited, SQLite database</small></a>
+        </button>
+      </div><!--/.actions-->
+
+      </div><!--/#abstract-->
+
+      <hr>
 
   </div><!--/#top-->
 
@@ -159,7 +141,7 @@ m4_dnl
         searchable. To search for an exact phrase, put it in double quotes,
         <em>e.g.</em>, <code>"momp D"</code>; otherwise the search input is
         "fuzzy" and may match across multiple columns.</p>
-   
+
         <p>Hover your mouse pointer over <strong>column names</strong> for a full
         description.</p>
 
@@ -204,7 +186,6 @@ m4_dnl
   <div id="table-viewer" class="wrapper">
     <!-- viraltfsurvey.html replaces what is here, loaded by XMLHttpRequest -->
     <div class="loading">
-m4_dnl      <h2>Fetching data... please wait a few moments.</h2>
       <p>Fetching data... please wait a few moments.</p>
       <p class="small">Nothing showing up here? <a class="ul-link"
         href="mailto:tftoolsadmin@cchmc.org?subject=PUBEMAILSUBJECT%20is%20not%20loading%20the%20data%properly!">Please let us know</a>.
@@ -234,7 +215,7 @@ m4_dnl      <h2>Fetching data... please wait a few moments.</h2>
     <p>
       Problems? <a id="admin-contact" class="ul-link"
          href="mailto:tftoolsadmin@cchmc.org?subject=PUBEMAILSUBJECT">Please let the site admin know</a>.
-m4_dnl      | <a class="ul-link" href="PUBSOURCEURL" title="Source code for web site">Source code</a>
+      | <a class="ul-link" href="PUBSOURCEURL" title="Source code for web site">Source code</a>
     </p>
     <p>
       &copy;PUBCOPYRIGHTYEAR 
@@ -251,11 +232,13 @@ m4_dnl      | <a class="ul-link" href="PUBSOURCEURL" title="Source code for web 
     </a> theme by <a href="https://twitter.com/adamwhitcroft">@adamwhitcroft</a>
   </div><!--/.footer-->
 
-  {# FIXME: host locally #}
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.min.js"></script>
-  <script src="vendor/jscookie/js.cookie-2.2.1.min.js"></script>
-  <script src="js/index.js">
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/dataTables.min.js"></script>
+  <script src="vendor/dataTables.fixedHeader.min.js"></script>
+  <script src="vendor/js.cookie.min.js"></script>
+  <script src="js/index.js"></script>
+  {%- if site.deployto != 'prod' and site.livereload %}
+  <script src="vendor/live.js"></script>
+  {%- endif %}
 </body>
 </html>

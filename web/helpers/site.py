@@ -2,40 +2,52 @@
 ##  Makefile helper functions related to site generation and admin
 ##
 
-def serve(root='public', addr='127.0.0.1', port='8000'):
-    import subprocess
-    # cheating
-    subprocess.call(['python', '-m', 'http.server', '--bind', addr,
-                     '--directory', root, port])
-    
+from .config import use_config, config_list
 
-def process_templates(site_config="site.toml", pub_config="publication.toml",
-                      template_dir="templates", public_dir="public"):
-    import os, sys, tomli
-    from jinja2 import Environment, FileSystemLoader  #, select_autoescape
 
-    sitecfg = tomli.load(open(site_config, 'rb'))
-    pubcfg = tomli.load(open(pub_config, 'rb'))
+@use_config
+def process_templates(template_dir="templates", deploy_dir="local.deploy",
+                      config=None):
+    """
+    Process Jinja2 templates from `template_dir`; copy to `deploy_dir`
+    """
+    import os, sys
+    from jinja2 import Environment, FileSystemLoader, pass_context
+
     env = Environment(loader=FileSystemLoader(template_dir))
-                      #autoescape=select_autoescape())
-    env.globals = { 'site': sitecfg, 'pub': pubcfg }
+
+    env.globals = {}
+    for config_name, _ in config_list.items():
+        env.globals.update({config_name: config[config_name]})
+
+    # as a shorter nickname for the above
+    env.globals.update({'pub': config['publication']})
+
+    def filesize(value):
+        return os.stat(f"static/data/{value}").st_size
+
+    env.filters['filesize'] = filesize
 
     for (path, dirs, files) in os.walk(template_dir):
+        # path relative to `templates` directory
         relpath = os.path.relpath(path, template_dir)
-        destpath = os.path.join(public_dir, relpath)
+
+        # corresponding destination path in "deploy" directory
+        destpath = os.path.join(deploy_dir, relpath)
         os.makedirs(destpath, exist_ok=True)
+
         for f in files:
             if f.endswith('.swp'):  # ugh
                 continue
 
-            template = os.path.join(path, f)
-            html = os.path.join(destpath, f)
-            print(f"Processing '{template}'...", file=sys.stderr)
+            destfile = os.path.join(destpath, f)
+            print(f"Writing '{destfile}'...", file=sys.stderr)
 
-            with open(html, 'w') as h:
-                with open(template, 'r') as ts:
-                    t = env.get_template(os.path.join(relpath, f))
-                    h.write(t.render())
+            with open(destfile, 'w') as df:
+                t = env.get_template(os.path.join(relpath, f))
+                df.write(t.render())
+
         for d in dirs:
+            # skip `_partials` and anything else beginning with an underscore
             if d.startswith('_'):
                 dirs.remove(d)

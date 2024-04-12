@@ -1,0 +1,3 @@
+# for use with https://github.com/hyperupcall/autoenv
+# be sure to set export AUTOENV_ENV_FILENAME=.autoenv in your .bashrc
+source venv/bin/activate

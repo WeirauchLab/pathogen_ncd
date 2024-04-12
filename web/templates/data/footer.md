@@ -10,15 +10,15 @@ Windows; download the .tar.gz version if you are on Mac or Linux.
 * a README file containing the current DB release version and date, with links
   to the <em>{{ pub.publicationname }}</em> ({{ pub.year }}) paper and this site
 
-* the **`.tsv` (tab-separated values) file** is suitable for import into any
+* the **`.tsv` (tab-separated values) files** are suitable for import into any
   spreadsheet program, *e.g.*, Excel or LibreOffice Calc
 
-    * it is UTF-8-encoded, no text field delimiters (no quotes), with
+    * they are UTF-8-encoded, no text field delimiters (no quotes), with
       **DOS/Windows (CR+LF) [line endings][1]**; don't try to process this file
       with Unix utilities like `cut` or `awk` without converting line endings
-      first!
+      first! (or just download the `.tar.gz` version to save yourself time)
 
-* the **`.sqlite3` file** is a relational database that can be queried
+* the **`.sqlite` file** is a relational database that can be queried
   using the SQLite 3 library provided in most programming languages' standard
   libraries ([example for Python][2]), using a graphical tool such as
   [DB Browser for SQLite][3], or a web-based tool such as [Datasette][4].
@@ -28,8 +28,8 @@ Windows; download the .tar.gz version if you are on Mac or Linux.
       web interface, which you can further refine, making it a good SQL
       learning tool.
 
-* the **`.html` file** is the same data data, simply reformatted into an unstyled
-  HTML fragment.
+* the **`.html` files** are the same data data, simply reformatted into an
+  unstyled HTML fragment.
 
     * this file has a root `<table>` element, so it can even be processed
       with a tolerant XML parser

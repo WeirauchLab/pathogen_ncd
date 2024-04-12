@@ -1,0 +1,46 @@
+# if we need it later…
+
+[project]
+name = "pathogen_ncd"
+description = "Web site for Lape 2024 publication"
+version = "0.0.1"
+requires-python = ">=3.8"
+dependencies = [
+    # newer xlrd has dropped support for .xlsx, leaving csvkit hanging
+    "xlrd == 1.2.*",
+    "csvkit",
+    "Jinja2",
+    # https://github.com/snakemake/snakemake/issues/1989
+    "pulp < 2.8",
+    # tomllib is in Python 3.11; but for now…
+    "tomli"
+]
+authors = [
+    { name = "Kevin Ernst", email = "Kevin.Ernst@cchmc.org" },
+    { name = "Michael Lape, PhD", email = "lapema@mail.uc.edu" }
+]
+#license = { file = "LICENSE.txt" }
+
+[project.optional-dependencies]
+dev = [
+	"bump2version",
+    "ipython",
+    "visidata",
+]
+
+[project.urls]
+homepage = "https://tf.cchmc.org/pubs/lape2024"
+#documentation = "https://url.to/docs"
+repository = "https://tfinternal.research.cchmc.org/gitlab/mike/pathogen_ncd"
+#changelog = "https://git.host/repo/CHANGELOG"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+#[project.scripts]
+#scriptname = "project_name.cli:main"
+
+#[tool.setuptools.packages.find]
+#where = ["src"]
+#include = ["project_name*"]

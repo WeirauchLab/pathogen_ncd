@@ -1,0 +1,19 @@
+name: pathogen_ncd
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - IS_PRODUCTION
+    # this will put Docker's ports as the host's external ports, instead of
+    # using an internal, private Class B IP address; you probably don't want
+    # this for a local development setup
+    #network_mode: host
+    #restart: always
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./local.deploy:/usr/local/apache2/htdocs:rw
+    #command: "httpd -D FOREGROUND"  # <-- this is the default for httpd:alpine

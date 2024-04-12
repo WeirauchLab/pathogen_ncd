@@ -1,49 +1,8 @@
 ##
-##  Print help for Makefile targets in the file given as argv[1]
-##
-##  (I like the Perl version better)
+##  Utility functions that don't fit in any other bin
 ##
 
-def load_config(configs=None):
-    """ load TOML configs and return dict of them all merged together """
-    import re, sys, pprint, tomli
-
-    cfg = {}
-    idx = {}
-
-    if configs is None:
-        configs = { 'site': 'site.toml', 'pub': 'publication.toml' }
-    for name, configfile in configs.items():
-        cfg[name] = tomli.load(open(configfile, 'rb'))
-
-    def interpolate(x):
-        """ Simple, sequential interpolation of `{keyname}`s """
-        if isinstance(x, dict):
-            for k, v in x.items():
-                if isinstance(v, (dict, list)):
-                    interpolate(v)
-                else:
-                    if isinstance(v, str):
-                        m = re.search(r'{(.*)}', v)
-                        if m and idx.get(m[1]):
-                            x[k] = v.replace(f"{{{m[1]}}}", idx[m[1]])
-                    idx[k] = str(v)
-        elif isinstance(x, list):
-            for i in x:
-                if isinstance(i, dict):
-                    interpolate(i)
-
-    interpolate(cfg)
-    return cfg
-
-
-def use_config(f, configs=None):
-    """ Decorator that loads the TOML configs automatically """
-    from functools import wraps
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        return f(*args, **kwargs, config=load_config(configs))
-    return wrapper
+from .config import use_config
 
 
 def ansi(code):
@@ -57,7 +16,7 @@ def make_help(makefile='Makefile', config=None):
     Scan through a `Makefile` passed as the first argument and automatically
     generate help for each target found
     """
-    import re, sys
+    import re
 
     BLUE = ansi(34)
     BOLD = ansi(1)
@@ -92,19 +51,19 @@ def make_help(makefile='Makefile', config=None):
                     maxlen = len(target)
                 targets.append((target, help))
 
-        # 4 spaces, the target name right-padded to the max width of any target, 4
-        # spaces, then the help
-        fmt = f"    %s%-{str(maxlen)}s%s    %s"
+        # 4 spaces, target name right-padded to the max width of any target,
+        # 4 spaces, then the help
+        fmt = f"    {BOLDBLUE}%-{str(maxlen)}s{RESET}    %s"
 
         if targets:
             for t in targets:
-                print(fmt % (ansi('1;34'), t[0], ansi(0), t[1]))
+                print(fmt % (t[0], t[1]))
         if groups:
             for g in groups:
                 print(f"\n  [{g}]")
                 for t in groups[g]:
-                    print(fmt % (ansi('1;34'), t[0], ansi(0), t[1]))
+                    print(fmt % (t[0], t[1]))
 
-    print(f"\n  Report bugs at:\n    {config['site']['issuesurl']}\n")
+    print(f"\n  {config['site']['sourceurl']}\n")
 
 # vim: sw=4 ts=4 expandtab
