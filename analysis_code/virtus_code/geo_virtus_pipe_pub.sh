@@ -1,10 +1,25 @@
 #!/bin/bash
-# 
-# To be used with SubmitArrayJobs
+
+# Name:     geo_virtus_pipe_pub.sh
+# Author:   Mike Lape
+# Date:     2023
+# Description:
 #
-# VAR1: Line with GSE ID, SRX ID, SRR ID, and possible SRR ID2 all space
-#       separated
-# VAR2: Disease abbreviation used in directory names, ms or sle, etc.
+#		Script to be used with submitArrayJobs 
+#		[https://github.com/ernstki/submitArrayJobs] that will run VIRTUS on a 
+#       single GSE ID whether single end or paired end. Then normalizes result
+#		and outputs the normalized hit rates.
+#
+# 	Requirements:
+#			geo_pipe_funcs_pub.sh 
+#
+#		Usage with sAJ:
+#   	VAR1: Line with GSE ID, SRX ID, SRR ID, and possible SRR ID2 all space
+#     	    separated
+#   	VAR2: Disease abbreviation used in directory names, ms or sle, etc.
+#
+
+
 
 HOME="/data/pathogen_ncd"
 SINGULARITY_HOME="${HOME}/singularity"
@@ -16,7 +31,7 @@ SINGULARITY_HOME="${HOME}/singularity"
 # Capture the starttime
 start=$(date +%s)
 
-# Cut adapt requires a certain python version and my preferred is not it.
+# Cutadapt requires a certain python version and my preferred is not it.
 # Just to make sure nothing gets in the way, just purge all loaded modules.
 module purge
 
@@ -33,8 +48,8 @@ module load nodejs
 # Load in all of our functions!
 source ./geo_pipe_funcs_pub.sh
 
-# Tell Singularity where it can find container image caches (so we
-# don't have to go through the proxy)
+# Tell Singularity where it can find container image caches (so we don't have 
+# to go through the proxy)
 export SINGULARITYENV_TMPDIR="${SINGULARITY_HOME}"
 export SINGULARITY_CACHEDIR="${SINGULARITY_HOME}"
 export CWL_SINGULARITY_CACHE="${SINGULARITY_HOME}"
@@ -61,11 +76,12 @@ RES_DIR="${HOME}/virtus/results/${CURR_DIS}"
 # Set data directory (where to store temp files)
 WORK_DIR="${HOME}/virtus/data/${CURR_DIS}"
 
-# Logging directory (where to dump log files) - plan to place these right next to where LSF logs should go.
+# Logging directory (where to dump log files) - plan to place these right next 
+# to where LSF logs should go.
 LOG_DIR="${HOME}/virtus/code/${CURR_DIS}/logs"
 
 # Set scratch dir (where we store fastq files from previously failed runs
-BASE_SCRATCH_DIR="/scratch/VIRTUS/${CURR_DIS}_files"
+BASE_SCRATCH_DIR="${HOME}/virtus/scratch/${CURR_DIS}_files"
 
 # Mode of sequencing of file(s) of interest (SE by default PE if paired-end)
 MODE="SE"
@@ -76,7 +92,6 @@ CONV_TAB="${HOME}/virtus/procd/ncbi_id_conv_table.txt"
 # Maximum number of times to try to re-run fasterq-dump to download the fastq
 # file for analysis.
 MAX_DL_RETRIES=5
-
 
 # Grab out input
 line="VAR1"
@@ -91,7 +106,6 @@ gse=$1
 srx=$2
 srr=$3
 srr2=$4
-
 
 # Setup the environment
 WORK_DIR="${WORK_DIR}/${gse}/${srr}"
@@ -335,7 +349,7 @@ cp -v "${virtus_out}" "${virtus_out_orig}" >> "${outf}"
 hu_log="${virtus_out_dir}/Log.final.out"
 
 # Grep for uniquely mapped reads, use awk to get actual value
-# then use xargs to strip trailing and leadingf space
+# then use xargs to strip trailing and leading space
 # per https://stackoverflow.com/a/12973694
 uniq=$(grep 'Uniquely mapped reads number' "${hu_log}" | awk -F"|" '{print $2}' | xargs)
 mult=$(grep 'Number of reads mapped to multiple loci' "${hu_log}" | awk -F"|" '{print $2}' | xargs)

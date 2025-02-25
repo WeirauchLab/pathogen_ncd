@@ -1,10 +1,17 @@
 #!/bin/bash
 
-# This file has all the functions I use in the geo_virtus_pipe.sh script
-# Extracting them into a separate file to save space but also so other
-# scripts can use the function.
-# Use by adding the following to your script. 
-#   source ./geo_pipe_funcs_pubs.sh
+# Name:     geo_pipe_funcs_pub.sh
+# Author:   Mike Lape
+# Date:     2023
+# Description:
+#
+#   This file has all the functions used in the geo_virtus_pipe.sh script
+#   Separating them into a separate file to save space but also so other scripts 
+#   can use the function.
+#   Use by adding the following to your script. 
+#     source ./geo_pipe_funcs_pubs.sh
+#
+
 
 VIRTUS_HIT_THRESH=0
 # define timestamp function ds
@@ -111,7 +118,6 @@ function fq_stats () {
 	# Rounding: https://stackoverflow.com/a/26465573
 	mean=$( printf "%.3f\\n" "$(echo "${mean}" | bc -l)")
 
-
 	# Max read len
 	max=$(echo "${hist}" | awk '{print $1}' | sort | tail -n1)
 
@@ -138,34 +144,34 @@ function run_virtus () {
 
 	if [[ "$1" = "SE" ]] ; then
 
-		virt_cmd="cwltool 									  \
-              --basedir . 									  \
-              --outdir ./out 								  \
-              --tmpdir-prefix ./tmp/${srr} 					  \
-              --singularity  								  \
-              ${VIRT_SE} 									  \
-              --fastq $2 									  \
-              --genomeDir_human ${STAR_HUMAN} 				  \
-              --genomeDir_virus ${STAR_VIR} 				  \
-              --salmon_index_human ${SALMON_IDX} 			  \
-              --salmon_quantdir_human salmon_out              \
-              --hit_cutoff  ${VIRTUS_HIT_THRESH}              \
+		virt_cmd="cwltool 								\
+              --basedir . 								\
+              --outdir ./out 							\
+              --tmpdir-prefix ./tmp/${srr} 				\
+              --singularity  							\
+              ${VIRT_SE} 								\
+              --fastq $2 								\
+              --genomeDir_human ${STAR_HUMAN} 			\
+              --genomeDir_virus ${STAR_VIR} 			\
+              --salmon_index_human ${SALMON_IDX} 		\
+              --salmon_quantdir_human salmon_out        \
+              --hit_cutoff  ${VIRTUS_HIT_THRESH}        \
               --nthreads ${CORES}"
 	else
 
-		virt_cmd="cwltool 									  \
-              --basedir . 									  \
-              --outdir ./out 								  \
-              --tmpdir-prefix ./tmp/${srr} 					  \
-              --singularity  								  \
-              ${VIRT_PE} 									  \
-              --fastq1 $2 									  \
-              --fastq2 $3 									  \
-              --genomeDir_human ${STAR_HUMAN} 				  \
-              --genomeDir_virus ${STAR_VIR} 				  \
-              --salmon_index_human ${SALMON_IDX} 			  \
-              --salmon_quantdir_human salmon_out              \
-              --hit_cutoff  ${VIRTUS_HIT_THRESH}              \
+		virt_cmd="cwltool 								\
+              --basedir . 								\
+              --outdir ./out 							\
+              --tmpdir-prefix ./tmp/${srr} 				\
+              --singularity  							\
+              ${VIRT_PE} 								\
+              --fastq1 $2 								\
+              --fastq2 $3 								\
+              --genomeDir_human ${STAR_HUMAN} 			\
+              --genomeDir_virus ${STAR_VIR} 			\
+              --salmon_index_human ${SALMON_IDX} 		\
+              --salmon_quantdir_human salmon_out        \
+              --hit_cutoff  ${VIRTUS_HIT_THRESH}        \
               --nthreads ${CORES}"
 
 	fi
@@ -197,16 +203,9 @@ function clean_virtus () {
   # Replace with a simpler command
   find "${WORK_DIR}" -type f -size +75M | grep '.fastq.gz\|.fastq\|fq.gz\|fq' | xargs rm -v
 
-	# Remove any fq files larger than 75M
-	echo -e "\\t\\tRemoving temporary directory"
-	rm -rf "${virtus_tmp_dir}"
-
 	echo -e "\\t\\tRemoving SIF files"
 	find "${WORK_DIR}" -type f -iname '*.sif'  -exec rm {} \;
 }
-
-# Function to either move fastq files to scratch or delete based on
-# VIRTUS return "code"
 
 # Clean up files when VIRTUS fails (move fq to scratch and clean work dir)
 clean_fail () {
@@ -222,6 +221,7 @@ clean_fail () {
     # And clean up VIRTUS environment
     clean_virtus
 }
+
 # Clean up files when VIRTUS succeeds (delete fq and clean work dir)
 clean_success () {
 		# We have paired ends!

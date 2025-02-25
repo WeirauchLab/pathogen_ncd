@@ -2,6 +2,7 @@
 # Author:   Mike Lape
 # Date:     01/17/2023
 # Description:
+#
 #     This file contains the main analysis functions for calculating the 
 #     antibody titer - disease associations for UKB data.  It contains a normal 
 #     asymptotic only version and then a specialized version for our 
@@ -11,6 +12,9 @@
 #     This is the final update to the analysis functions where we add 
 #     intelligent handling of ICD10 chap O diseases allowing for setting
 #     control set to just all females, or all healthy birth codes.
+#
+#     It also includes Phecode analysis functions which are pretty similar to
+#     the ICD related functions
 #
 HEALTHY_PREGNANCY_CODES = c("O80", "O81", "O82", "O83", "O84")
 
@@ -118,8 +122,6 @@ step_analysis <- function(dis_name, cnt = -1, o_con = 'all_females',
   
   full_code = paste(icd_cat, icd_loc, sep = "")
   
-  
-  
   # Put together our data for this disease #####
   # First check if we are working on a sex-specific disease, by looking it up
   # in our sex_spec_dis lookup table
@@ -225,7 +227,6 @@ step_analysis <- function(dis_name, cnt = -1, o_con = 'all_females',
   mod_df$num_sex_part = as.factor(mod_df$num_sex_part)  
   mod_df$same_sex = as.factor(mod_df$same_sex)  
   
-  
   # Create case and control specific dataframes, drop any subjects with any
   # NAs.  Right here na.omit should not affect anyone, if the data was cleaned
   # properly.
@@ -234,8 +235,7 @@ step_analysis <- function(dis_name, cnt = -1, o_con = 'all_females',
   
   # Debug message
   if (DEBUG == TRUE){
-    
-  
+
     cat(paste("\t\tis_sex_spec: ", is_sex_spec, " | is_o_dis: ", (icd_cat == 'O'),
                 " | O-dis cons: ", o_con,
                 "\n\t\tnCase: ", length(case_inds), " | nCon: ", length(control_inds),
@@ -276,9 +276,7 @@ step_analysis <- function(dis_name, cnt = -1, o_con = 'all_females',
                "icd_cat" = icd_cat,
                "icd_loc" = icd_loc,
                "dis_sex" = dis_sex_str)
-  
 
-  
   # Start looping through ant_dat
   for (y in names(ant_dat))
   {
@@ -765,12 +763,691 @@ step_ind_anti_analysis <- function(y, mod_df,
 
 
 
+
+# phecode_step_analysis function. ####
+# Augmented from step_ind_anti_analysis function to process Phecode data
+# This function takes the name of a disease (unparsed) and the count of this
+# disease (only used for progress notification to user) and generates all 
+# logistic regression models for this disease and all 45 different antibodies
+# using a backwards elimination step-wise method.
+#
+# Requirements:
+#   step_ind_anti_analysis function
+#
+# Input:
+#   dis_name [string]: Phecode, "008"
+#   cnt      [int]   : count of which disease this is (used for progress output)
+#   o_con    [string]: What should be used for controls for O diseases, either
+#                      'all_females' or 'o_cons', which limits us to healthy
+#                      birth codes as controls
+#   DEBUG    [bool]: Boolean indicator if certain debug info should be printed.
+# Output:
+#   dataframe [1+ x 36] :
+#         $Disease [string]: Disease name, "other salmonella infections"
+#         $Disease_Group [string]: Phecode group this disease falls into, 
+#                                  "Bacterial enteritis"
+#         $Phecode [string]: Phecode for this current disease
+#         $sex_specific_dis [bool]: Whether this is a sex-specific disease, F
+#         $nCase [int]: Number of cases of this disease, 
+#         $nControl [int]: Number of controls for this disease
+#         $nNA [int]: Number of people with NA for this Phecode
+#         $control_set [string]: Set of controls used for this analysis (
+#                                "Both", "Female", "Male")
+#         $Antigen [string]: Antibody for which this disease was modeled for 
+#                            association.
+#         $organism [string]: Organism abbreviation that produced the antigen
+#         $p_val [float]: P-val of association between antibody level,
+#                                 and disease status - from logistic regression.
+#         $anti_or [string]: Odds ratio for this association
+#         $anti_CI [string]: 95% confidence intervals for this OR
+#         $model [string]: Logistic regression model formula with weights.
+#         $r2_tjur [float]: Tjur's R2 or coefficient of determination.
+#         $r2_mcfad [float]: Unadjusted McFadden's R2
+#         $r2_adj_mcfad [float]: Adjusted McFadden's R2
+#         $r2_coxsnell [float]: Cox & Snell's R2
+#         $r2_nagelkerke [float]: Nagelkerke's R2
+#         $cov_ps [string]: p-values for each covariate included in the
+#                                   logistic regression model
+#         $sig_covs [string]: String listing all covariates included in 
+#                             fully adjusted model
+#         $cov_adj_for  [string]: String listing just the covariates left after
+#                                 backward elimination and thus adjusted for in
+#                                 actual model.
+#         $cov_ors [string]: String containing ORs and CIs for all covars
+#                                that logistic regression model was adjusted for
+#         $avg_age_case [float]: Average age of all cases
+#         $avg_age_con [float]: Average age of all controls
+#         $avg_titer_case [float]: Average titer level for cases
+#         $avg_titer_con [float]: Average titer level for controls
+#         $std_titer_case [float]: Standard deviation titer level for cases
+#         $std_titer_case [float]: Standard deviation titer level for controls
+#         $med_titer_case [float]: Median titer level for cases
+#         $med_titer_case [float]: Median titer level for cases
+#         $Warnings [string]: Text from any glm or CI warnings
+#         $is_warning [bool]: whether a glm warning was thrown for model
+#         $proc_time [string]: Amount of time the CPU took to process this pair
+#         $date_time [string]: Date and time pair analysis was completed.
+#         $perm_n [int]: Will always be -1 unless doing actual permutations
+#
+# Test:
+#   val = analysis("other salmonella infections[A02]", 1)
+#   
+#
+phecode_step_analysis <- function(dis_name, cnt = -1, o_con = 'all_females', 
+                          DEBUG = FALSE)
+{
+  
+  curr_phecode = dis_name
+  
+  # Indicator to tell our code if we have a sex-specific code using the 
+  # gender restriction file from Phecodes.org
+  male_only   = SEX_REF[SEX_REF['phecode'] == curr_phecode, 'male_only']
+  female_only = SEX_REF[SEX_REF['phecode'] == curr_phecode, 'female_only']
+  
+  is_sex_spec = male_only | female_only
+  
+  # Create empty df to hold our associations for this Phecode 1 row for 
+  # each of the antibodies we are testing [45]
+  # This is a per-Phecode form of the res dataframe created earlier.
+  dis_res = data.frame(matrix(nrow = 0, ncol = 36))
+  
+  # Give it proper colnames
+  colnames(dis_res) = result_cols
+  
+  # Get the Phecode status data for the current Phecode we are looking at.
+  curr_dis = cols_w_power[dis_name]
+  
+  # Current Phecode status message
+  cat(paste("\U2560\U2550 ",curr_phecode, 
+            " [", cnt, "/", ncol(cols_w_power),"]\n", sep = ''))
+  
+  # Collect the other info on this phecode
+  dis_descr = LOOKUP[LOOKUP['phecode'] == curr_phecode, 'description']
+  dis_group = LOOKUP[LOOKUP['phecode'] == curr_phecode, 'group']
+  
+  
+  # Put together our data for this Phecode #####
+  # First check if we are working on a sex-specific Phecode, by looking it up
+  # in our sex_spec_dis lookup table
+  # We will set the sex of this Phecode if true 
+  # Female: 0
+  # Male:   1
+  if (is_sex_spec == FALSE) {
+    # If its not a sex-specific Phecode set the str to "both" and the dis
+    # sex to indicator "-1"
+    dis_sex_str = "Both"
+    dis_sex = -1
+    control_str = 'All'
+    
+  } else {
+    if (male_only == TRUE) {
+      
+      dis_sex = 1
+      dis_sex_str = "Male"
+      control_str = 'Male-only'
+      
+      
+      # Has to be female only
+    } else {
+      dis_sex = 0
+      dis_sex_str = "Female"
+      control_str = 'Female-only'
+      
+    }
+  }
+  
+  # Get patient IDs for people that are cases and controls for this Phecode
+  na_inds = rownames(which(is.na(curr_dis), arr.ind = TRUE))
+  case_inds = rownames(which(curr_dis == TRUE, arr.ind = TRUE))
+  control_inds = rownames(which(curr_dis == FALSE, arr.ind = TRUE))
+  
+  
+  # Check if we have sex-specific Phecode so if we do we can limit our cases
+  # and controls to specific sex required.
+  if (is_sex_spec)
+  {
+    
+    sex_inds = row.names(cov_dat[cov_dat$sex == dis_sex, ])
+    
+    # Limit case and control patients to only those with sex matching dis_sex
+    na_inds = na_inds[na_inds %in% sex_inds]
+    case_inds = case_inds[case_inds %in% sex_inds]
+    control_inds = control_inds[control_inds %in% sex_inds]
+    
+  }
+  
+  
+  all_inds = c(case_inds,control_inds)
+  curr_dis$id = row.names(curr_dis)
+  
+  curr_dis = curr_dis[all_inds, ]
+  row.names(curr_dis) = curr_dis$id
+  curr_dis$id <- NULL
+  
+  
+  # Prepare the dataframe that will be used for all of our modeling, mod_df.
+  # In this first step we merge the Phecode status data and covariate data.
+  mod_df = merge(curr_dis, cov_dat, by = 0, all.x = TRUE, sort = FALSE)
+  row.names(mod_df) = mod_df$Row.names
+  mod_df$Row.names = NULL
+  
+  # Set up our Phecode column name so we can refer to it programmatically.
+  # Just switching the actual Phecode name like "cholera..." to "mod_dis"
+  # so we can more easily reference it in our code.  
+  mod_df_names = names(mod_df)
+  mod_df_names[1] = "mod_dis"
+  names(mod_df) = mod_df_names
+  
+  # Switch mod_dis from logical vector to numeric with 0 = disease False, 
+  # and 1 = disease True.
+  mod_df$mod_dis = ifelse(mod_df$mod_dis == FALSE, 0, 1)  
+  
+  # Convert all covariates to ordered factors.
+  mod_df$sex = as.factor(mod_df$sex)
+  mod_df$ethnic = as.factor(mod_df$ethnic)
+  mod_df$tdi_quant = as.factor(mod_df$tdi_quant)
+  mod_df$num_in_house = as.factor(mod_df$num_in_house)
+  mod_df$tobac = as.factor(mod_df$tobac)
+  mod_df$alc = as.factor(mod_df$alc)
+  mod_df$num_sex_part = as.factor(mod_df$num_sex_part)  
+  mod_df$same_sex = as.factor(mod_df$same_sex)  
+  
+  
+  # Create case and control specific dataframes, drop any subjects with any
+  # NAs.  Right here na.omit should not affect anyone, if the data was cleaned
+  # properly.
+  case = na.omit(mod_df[case_inds , ])
+  control = na.omit(mod_df[control_inds , ])
+  
+  # Debug message
+  if (DEBUG == TRUE){
+    
+    
+    cat(paste(dis_descr, " [", dis_group, "]\n",
+              "\t\tis_sex_spec: ", is_sex_spec, " |  Disease sex: ", dis_sex_str,
+              " |  Control str: ", control_str,
+              "\n\t\tnCase: ", length(case_inds), 
+              " | nCon: ", length(control_inds),
+              " | NAs: ", length(na_inds),
+              " | nAll: ", length(all_inds), 
+              "\n\t\tnCase: ", nrow(mod_df[mod_df$mod_dis == 1, ]), 
+              " | nCon: ", nrow(mod_df[mod_df$mod_dis == 0, ]),
+              " | nrow(mod): ", nrow(mod_df), "\n"
+    ))
+  }
+  
+  # Calculate Phecode ~ covariate associations #####
+  # Use helper function calc_dis_assoc to calculate association 
+  # between this Phecode and all the covariates of interest, and making sure
+  # to notify the function if our current Phecode is sex-specific.
+
+  dis_covs = calc_dis_assoc(mod_df, is_sex_spec)
+
+  
+  # Start testing antibody titers ####
+  # Here we finally start looping through all the different antibodies in 
+  # ant_dat and do the modeling for association between our current Phecode and
+  # each antibody.
+  
+  # Initialize a counter to update user on progress for each of 45 antibodies.
+  ant_cnt = 1
+  
+  
+  # Generate a list containing Phecode info that will be bound to each pair's
+  # result list (used below).
+  dis_info = c("disease_descr" = dis_descr, 
+               "dis_grp" = dis_group, 
+               "phecode" = curr_phecode,
+               "dis_sex" = dis_sex_str)
+  
+  
+  
+  # Start looping through ant_dat
+  for (y in names(ant_dat))
+  {
+    
+
+    # Use the function ind_anti_analysis to create a logistic regression model
+    # for the given Phecode and antibody.
+    # is_warning, the first parameter to ind_anti_analysis refers to whether or 
+    # not we have a glm_warning in the logistic regression model for a Phecode
+    # antibody pair, but since this is our initial model, we set it to false.
+    ret_ind_res =  step_ind_phecode_anti_analysis(y, mod_df, case_inds,
+                                          control_inds, is_sex_spec, dis_sex,
+                                          dis_covs, ant_cnt)  
+    ret_ind_res = append(ret_ind_res, c("control_set" = control_str))
+    ret_ind_res = append(ret_ind_res, c("num_na" = length(na_inds)))
+    ret_ind_res = append(ret_ind_res, c("perm_n" = -1))
+      
+    
+    # Push the Phecode information list onto the front of our returned Phecode
+    # antibody pair result list, ret_ind_res.
+    ret_ind_res = append(dis_info, ret_ind_res)
+    
+    
+    # Rearrange some columns
+    ind_res_cols = c("disease_descr", "dis_grp", "phecode",
+                     "dis_sex", 
+                     "num_case", "num_con", "num_na", 'control_set', 
+                     "antigen", "org", 
+                     "p_val", "OR", "CI",  
+                     "model", 
+                     "tjur_r2.Tjur's R2", "mcfad_r2.McFadden's R2", 
+                     "adj_mcfad_r2.adjusted McFadden's R2", 
+                     "nag_r2.Nagelkerke's R2", 
+                     "cox_r2.Cox & Snell's R2", 
+                     "cov_ps", "sig_cov", "cov_adj",  "cov_or", 
+                     "case_age", "con_age", 
+                     "case_titer", "con_titer", 
+                     "case_titer_std", "con_titer_std",  
+                     "case_titer_med", "con_titer_med", 
+                     "glm_warn_msg", "glm_warn_bool",                      
+                     "proc_time.elapsed", "date_time", 'perm_n')
+    
+    ret_ind_res = ret_ind_res[ind_res_cols]         
+    
+    
+    # Put the list containing all results for this Phecode-antibody pair into 
+    # the larger matrix that contains results for this particular Phecode 
+    # with all antibodies.
+    dis_res[(nrow(dis_res) + 1), ] = ret_ind_res
+    
+    
+    # Update our antibody counter for progress messages to user.
+    ant_cnt = ant_cnt + 1
+    
+  }
+  
+  # Finished initial antibody loop ####
+  # We have finished creating models for all antibodies paired to this Phecode
+  
+  # We finished all modeling for this Phecode (finished all 45 antibodies), so
+  # now take dis_res and return it to whoever called this function.
+  return(dis_res)
+}
+
+# step_ind_phecode_anti_analysis function. ####
+# Augmented from step_ind_anti_analysis function to process Phecode data
+# This function takes the name of an antibody along with a dataframe (mod_df)
+# that has been prepared for a particular Phecode and has covariate data 
+# included and generated a logistic regression model for this pair using a 
+# step-wise backwards elimination procedure.
+#
+# Input:
+#   y [string]: antibody name without "_init" on end of name
+#   mod_df [dataframe]: df containing Phecode status and covariate columns
+#   case_inds [list]: List of patient IDs who are considered cases
+#   control_inds [list]: List of patient IDs who are considered controls
+#   is_sex_spec [bool]: Boolean indicating whether this Phecode is sex-specific
+#   dis_sex [int]: Integer code indicating if the Phecode is female-specific (0)
+#                  male-specific (1), or not sex-specific (-1)
+#   dis_covs [string]: String containing all covariates significantly associated
+#                       with current Phecode.
+#   ant_cnt [int]: count of which antibody this is (used for progress output)
+#
+# Output:
+#   list [length(29)] :
+#         [1] nCase [int]: Number of cases of this Phecode, 
+#         [2] nControl [int]: Number of controls for this Phecode
+#         [3] anti [string]: Antibody for which this Phecode was modeled for 
+#                            association.
+#         [4] organism [string]: Organism abbreviation that produced the antigen
+#         [5] log_reg_p [float]: P-val of association between antibody level,
+#                                 and Phecode status - from logistic regression.
+#         [6] anti_or_str [string]: Odds ratio for this association
+#         [7] anti_ci_str [string]: 95% confidence intervals for this OR
+#         [8] log_reg_mod [string]: Logistic regression model formula with 
+#                                   weights.
+#         [9] tjur [float]: Tjur's R2 or coefficient of determination.
+#         [10] mcfad [float]: Unadjusted McFadden's R2
+#         [11] adj_mcfad [float]: Adjusted McFadden's R2
+#         [12] nag [float]: Nagelkerke's R2
+#         [13] cox [float]: Cox & Snell's R2
+#         [14] log_reg_cov_ps [string]: p-values for each covariate included in 
+#                                       the logistic regression model
+#         [15] sig_covs [string]: String listing all covariates included in 
+#                                 fully adjusted model
+#         [16] cov_adj  [string]: String listing just the covariates left after
+#                                 backward elimination and thus adjusted for in
+#                                 actual model.
+#         [17] other_ci_str [string]: String containing ORs and CIs for all 
+#                                     covars that logistic regression model was 
+#                                     adjusted for
+#         [18] avg_age_case [float]: Average age of all cases
+#         [19] avg_age_con [float]: Average age of all controls
+#         [20] avg_titer_case [float]: Average titer level for cases
+#         [21] avg_titer_con [float]: Average titer level for controls
+#         [22] std_titer_case [float]: Standard deviation titer level for cases
+#         [23] std_titer_case [float]: Standard deviation titer level for 
+#                                      controls
+#         [24] med_titer_case [float]: Median titer level for cases
+#         [25] med_titer_case [float]: Median titer level for cases
+#         [26] glm_warn [string]: Text from any glm or CI warnings
+#         [27] is_warning [bool]: whether a glm warning was thrown for model
+#         [28] tot_time [string]: Amount of time the CPU took to process this pair
+#         [29] date_time [string]: Date and time pair analysis was completed.
+#
+#
+#
+step_ind_phecode_anti_analysis <- function(y, mod_df, 
+                                   case_inds, control_inds, 
+                                   is_sex_spec, dis_sex, dis_covs, ant_cnt)
+{
+  # We will measure processing time for this script using proc.time but will
+  # also log when this analysis was run using Sys.time
+  start_time = proc.time()
+  date_time = as.character(Sys.time())
+  
+  # Get the antibody titer (Log10 transformed already) data for our current
+  # antibody and push the row.names into the dataframe as the column "id"
+  # for use in filtering below.
+  curr_ant = ant_dat[y]
+  curr_ant$id = row.names(curr_ant)
+  
+  # Limit our antigen data to only those patients that we have Phecode info
+  # on.  First put all the IDs into a single list and then filter antibody
+  # data, keeping only data for those people in all_inds, and finally remove
+  # the "id" column created for this filtering.
+  all_inds = append(case_inds, control_inds)
+  curr_ant = curr_ant[curr_ant$id %in% all_inds,]
+  curr_ant$id <- NULL
+  
+  # Add our antigen data onto our dataframe for modeling, mod_df, that already
+  # contains the Phecode status data and the covariate data. Push this into
+  # new variable called dat_df and remove extraneous Row.names column.
+  dat_df = merge(curr_ant, mod_df, by = 0, all = TRUE, sort = FALSE)
+  row.names(dat_df) = dat_df$Row.names
+  dat_df$Row.names = NULL
+  
+  # Set up our antibody column name so we can refer to it programmatically.
+  # Just switching the actual antibody name, "1gG antigen for Herpes Simplex 
+  # virus-1_init" to "mod_ant" so we can more easily reference it in our code.  
+  dat_df_names = names(dat_df)
+  dat_df_names[1] = "mod_ant"
+  names(dat_df) = dat_df_names
+  
+  
+  # When merging the curr_ant for CagA for H Pylori, which has NAs for a bunch
+  # of samples (known issue in source data), with our model data (mod_df) we
+  # will end up with rows with NAs because we have the Phecode status but we 
+  # have no antibody titer data for a patient.  We don't want these in the 
+  # model so we remove them here.     
+  dat_df = dat_df[!is.na(dat_df$mod_ant),]
+  
+  # Update case and control dataframes after previous step removing NA rows.
+  case = na.omit(dat_df[case_inds , ])
+  control = na.omit(dat_df[control_inds , ])
+  
+  # Update dat_df in global scope.
+  dat_df <<- dat_df
+  
+  
+  # Collect meta data #####
+  # Get friendlier version of antibody name
+  # "1gG antigen for Herpes Simplex virus-1" becomes
+  #     "IgG"
+  anti = ant_dict[ant_dict['Antigen'] == y,'Clean Ant Name']
+  
+  # Look up abbreviation for the organism the antigen is produced by in our
+  # antigen dictionary.
+  # Example: anti = "1gG antigen for Herpes Simplex virus-1", then 
+  #             org = "HSV1"
+  org = ant_dict[(grep(y, ant_dict$Antigen)),'Abbrev'][[1]]
+  
+  # Print out our progress
+  # Example:
+  #   ╚═ HSV1 IgG [4/45]
+  cat(paste("   \U255A\U2550 ",org, " ", anti,
+            " [", ant_cnt, "/", ncol(ant_dat),"]\n", sep = ''))
+  
+  # Calculate summary stats for cases and controls
+  # Age - multiply by 10 to re-scale back to normal
+  avg_age_case = round(mean((case[,'age']) * 10),2)
+  avg_age_con = round(mean((control[,'age']) * 10),2)
+  
+  # Number of cases and controls    
+  nCase = nrow(case)
+  nControl = nrow(control)
+  
+  # Collect titer summary statistics - I'm not re-scaling these but if you 
+  # wanted to do this you would just do 10^(case[,'mod_ant'])
+  avg_titer_case = round(mean(case[,'mod_ant']),2)
+  avg_titer_con  = round(mean(control[,'mod_ant']),2)
+  std_titer_case = round(sd(case[,'mod_ant']),2)
+  std_titer_con  = round(sd(control[,'mod_ant']),2)
+  med_titer_case = round(median(case[,'mod_ant']),2)
+  med_titer_con  = round(median(control[,'mod_ant']),2)
+  
+  # Confounder determination ####
+  # Get the list of covariates with significant association with Phecode
+  # status, as calculated by calc_dis_assoc() and get the list of those with
+  # significant association with antibody titer as calculated by 
+  # calc_ant_assoc(), and put together a final list of possible confounders
+  # we should adjust our model for.
+  # If a covariate is significantly associated with both the antibody level 
+  # and the Phecode status then we are calling this a possible confounder 
+  # and are adjusting our model for it.  
+  # To get the list of covariates significantly associated with an antibody
+  # we will use our lookup table produced earlier, ant_cov_assoc, the row in
+  # which depends on the current antibody name and the sex-specific nature of
+  # this disease.
+  if (is_sex_spec)
+  {
+    # Female specific disease
+    if (dis_sex == 0)
+    {
+      ant_covs = unlist(ant_cov_assoc[(ant_cov_assoc$antigen == y) &
+                                        (ant_cov_assoc$sex == "female"), 
+                                      'sig_covs'])
+    } else
+    {
+      # For a disease to be is_sex_spec == TRUE and not dis_sex == 0, it has
+      # to be a male-specific disease
+      ant_covs = unlist(ant_cov_assoc[(ant_cov_assoc$antigen == y) &
+                                        (ant_cov_assoc$sex == "male"), 
+                                      'sig_covs'])
+    }
+  } else
+  {
+    # Not a sex-specific disease
+    ant_covs = unlist(ant_cov_assoc[(ant_cov_assoc$antigen == y) &
+                                      (ant_cov_assoc$sex == "both"), 
+                                    'sig_covs'])
+  }
+  
+  # Determine possible confounders by intersecting antibody covariates and 
+  # disease covariate lists.
+  covs = intersect(ant_covs, dis_covs)
+  sig_covs = covs
+  
+  # Statistical Analysis #####
+  # We are using a logistic regression model to calculate association between
+  # antigen level and disease status.  We will also adjust for any possible 
+  # confounders.
+  
+  
+  # If this is a sex-specific Phecode, meaning only 1 sex is represented in the
+  # data we have to drop the sex covariate as this would lead to a no contrasts
+  # error.
+  if (is_sex_spec)
+  {
+    covs = covs[covs != 'sex']
+  }
+  
+  # We are building our actual glm model formula [log_form] inserting our
+  # possible confounders as needed.
+  if (length(covs) == 0)
+  {
+    log_form = as.formula(paste("mod_dis ~ mod_ant", sep = ''))
+  } else
+  {
+    # Example: log_form: mod_dis ~ mod_ant + bmi + age
+    log_form = as.formula(paste("mod_dis ~ mod_ant +  ", 
+                                paste(covs, collapse = ' + '), sep = ''))
+  }
+  
+  
+  # StepAIC requires starting with a model, so we will use the fully adjusted
+  # model that includes all confounders
+  log_reg_res = suppressMessages(myTryCatch(
+    glm(log_form, data = dat_df, family = binomial)))
+  
+  log_reg = log_reg_res$value
+  
+  # Only run step-wise method if we actually have covariates to consider.
+  if (length(covs) > 0)
+  {
+    
+    # Do the backwards elimination     
+    step = stepAIC(log_reg, direction = "backward", trace = FALSE,
+                   scope = list(lower = mod_dis ~ mod_ant, upper = log_form))
+    
+    
+    # Extract our selected formula from stepAIC to use for modeling.
+    log_form = step$formula
+    
+    # Extract what covs we are adjusting for from this log_form
+    # Drop 'mod_dis ~ mod_ant + ' from log_form
+    # This code will not work and is not needed anyways if we have just a 
+    # univariate model
+    cov_form = paste(deparse(log_form), collapse = '')
+    cov_form = gsub("mod_dis ~ mod_ant", "", cov_form)
+    
+    # If we actually have covs in step form
+    if (cov_form != "")
+    {
+      cov_arr = unlist(str_split(cov_form, "\\+"))
+      cov_arr = sapply(cov_arr, killws)
+      cov_arr = cov_arr[cov_arr != ""]
+      names(cov_arr) <- NULL
+      
+      covs = cov_arr
+    } else
+    {
+      covs = list()
+    }
+    
+    
+    # Re-run regression and collect results! Needed to actually catch any
+    # warnings from this specific stepAIC optimized model.
+    # using myTryCatch which is an awesome way to run code and catch any 
+    # warnings and errors
+    log_reg_res = suppressMessages(myTryCatch(
+      glm(log_form, data = dat_df, family = binomial)))
+    
+    # extracting the actual logistic regression model from the myTryCatch 
+    # results
+    log_reg = log_reg_res$value
+    
+  }
+  
+  # Collect regression results ####
+  
+  # initialize glm warning msg to empty string. This str will carry any 
+  # warning that pops up when running glm model, usually something about 
+  # perfect separation, which will force us to re-run this model without 
+  # considering covariates.
+  glm_warn = ""
+  
+  
+  # Determine if the glm threw a warning and handle it accordingly.
+  # is_warning will appear in the results to let us know if the glm threw a 
+  # warning.
+  is_warning = FALSE
+  
+  # If warning is not null we have a warning and we need to handle it.
+  if (!is.null(log_reg_res$warning))
+  {
+    # Dump the warning message into our glm warn status str
+    glm_warn = paste(glm_warn, "log_reg_warn: ", log_reg_res$warning, 
+                     sep = "")
+    
+    is_warning = TRUE
+    
+    # The warning message comes from glm with a trailing new line, we strip 
+    # that off here otherwise it causes issues when printing our results out.
+    glm_warn = gsub("[\r\n]", "", glm_warn)
+  }
+  
+  
+  # Extract the p-value of association between antigen level and disease 
+  # status
+  log_reg_p = coef(summary(log_reg))[2,4]
+  
+  # Get the p-values of association for any covariates included in the model
+  log_reg_cov_ps =  tail(coef(summary(log_reg))[,4], -2)
+  
+  # Create a string that shows the model with weightings, for example:
+  # "dis_status ~  -4.8682  +  (0.1172 * mod_ant) + (0.0492 * bmi)"
+  log_reg_mod = extract_lin_form(log_reg)
+  
+  
+  # Goodness of fit metrics ####
+  # McFadden's pseudo R2, unadjusted and adjusted - McFadden, D. (1987)
+  mcfad_res = r2_mcfadden(log_reg)
+  mcfad     = mcfad_res$R2
+  adj_mcfad = mcfad_res$R2_adjusted
+  
+  # Nagelkerke's pseudo-R2 - Nagelkerke, N. J. (1991)
+  nag = r2_nagelkerke(log_reg)
+  
+  # Tjur's R2 or coefficient of determination - Tjur, T. (2009)
+  tjur = r2_tjur(log_reg)
+  
+  # Cox and Snell's pseudo-R2 - Cox & Snell (1989)
+  cox  = r2_coxsnell(log_reg)
+  
+  # Get pretty ORs and CIs ####
+  or_ci_dat = calc_or_ci(log_reg)
+  ant_or_str  = or_ci_dat$ant_or
+  ant_ci_str  = or_ci_dat$ant_ci
+  other_ci_str = or_ci_dat$other_ci
+  ci_warn = gsub("[\r\n]", "", or_ci_dat$warn)
+  
+  # Put together data and return it ####
+  # R float has limit just slightly smaller than 2.22e-308
+  # So if the p-value is 0 (it overflowed R float) we need to manually
+  # set to smallest number we can (2.22E-308)
+  if (log_reg_p == 0)
+  {
+    log_reg_p = 2.22e-300
+  }
+  
+  # Calculate total processing time for this disease-antibody pair modeling.
+  tot_time = proc.time() - start_time
+  
+  # throw all results and data into list and return to caller.
+  ind_res = c("num_case" = nCase, "num_con" = nControl,
+              "antigen" = anti, "org" = org, 
+              "p_val" = log_reg_p, "OR" = ant_or_str, 
+              "CI" = ant_ci_str,  "model" = log_reg_mod,
+              "tjur_r2" = tjur, "mcfad_r2" = mcfad, 
+              "adj_mcfad_r2" = adj_mcfad, "cox_r2" = cox, "nag_r2" = nag,
+              "cov_ps" = named_list_to_str(log_reg_cov_ps),
+              "sig_cov" = paste(sig_covs, collapse = ", "),
+              "cov_adj" = paste(covs, collapse = ", "),
+              "cov_or" = other_ci_str,
+              "case_age" = avg_age_case, "con_age" = avg_age_con,
+              "case_titer" = avg_titer_case, "con_titer" = avg_titer_con,
+              "case_titer_std" = std_titer_case, 
+              "con_titer_std" = std_titer_con,
+              "case_titer_med" = med_titer_case, 
+              "con_titer_med" = med_titer_con, 
+              "glm_warn_msg" = glm_warn, 
+              "glm_warn_bool" = is_warning, 
+              "proc_time" = tot_time['elapsed'], 
+              "date_time" = date_time)
+  
+  return (ind_res)
+}
+
+
 # perm_analysis function. ####
 # Special version of analysis function used in ukb_titer_analysis.R
 # This function takes the name of a disease (unparsed), and
-# a list of
-# all antibodies (by name) that the user wants to generate and generates all 
-# logistic regression models for this disease and all 45 different antibodies
+# a list of all antibodies (by name) that the user wants to generate and 
+# generates all logistic regression models for this disease and all 45 different
+# antibodies
 #
 # Requirements:
 #   perm_analysis function
@@ -826,10 +1503,6 @@ step_ind_anti_analysis <- function(y, mod_df,
 #         $med_titer_case [float]: Median titer level for cases
 #         $Warnings [string]: Text from any glm or CI warnings
 #         $is_warning [bool]: whether a glm warning was thrown for model
-#         $vanilla_pair [bool]: Whether this pair was being run in vanilla mode
-#                               after an initial glm warning
-#         $vanilla_dis [bool]: Whether this pair was being run in vanilla mode
-#                               due to disease surpassing VANILLA_LIMIT 
 #         $proc_time [string]: Amount of time the CPU took to process this pair
 #         $date_time [string]: Date and time pair analysis was completed.
 #
@@ -848,7 +1521,7 @@ perm_analysis <- function(dis_name, curr_res_fn,
   # Create empty matrix to hold our associations for this disease 1 row for 
   # each of the antibodies we are testing [45]
   # This is a per-disease form of the res dataframe created earlier.
-  curr_dis_res =  matrix(nrow = 0, ncol = 37)
+  curr_dis_res =  matrix(nrow = 0, ncol = 35)
   colnames(curr_dis_res) = result_cols
   
   # Get the disease status data for the current disease we are looking at.
@@ -900,7 +1573,6 @@ perm_analysis <- function(dis_name, curr_res_fn,
     }
   }
   
-
   all_inds = c(orig_case_inds, orig_control_inds)
   curr_dis$id = row.names(curr_dis)
   
@@ -916,6 +1588,7 @@ perm_analysis <- function(dis_name, curr_res_fn,
   curr_dis_names[1] = "mod_dis"
   names(curr_dis) = curr_dis_names
   
+  # Do permuting
   curr_dis$id = row.names(curr_dis)
   curr_dis = transform(curr_dis, mod_dis = sample(mod_dis))
   row.names(curr_dis) = curr_dis$id
@@ -1067,10 +1740,7 @@ perm_analysis <- function(dis_name, curr_res_fn,
 # This function takes the name of an antibody along with a dataframe (mod_df)
 # that has been prepared for a particular disease and has covariate data 
 # included and generated a logistic regression model for this pair, while
-# adjusting for any confounding covariates, unless do_vanilla flag is set to 
-# TRUE, at which point it will generate a model for just disease ~ antibody 
-# titer.
-#
+# adjusting for any confounding covariates.
 # Input:
 #   y [string]: antibody name with "_init" on end of name
 #   mod_df [dataframe]: df containing disease status and covariate columns
@@ -1120,8 +1790,6 @@ perm_analysis <- function(dis_name, curr_res_fn,
 #         [24] med_titer_case [float]: Median titer level for cases
 #         [25] glm_warn [string]: Text from any glm or CI warnings
 #         [26] is_warning [bool]: whether a glm warning was thrown for model
-#         [27] do_vanilla [bool]: Whether this pair was being run in vanilla mode
-#                               after an initial glm warning
 #         [28] tot_time [string]: Amount of time the CPU took to process this pair
 #         [29] date_time [string]: Date and time pair analysis was completed.
 #
@@ -1770,6 +2438,7 @@ run_firth <- function(dat_df, covs_to_use, LOG, DEBUG, LOG_FN)
       
     }
     
+    # Collect info on Firth modeling 
     firth_n = log_reg$n
     firth_dof = log_reg$df
     firth_log_like = named_list_to_str(log_reg$loglik)

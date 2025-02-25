@@ -2,9 +2,11 @@
 # Author:   Mike Lape
 # Date:     5/4/2020
 # Description:
+#
 #     This file contains helper functions for the antibody titer - disease
 #     association scripts including the asymptotic p-value calculation script
 #     and the permutation scripts.
+#
 
 # Load libraries ####
 # readxl is required for load_data, which uses it to read in one excel sheet.
@@ -18,10 +20,7 @@ OUR_SEED = 5
 #            association analysis.
 SIG_LEVEL = 0.05
 
-
 LOCAL_COPY_PATH =  "/data/pathogen_ncd"
-
-
 
 ######################
 # Generic utilities  #
@@ -93,8 +92,6 @@ myTryCatch <- function(expr) {
     })
   list(value=value, warning=warn, error=err)
 }
-
-
 
 
 
@@ -172,7 +169,13 @@ load_data <- function(BASE_DIR)
               dis_dat      = dis_dat, 
               roll_dat     = roll_dat,
               ant_dict     = ant_dict,
-              sex_spec_dis = sex_spec_dis))
+              sex_spec_dis = sex_spec_dis,
+              cov_dat_path = cov_dat_path,
+              ant_dat_path = ant_dat_path, 
+              dis_dat_path = dis_dat_path,
+              roll_dat_path = roll_dat_path, 
+              ant_dict_path = ant_dict_path, 
+              sex_spec_dis_path = sex_spec_dis_path))
 }
 
 
@@ -736,16 +739,16 @@ get_icd <- function(dis_name)
 # for association with sex as this will fail.
 #
 # Uses the following test for each covariate
-# Sex:	                      t-test
-# Age:	                      linear regression
-# BMI:	                      linear regression
-# Race:	                      ANOVA
+# Sex:	                        t-test
+# Age:	                        linear regression
+# BMI:	                        linear regression
+# Race:	                        ANOVA
 # Townsend Deprivation Index:	ANOVA
-# Number in House:	          ANOVA
-# Tobacco Use:	              ANOVA
-# Alcohol Use:	              ANOVA
+# Number in House:	            ANOVA
+# Tobacco Use:	                ANOVA
+# Alcohol Use:	                ANOVA
 # Number of Sex Partners:	    ANOVA
-# Same-sex Intercourse:   	  ANOVA
+# Same-sex Intercourse:   	    ANOVA
 #
 # Input:
 #   input_df: dataframe containing column "mod_ant" with antibody titers and 
@@ -894,16 +897,16 @@ calc_ant_assoc <- function(input_df, is_sex_part = FALSE)
 # for association with sex as this will fail. 
 # 
 # Uses the following test for each covariate
-# Sex:	                      Chi-squared
-# Age:	                      t-test
-# BMI:	                      t-test
-# Race:	                      Chi-squared
+# Sex:	                        Chi-squared
+# Age:	                        t-test
+# BMI:	                        t-test
+# Race:	                        Chi-squared
 # Townsend Deprivation Index:	Chi-squared
-# Number in House:	          Chi-squared
-# Tobacco Use:	              Chi-squared
-# Alcohol Use:	              Chi-squared
+# Number in House:	            Chi-squared
+# Tobacco Use:	                Chi-squared
+# Alcohol Use:	                Chi-squared
 # Number of Sex Partners:	    Chi-squared
-# Same-sex Intercourse:   	  Chi-squared
+# Same-sex Intercourse:   	    Chi-squared
 #
 # Input:
 #   input_df: dataframe containing column "mod_dis" with disease status and 
