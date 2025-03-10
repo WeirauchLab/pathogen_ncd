@@ -55,11 +55,14 @@ toggleHelpLink.on('click', function(e) {
 // wire up the "ICD10" and "Phecode" tabs
 // the string arguments to 'loadTab' correspond to the names of the
 // columns.json keys and data/pathogen_ncd-{ICD,PHE}.tsv files
-$('#tab-icd').on('click', e => loadTab('ICD'));
-$('#tab-phe').on('click', e => loadTab('PHE'));
+{% for ds in data.datasources -%}
+$('#tab-{{ data.datasources[ds].tabname | lower }}')
+  .on('click', e => loadTab('{{ data.datasources[ds].tabname }}'));
+{% endfor %}
 
 // load the default tab, but don't scroll to it
-loadTab('ICD', false);
+{% set defaulttab = data.datasources | sort(attribute='order') | first -%}
+loadTab('{{ defaulttab }}', false);
 
 // formatter for the child rows (expanded details)
 function formatChild(rowdata) {
@@ -79,8 +82,7 @@ function formatChild(rowdata) {
     // split comma-delimited values so they wrap properly
     value = value.replace(/,(\w)/g, ', $1');
 
-    // make everything that looks like a PMID into a link; chop off the ".0"
-    // that's proabably 'in2csv' trying to do type inference, but failed
+    // make everything that looks like a PMID into a link
     value = value.replace(
       /(\d{6,})(\.0)?/g,
       '<a title="Open PubMed record for PMID $1 (in current window/tab)" ' +
@@ -141,13 +143,13 @@ function scrollTabsToTop() {
   $('html, body').animate({ scrollTop: tabsTop }, 500);
 }
 
-
 function loadTab(which, scrollTo = true) {
-  var tsv = "DEPLOYDATADIR/pathogen_ncd-" + which + '.tsv';
+  var tsv = `data/{{ data.artifacts.basename }}_${which}_Results.tsv`;
   var tableDiv = $('#table-' + which.toLowerCase());
   var columnDefs = {
-      "ICD": {{ data.tabs.ICD | tojson }},
-      "PHE": {{ data.tabs.PHE | tojson }}
+{%- for ds in data.datasources %}
+      "{{ ds }}": {{ data.datasources[ds].columns }},
+{%- endfor %}
   };
   var columnDefs = columnDefs[which];
   var loadingMsg = $('#table-viewer .loading');
@@ -161,7 +163,6 @@ function loadTab(which, scrollTo = true) {
     return;
   }
 
-  $('#which-tab').text(which == 'PHE' ? 'Phecode' : 'ICD10');
   loadingMsg.show();
 
   // start: fetch the table data with XHR
@@ -171,48 +172,46 @@ function loadTab(which, scrollTo = true) {
       var table = $('<table>');
       var tableID = 'datatable-' + which.toLowerCase();
       table.attr('id', tableID);
-      table.addClass('display verycompact');  // & possibly 'nowrap'
+        table.addClass('display verycompact');  // & possibly 'nowrap'
 
-      tableDiv.fadeOut();
-      loadingMsg.hide()
-      tableDiv.append(table);
-      tableDiv.addClass('loaded');
-      tableDiv.fadeIn();
+        tableDiv.fadeOut();
+        loadingMsg.hide()
+        tableDiv.append(table);
+        tableDiv.addClass('loaded');
+        tableDiv.fadeIn();
 
-      // break up the .tsv file into an array, discarding the header row, and
-      // the final, empty element (since Unix text files are newline-delimited)
-      var data = data.split(/\n/).slice(1).filter(e => e.length);
-      // now, split on tab characters to make a two-dimensional array
-      data = data.map(e => e.split(/\t/));
+        // break up the .tsv file into an array, discarding the header row, and
+        // the final, empty element (since Unix text files are newline-delimited)
+        var data = data.split(/\n/).slice(1).filter(e => e.length);
+        // now, split on tab characters to make a two-dimensional array
+        data = data.map(e => e.split(/\t/));
 
-      var dt = table.DataTable({
-        data: data,
-        order: [
-          { name: 'Pair_is_Assoc', dir: 'desc' },
-          { name: 'UKB_FDR', dir: 'asc' },
-        ],
-        layout: {
-          //topStart: [ 'pageLength', { buttons: ['colvis'] } ],
-          topEnd: [
-            { buttons: [
-                { extend: 'copy', text: 'Copy' },
-                { extend: 'csv', text: 'Download CSV' }
-              ]
+        var dt = table.DataTable({
+            data: data,
+            columnDefs: columnDefs,
+            order: {{ data.ordering | tojson }},
+            layout: {
+                //topStart: [ 'pageLength', { buttons: ['colvis'] } ],
+                topEnd: [
+                    { buttons:
+                      [
+                        { extend: 'copy', text: 'Copy' },
+                        { extend: 'csv', text: 'Download CSV' }
+                      ]
+                    },
+                    'search',
+                ],
             },
-            'search',
-          ],
-        },
-        scrollX: false,
-        lengthMenu: [[10, 25, 100, -1], [10, 25, 100, "All"]],
-        pageLength: 100,
-        columnDefs: columnDefs,
-        // disabled for now; doesn't work with the tabs
-        //fixedHeader: true,
-        // https://datatables.net/reference/option/deferRender
-        deferRender: true,
-        // https://datatables.net/examples/advanced_init/row_callback.html
+            scrollX: false,
+            lengthMenu: [[10, 25, 100, -1], [10, 25, 100, "All"]],
+            pageLength: 100,
+            // disabled for now; doesn't work with the tabs
+            //fixedHeader: true,
+            // https://datatables.net/reference/option/deferRender
+            deferRender: true,
+            // https://datatables.net/examples/advanced_init/row_callback.html
         createdRow: (r, d, i) => {
-          // replace empty cells in both TNX columns with 'n/a'
+          // XXX: replace empty cells in both TNX columns with 'n/a'
           if (d[6] == "") r.querySelector(':nth-child(7)').textContent = 'n/a';
           if (d[8] == "") r.querySelector(':nth-child(9)').textContent = 'n/a';
         },

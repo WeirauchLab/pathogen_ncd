@@ -9,11 +9,17 @@
 	# ENABLE INDEXING
 	Options +Indexes
 
-	# INDEX OPTIONS IndexOptions +Charset=UTF-8 +FancyIndexing +IconsAreLinks +IgnoreCase +FoldersFirst +XHTML +HTMLTable +SuppressRules +NameWidth=* +SuppressDescription
-    #+DescriptionWidth=*
+	# INDEX OPTIONS
+    #IndexOptions +Charset=UTF-8 +FancyIndexing +IconsAreLinks +IgnoreCase +FoldersFirst +XHTML +HTMLTable +SuppressRules +NameWidth=* +SuppressDescription
+    IndexOptions +NameWidth=* +DescriptionWidth=*
 
 	# HIDE PARTS OF THE THEME (config.json, footer.md, etc.)
-	IndexIgnore .htaccess header.html footer.html Makefile *.md *.json
+	IndexIgnore .htaccess header.html footer.html Makefile *.md *.json *.tsv *.xlsx
+
+    AddDescription "Results datasets as Excel <tt>.xlsx</tt> files" {{ data.artifacts.resultsarchive }}
+    AddDescription "Results datasets as tab-delimited Unix text files" {{ data.artifacts.resultstarball }}
+    AddDescription "All supplemental datasets as Excel <tt>.xlsx</tt> files" {{ data.artifacts.supplementarchive }}
+    AddDescription "SHA1 checksums to validate archive integrity" SHA1SUMS
 
 #
 # GENERAL ICONS (BLANK, DIRECTORY, PARENT DIRECTORY)

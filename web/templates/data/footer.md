@@ -1,53 +1,42 @@
-The `{{ pub.shortname }}-supplement.zip` archive contains of the **supplemental tables**
-included with the [_{{ pub.publicationname }}_ ({{ pub.year }}) publication][0].
+The [`{{ data.artifacts.resultsarchive }}`][0] archive contains the ICD10 and
+Phecode results seen on the parent page in Excel (<tt>.xlsx</tt>) format. The
+`.tar.gz` version is tab-delimited Unix text files with LF [line endings][1].
 
-If you want **just the underlying data**, in all the various formats, in one
-compressed bundle, download the latest `{{ pub.dbarchivebasename }}*.zip` if you are on
-Windows; download the .tar.gz version if you are on Mac or Linux.
+The [`{{ data.artifacts.supplementarchive }}`][2] archive contains **all
+supplemental datasets** from the [_{{ pub.journal }}_ ({{ pub.year }})
+publication][3] in Excel format, _including_ the ICD10 and Phecode datasets in
+unprocessed form.
 
-## Contents of the .zip file
+## Validating SHA1 checksums
 
-* a README file containing the current DB release version and date, with links
-  to the <em>{{ pub.publicationname }}</em> ({{ pub.year }}) paper and this site
+### Windows
 
-* the **`.tsv` (tab-separated values) files** are suitable for import into any
-  spreadsheet program, *e.g.*, Excel or LibreOffice Calc
+* download either or both of the `.zip` archives and
+  [`SHA1SUMS`]({{ site.deploy.publicurl }}/data/SHA1SUMS) locally
+* open PowerShell in the directory where you downloaded these and run:
 
-    * they are UTF-8-encoded, no text field delimiters (no quotes), with
-      **DOS/Windows (CR+LF) [line endings][1]**; don't try to process this file
-      with Unix utilities like `cut` or `awk` without converting line endings
-      first! (or just download the `.tar.gz` version to save yourself time)
+    ```powershell
+    get-filehash -alg SHA1 *.zip
+    ```
+* compare these computed hashes with the downloaded `SHA1SUMS`
 
-* the **`.sqlite` file** is a relational database that can be queried
-  using the SQLite 3 library provided in most programming languages' standard
-  libraries ([example for Python][2]), using a graphical tool such as
-  [DB Browser for SQLite][3], or a web-based tool such as [Datasette][4].
+### macOS
 
-    * **We recommend [Datasette][4] for this purpose** because it builds basic
-      SQL (Structured Query Language) queries for you with a point-and-click
-      web interface, which you can further refine, making it a good SQL
-      learning tool.
-
-* the **`.html` files** are the same data data, simply reformatted into an
-  unstyled HTML fragment.
-
-    * this file has a root `<table>` element, so it can even be processed
-      with a tolerant XML parser
-
-## Contents of the .tar.gz file
-
-* same as above, except text files have **Unix (LF) line endings** and the
-  tarball extracts to its own subdirectory, named after the database build.
-
-## Validating MD5 checksums
+With the default shell:
 
 ```bash
-# assuming Bash shell on Linux
-md5sum -c <(curl {{ site.publicurl }}/data/MD5SUMS)
+shasum -a1 -c <(curl {{ site.deploy.publicurl }}/data/SHA1SUMS)
 ```
 
-[0]: {{ pub.url }}
+### Linux
+
+Assuming the Bash shell:
+
+```bash
+sha1sum --ignore-missing -c <(curl {{ site.deploy.publicurl }}/data/SHA1SUMS)
+```
+
+[0]: {{ data.artifacts.resultsarchive }}
 [1]: https://en.wikipedia.org/wiki/Newline
-[2]: https://docs.python.org/3/library/sqlite3.html "sqlite3 — DB-API 2.0 interface for SQLite databases"
-[3]: https://sqlitebrowser.org/
-[4]: https://datasette.io/
+[2]: {{ data.artifacts.supplementarchive }}
+[3]: {{ pub.url }}

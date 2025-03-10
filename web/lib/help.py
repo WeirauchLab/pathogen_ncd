@@ -1,13 +1,5 @@
-##
-##  Utility functions that don't fit in any other bin
-##
-
 from .config import use_config
-
-
-def ansi(code):
-    """ Generates an ANSI escape code """
-    return f"\033[{code}m"
+from .util import BLUE, BOLD, BOLDUL, BOLDBLUE, RESET
 
 
 @use_config
@@ -17,14 +9,6 @@ def make_help(makefile='Makefile', config=None):
     generate help for each target found
     """
     import re
-
-    BLUE = ansi(34)
-    BOLD = ansi(1)
-    UL = ansi(4)
-    RESET = ansi(0)
-    BOLDBLUE = ansi('1;34')
-    BOLDUL = ansi('1;4')
-
     maxlen = 0
     groups = {}
     targets = []
@@ -64,6 +48,13 @@ def make_help(makefile='Makefile', config=None):
                 for t in groups[g]:
                     print(fmt % (t[0], t[1]))
 
-    print(f"\n  {config['site']['sourceurl']}\n")
+    print(f"\n  Source + issues:\n    {config['site']['sourceurl']}\n")
 
-# vim: sw=4 ts=4 expandtab
+
+if __name__ == '__main__':
+    import os, sys
+    if len(sys.argv) == 2 and os.path.exists(sys.argv[1]):
+        make_help(sys.argv[1])
+    else:
+        make_help()
+

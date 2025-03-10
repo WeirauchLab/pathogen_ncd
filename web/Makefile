@@ -15,29 +15,105 @@ CONTAINER = web
 #LOCALUID = $(shell id -u)
 
 help: venv  # prints this help
-	@$(PYTHON) -c 'from helpers import make_help; make_help("$(THISMAKEFILE)")'
+	@$(PYTHON) -m lib.help $(THISMAKEFILE)
 
-config: venv  # pretty-print the parsed site and publication configs
-	@$(PYTHON) -c 'import pprint; from helpers.config import load_config; c=load_config(); pprint.pprint(c)'
+config: venv  # pretty-prints the parsed site and publication configs
+	@$(PYTHON) -m lib.config$(if $(KEY), --get $(KEY))
 
-site: static process_templates  # build public web site
+site: static data process_templates  # copies static assets, builds templates and downloads
 
-static: node_modules sync_static  # put static assets in place
-node_modules:
-	cd static && npm install
-sync_static:
+config = $(shell python -m lib.config --json --get $(1) | jq -r)
+publicurl = $(call config,site.deploy.publicurl)
+sitetitle = $(call config,site.title)
+
+isup: isitup
+isitup:
+	curl -s $(publicurl) | grep --color '$(sitetitle)'
+
+# copies static assets like theme files and JavaScript libs in place
+static: .datatables_installed .npm_installed
 	rsync -av --copy-links --exclude=".*.swp" --exclude=node_modules \
-		--exclude="package.json*" --no-perms$(if $(DRYRUN), --dry-run) \
+		--exclude="package*.json" --no-perms$(if $(DRYRUN), --dry-run) \
 		static/ $(DEPLOYDIR)
 
+datatables: .datatables_installed
+# using the DataTables download builder was easier than trying to 'npm install'
+# and then figure out which source files to include in <script> tags -- a
+# complete nightmare
+#
+# instead, see https://datatables.net/download and right-click to copy the URL
+# from the "Download files" button here, then run this target
+DATATABLES_DOWNLOAD_BUILDER_URL	= https://datatables.net/download/builder?dt/dt-2.2.2/b-3.2.2/b-html5-3.2.2/fh-4.0.1
+.datatables_installed:
+	cd static/vendor && curl -sLOJ $(DATATABLES_DOWNLOAD_BUILDER_URL)
+	cd static/vendor && unzip DataTables.zip
+	rm static/vendor/DataTables.zip
+	touch $@
+
+npm_install: .npm_installed
+.npm_installed:
+	cd static && npm install
+	touch $@
+
 process_templates: venv
-	$(PYTHON) -c 'from helpers import process_templates; process_templates()'
+	$(PYTHON) -m lib.templates
 	# create a symlink from theme/dot-htaccess to anywhere that needs it
 	cd $(DEPLOYDIR)/data && ln -sf ../theme/dot-htaccess .htaccess
 
+deploydir = $(call config,site.deploydir)
+datasubdir = $(call config,data.artifacts.subdir)
+localdatadir = $(call config,site.datadir)
+deploydatadir = $(deploydir)/$(datasubdir)
+
+$(deploydatadir):
+	mkdir -p $(deploydatadir)
+
+downloads: data
+data: $(deploydatadir) .transformed .converted archives checksums  # [downloads] creates downloadable archives from supplemental datasets
+
+
+transform: .transformed
+.transformed:
+	$(PYTHON) -m lib.transform
+	touch $@
+
+convert: .converted
+.converted:
+	$(PYTHON) -m lib.convert
+	touch $@
+
+resultsarchive = $(deploydatadir)/$(call config,data.artifacts.resultsarchive)
+resultstarball = $(deploydatadir)/$(call config,data.artifacts.resultstarball)
+supplementarchive = $(deploydatadir)/$(call config,data.artifacts.supplementarchive)
+
+archives: $(deploydatadir) $(resultsarchive) $(resultstarball) $(supplementarchive)
+
+$(resultsarchive):
+	@echo
+	-rm $@
+	zip $@ $(deploydatadir)/*Results.xlsx
+
+$(resultstarball):
+	@echo
+	-rm $@
+	tar czvf $@ $(deploydatadir)/*Results.tsv
+
+$(supplementarchive):
+	@echo
+	-rm $@
+	zip $@ ../supplemental_data/supplemental_dataset_*.xlsx
+
+sums: checksums
+checksum: checksums
+checksums:  # [downloads] re-computes checksums of downloadable archives
+	@echo
+	# computing checksums
+	cd $(deploydatadir) && \
+	sha1sum *.zip *.tar.gz > SHA1SUMS
+
 up: serve
 ## not currently used; see comments in `Dockerfile`
-serve: venv  # (alias: up) serve site locally
+serve: venv  # [dev] (alias: up) serves site locally using Docker
 ifneq ($(BUILD)$(REBUILD),)
 	@#docker compose build --build-arg LOCALUID=$(LOCALUID) $(CONTAINER)
 	docker compose build $(CONTAINER)
@@ -50,24 +126,34 @@ endif
 down: venv
 	docker compose down $(CONTAINER)
 
+n: notebook
+nb: notebook
+# (aliases: n, nb) runs a local Jupyter notebook in the 'web' dir.
+notebook:  
+	jupyter notebook
+
 s: shell
-shell: venv  # (alias: s) start a root shell in the container
+sh: shell
+shell: venv  # [dev] (alias: s, sh) starts a root shell in the container
 	docker compose exec $(CONTAINER) /bin/sh
 
 b: browse
-browse: venv  # (alias: b) open a web browser to the (local) server
+browse: venv  # [dev] (alias: b) opens a web browser to the (local) server
 	@# python -m webbrowser prints a '\g' (BEL) to the terminal -- huff!
 	$(PYTHON) -m webbrowser -t http://$(BIND):$(PORT) >/dev/null
 
 
-check: venv  # check all Python source files for syntax errors
-	$(PYTHON) -m compileall -f helpers
+check: venv  # checks all Python source files for syntax errors
+	$(PYTHON) -m compileall -f lib
 
-clean:  # remove compiled bytecode and other detritus
-	-find . -path venv -prune -name "*.pyc"
+clean:  # removes compiled bytecode and other detritus
+	-rm .transformed .converted .npm_installed. datatables_installed
+	-find venv -prune -name "*.pyc"
+	-rm -rf lib/__pycache__
 
-reallyclean: clean  # also remove the local deploy directory
+reallyclean: clean  # [DANGEROUS] `make clean` + removes the deploy directory
 	-rm -rf $(DEPLOYDIR)/*
+	-rm -rf static/node_modules
 
 
 .PHONY: venv
@@ -428,84 +514,6 @@ venv:
 #	PUBRECCOUNT = $(DBERRORMSG)
 #	PUBDISEASECOUNT = $(DBERRORMSG)
 #endif
-
-
-# SQLite has kind of a built-in AUTOINCREMENT key for each record: 'rowid'
-DBCOLUMNS = rowid *
-#DBCOLUMNS = Viral_family Species Name Aliases Notes
-
-# add <thead> and <tbody> tags to output of 'sqlite --html'
-# FIXME: using an ERB or Jinja template might be more straightforward
-define TABLEFIXSED
-	# add <THEAD> at the top
-	1i<THEAD>
-
-	# add a blank column for the record detail control
-	s/<TR><TH>/<TR><TH><\/TH><TH>/
-
-	# look for a <th> at the beginning of a line (maybe indented)
-	/^ *<TH>/ {
-		:a
-		# take the next line into the pattern buffer
-		N
-		# if it's the last <th>, add thead close / tbody open tags
-		s/<\/TH>\n<\/TR>/&<\/THEAD><TBODY>/
-		# if a substitution was made, branch (to end)
-		t
-		# otherwise, go back to ":a"
-		ba
-	}
-
-	# add a blank column for the record detail control
-	s/<TR><TD>/<TR><TD class="details-control"><\/TD><TD>/
-
-	# tack on </TBODY> at the end
-	$$a</TBODY>
-endef
-export TABLEFIXSED
-
-user-provided-version:
-ifeq ($(VERSION),)
-	@echo >&2; \
-	echo "  $(UL)$(BOLD)$(RED)OH NOES!$(RESET)"; \
-	echo >&2; \
-	echo "  Expected a value for 'VERSION'. Try again like this:"; \
-	echo >&2; \
-	echo "      $(BOLD)make <target> VERSION=x.y.z$(RESET)" >&2; \
-	echo >&2; \
-	echo "  FYI, the current code version is $(BOLD)$(PUBSOURCEVER)$(RESET); DB build" \
-	     "is $(BOLD)$(PUBDBVER)$(RESET)."; \
-	echo >&2
-	@false
-else
-	@# FIXME: increment patchlevel by one if VERSION not provided
-	@if ! [[ $(VERSION) =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$$ ]]; then \
-		echo >&2; \
-		echo "(!!) $(ERROR) - bad build version;" \
-			 "expected x.y[.z], where x, y, and z are all integers." >&2; \
-		exit 1; \
-	fi
-endif
-
-work-tree-is-tidy:
-	@# For a DB release, the .tsv is the only "dirty" file allowed
-	# checking if Git work tree is clean
-	@if git status --porcelain | grep -v $(LOCALDATADIR)/$(PUBTSVFILE) | grep .; then \
-		echo >&2; \
-		echo "(!!) $(ERROR) - Git working tree is dirty;" \
-		     "commit changes and try again." >&2; \
-		exit 1; \
-	fi
-
-db-build-not-dupe:
-	@echo	
-	# checking that tag '$(PUBDBVERTAGPREFIX)$(VERSION)' doesn't already exist
-	@if git tag | grep $(PUBDBVERTAGPREFIX)$(VERSION); then \
-		echo >&2; \
-		echo "(!!) $(ERROR) - database build $(VERSION)" \
-		     "already exists." >&2; \
-		exit 1; \
-	fi
 
 ## read the TSV into SQLite
 #define IMPORTSQL

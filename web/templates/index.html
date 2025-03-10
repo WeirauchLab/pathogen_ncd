@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ site.meta.lab }} - {{ pub.title }}</title>
+  <link rel="stylesheet" href="vendor/datatables.min.css" media="all">
   <link rel="stylesheet" href="theme/style.css" media="all">
-  <link rel="stylesheet" href="vendor/dataTables.dataTables.min.css" media="all">
-  <link rel="stylesheet" href="vendor/fixedHeader.dataTables.min.css" media="all">
+
 {% include "_partials/meta.html" %}
 </head>
 <body>
@@ -18,30 +18,30 @@
     </div>
 
     <div id="header">
-      <h1 id="headline">{{ pub.title }}</h1>
+      <h1 id="headline">{{ site.title | safe }}</h1>
       <!--h3 id="tagline"></h3-->
 {% include "_partials/authors.html" %}
 
       <div class="actions actions-top">
-        <!-- the 'onclick' is necessary to make the ENTIRE button clickable -->
-        {% set tarfile = 'data/' ~ data.archivebasename ~ data.build ~ '.tar.gz' -%}
-        {%- set tarfilesize = '{{' ~ tarfile ~ ' | filesize }}' -%}
-        <button id="download-btn" onclick="location.href='{{ tarfile }}'"
-                title="Download database build {{ data.build }}, released {{ releasedate }} ({{ tarfilesize }}); gzipped Unix tar format, LF line endings"
-        >
-          <a href="{{ tarfile }}">
-            <strong>Download Database Build {{ data.build }}</strong>
-            <small>Released {{ releasedate }} ({{ '{{' }} {{ tarfile }} | filesize {{ '}}' }})</small>
-          </a>
-        </button>
+        {%- set resultszip = data.artifacts.subdir ~ "/" ~ data.artifacts.resultsarchive -%}
+        {%- set resultsfilesize = (site.deploydatadir ~ "/" ~ data.artifacts.resultsarchive) | filesize -%}
+        <a href="{{ resultszip }}">
+          <button id="download-btn"
+                  title="Download results datasets, released {{ date.releasedate }} ({{ resultsfilesize }}); .zip format"
+          >
+              <strong>Download Results</strong>
+              <small>Excel format, released {{ date.releasedate }} ({{ resultsfilesize }})</small>
+          </button>
+        </a>
 
-        <button type="button" title="Download supplemental tables from the publication (as a .zip archive)"
-                onclick="location.href='{{ zipfile }}'">
-          <a href="{{ zipfile }}">
-            Download Supplemental Tables
-            <small>Supplement from the PUBPUBLICATIONNAME (PUBYEAR) paper</small>
-          </a>
-        </button>
+        {%- set supplementzip = data.artifacts.subdir ~ "/" ~ data.artifacts.supplementarchive -%}
+        {%- set supplementfilesize = (site.deploydatadir ~ "/" ~ data.artifacts.supplementarchive) | filesize -%}
+        <a href="{{ supplementzip }}">
+          <button type="button" title="Download supplemental tables from the publication (as a .zip archive)">
+            Download Supplemental Data
+            <small>All supplemental datasets from the {{ pub.journal }} {{ pub.year }} paper ({{ supplementfilesize}})</small>
+          </button>
+        </a>
 
         <button id="search-btn" onclick="location.href='#search'">
           <a href="#search">Search Data</a>
@@ -53,14 +53,14 @@
 #}
         <div class="subtle-link" id="links-to-footer">
           <p>
-            {% set zipfile = 'data/' ~ data.archivebasename ~ data.build ~ '.zip' -%}
-            {%- set zipfilesize = '{{' ~ zipfile ~ ' | filesize }}' -%}
-            <a href="{{ zipfile }}"
-               title="Download database build {{ data.build }}, released {{ releasedate }} ({{ zipfilesize }}); ZIP format"
-            >Windows format</a>
+            {% set tarball = data.artifacts.subdir ~ "/" ~ data.artifacts.resultstarball -%}
+            {%- set tarballsize = (site.deploydatadir ~ "/" ~ data.artifacts.resultstarball) | filesize -%}
+            <a href="{{ tarball }}"
+               title="Download results datasets as TSV, Unix LF line endings, released {{ releasedate }} ({{ tarballsize }}); .tar.gz format"
+            >Datasets as <tt>.tsv</tt> with Unix LF line endings</a>
             &nbsp;|&nbsp;
-            <a href="data/MD5SUMS"
-               title="MD5 checksums, for verifying download integrity"
+            <a href="{{ data.artifacts.subdir }}/SHA1SUMS"
+               title="SHA1 checksums, for verifying download integrity"
             >Checksums</a>
             &nbsp;|&nbsp;
             <a href="data" title="View all available downloads">All downloads</a>
@@ -87,11 +87,12 @@
       <h2 id="feedback">Feedback</h2>
       <p>
         Have feedback on how we can make this resource better?
-        <a href="mailto:{{ adminemail }}?subject={{ emailsubject | urlencode }}">
+        <a href="mailto:{{ site.adminemail }}?subject={{ site.emailsubject | urlencode }}">
           Let us know</a>.
       </p>
       <br>
 
+<!--
       <h2>Database release history</h2>
       <p>
         The latest database build is
@@ -100,28 +101,30 @@
         m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', `A description of previous builds follows:')
        A description of previous builds follows:
       </p>
-
+-->
       <!-- generated by 'git tag -n' -->
-      m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', PUBDBRELEASEHISTORY)
-
+      <!-- m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', PUBDBRELEASEHISTORY) -->
+<!--
       <p>
         The data searchable in the table below is also
         <a href="data">provided for download</a> in several different formats,
         including tab-delimited (suitable for import into a spreadsheet program
         like Excel or LibreOffice Calc) and SQLite.
-       <!-- (confusing, having two links) --> The <a href="PUBDBZIP"><code>.zip</code> archive</a> simply
-       contains all of them in one compressed bundle.
+      </p>
+      <p>
+        The <a href="PUBDBZIP"><code>.zip</code> archive</a> simply
+        contains all of them in one compressed bundle.
       </p>
 
       <div class="actions">
         <button type="button" title="Download data in other formats such as tab-delimited, SQLite database" onclick="location.href='data'">
           <a href="data">Download Other Formats<small>Tab-delimited, SQLite database</small></a>
         </button>
-      </div><!--/.actions-->
+      </div>--><!--/.actions-->
 
-      </div><!--/#abstract-->
+    </div><!--/#abstract-->
 
-      <hr>
+    <hr>
 
   </div><!--/#top-->
 
@@ -136,21 +139,36 @@
 
     <div id="search-help-container">
       <div id="search-help" style="display:none">
+{#
         <p>Click the "▶︎" symbol in order to reveal <em>all</em>
         fields for the associated record. Fields not shown are still
-        searchable. To search for an exact phrase, put it in double quotes,
-        <em>e.g.</em>, <code>"momp D"</code>; otherwise the search input is
-        "fuzzy" and may match across multiple columns.</p>
+        searchable.
+-#}
+        <p>Hover your mouse pointer over <strong>column names</strong> for a
+        full description.
 
-        <p>Hover your mouse pointer over <strong>column names</strong> for a full
-        description.</p>
-
+        <p>The search box performs "fuzzy" matching, and may match across
+        multiple columns. To search for an exact phrase, put it in double
+        quotes, <em>e.g.</em>, <code>"disorders of urinary system"</code>.
+      
+        <p>The <strong>Copy</strong> and <strong>Download CSV</strong> buttons
+        will copy the <em>entire</em> table, including records not currently
+        shown, to the system clipboard, or download it as a comma-separated
+        values file. The former can be pasted directly into a spreadsheet
+        program such as Excel, LibreOffice Calc, or Google Sheets with
+        <span class="hotkey"><kbd>Ctrl</kbd>&thinsp;+&thinsp;<kbd>V</kbd></span>,
+        or <kbd>⌘&thinsp;V</kbd> on a Mac. See
+        <a class="ul-link" href="{{ data.artifacts.subdir }}">
+          the <code>{{ data.artifacts.subdir }}</code> directory
+        </a> directory for other formats.
+{#
         <p>
           Cell values with dotted underlines styling are clickable, and will
           open in the relevant web site <strong>in the current window/tab</strong>.
           Hold down the <kbd>Ctrl</kbd> key on the keyboard (or <kbd>⌘</kbd> on
           a Mac) as you click to open these links in a new tab.
         </p>
+-#}
       </div><!-- /.search-help -->
 
       <div id="search-help-toggle-cont" style="display:none">
@@ -183,15 +201,39 @@
     </div><!--/.block-->
   </div><!-- /#search -->
 
-  <div id="table-viewer" class="wrapper">
-    <!-- viraltfsurvey.html replaces what is here, loaded by XMLHttpRequest -->
-    <div class="loading">
-      <p>Fetching data... please wait a few moments.</p>
-      <p class="small">Nothing showing up here? <a class="ul-link"
-        href="mailto:tftoolsadmin@cchmc.org?subject=PUBEMAILSUBJECT%20is%20not%20loading%20the%20data%properly!">Please let us know</a>.
-      </p>
-    </div>
-  </div>
+  <div id="tabs-and-tables" class="wrapper">
+    <div class="tabs">
+{% for ds in data.datasources | sort(attribute="order") %}
+      <div class="tab" title="{{ data.datasources[ds].tooltip}}"> 
+        <input type="radio" id="tab-{{ data.datasources[ds].tabname | lower }}" 
+               name="table-tabs" {% if loop.first %}checked{% endif %}
+        >
+        <label for="tab-{{ data.datasources[ds].tabname | lower }}"
+               class="tablabel"
+        >
+          {{ data.datasources[ds].tabname }}
+        </label>
+      </div> <!-- /.tab -->
+{% endfor %}
+    </div> <!-- /.tabs --> 
+    <div class="tab-separator"></div>
+
+    <div id="table-viewer">
+      <!-- loadTab replaces what is here -->
+      <div class="loading">
+        <p>Fetching and formatting data…</p>
+        <p class="small">Nothing showing up here?
+          <a class="ul-link"
+             href="mailto:{{ site.adminemail }}?subject={{ site.emailsubject | urlencode }}%20is%20not%20loading%20the%20data%properly!"
+          >Please let us know</a>.
+        </p>
+      </div>
+{%- for ds in data.datasources | sort(attribute="order") %}
+      <div id="table-{{ data.datasources[ds].tabname | lower }}" style="display:none;"></div>
+{%- endfor %}
+    </div> <!-- /#table-viewer -->
+
+  </div> <!-- /.wrapper -->
 
   <div class="block" id="footer-md" data-markdown>
     <!-- content comes from 'footer.md', loaded by XMLHttpRequest -->
@@ -213,29 +255,30 @@
 
   <div id="footer" class="footer">
     <p>
-      Problems? <a id="admin-contact" class="ul-link"
-         href="mailto:tftoolsadmin@cchmc.org?subject=PUBEMAILSUBJECT">Please let the site admin know</a>.
-      | <a class="ul-link" href="PUBSOURCEURL" title="Source code for web site">Source code</a>
+      Problems?
+      <a id="admin-contact" class="ul-link"
+         href="mailto:{{ site.adminemail }}?subject=Problem%20with%20{{ site.emailsubject | urlencode }}"
+      >Please let the site admin know</a>.
+{# | <a class="ul-link" href="PUBSOURCEURL" title="Source code for web site">Source code</a> #}
     </p>
     <p>
-      &copy;PUBCOPYRIGHTYEAR 
+      &copy;{{ date.currentyear }}
       <a href="https://www.cincinnatichildrens.org/research/divisions/a/genomics-etiology">The Center for Autoimmune Genomics and Etiology</a>
-      &ndash; <a href="https://weirauchlab.org">Weirauch Research Lab</a>
-      <br>
-      <a href="https://cincinnatichildrens.org">Cincinnati Children's Hospital Medical Center</a>
+      &bull; <a href="https://weirauchlab.org">Weirauch Research Lab</a>
+      &bull; <a href="https://cincinnatichildrens.org">Cincinnati Children's Hospital Medical Center</a>
     </p>
-  </div>
-
+  </div><!--/.footer-->
+{#-
   <div id="apaxy-credit" class="footer" style="display:none">
     <a href="http://adamwhitcroft.com/apaxy/" title="Apaxy theme home page">
       Apaxy
     </a> theme by <a href="https://twitter.com/adamwhitcroft">@adamwhitcroft</a>
   </div><!--/.footer-->
+-#}
 
   <script src="vendor/jquery.min.js"></script>
-  <script src="vendor/dataTables.min.js"></script>
-  <script src="vendor/dataTables.fixedHeader.min.js"></script>
-  <script src="vendor/js.cookie.min.js"></script>
+  <script src="vendor/js.cookie.js"></script>
+  <script src="vendor/datatables.min.js"></script>
   <script src="js/index.js"></script>
   {%- if site.deployto != 'prod' and site.livereload %}
   <script src="vendor/live.js"></script>

@@ -16,3 +16,12 @@ make browse                # opens the local web server in your browser
 There is some duplication among `docker.yml`, the `Makefile`, and `site.toml`
 with regard to the local web server port, but this could probably be resolved
 in time.
+
+## Credits
+
+### Apaxy theme for Apache `mod_autoindex` by Adam Whitcroft
+
+See [the old adamwhitcroft.com/apaxy website][1], `static/theme/README.md`,
+and `static/theme/License.md` for full details.
+
+[1]: https://web.archive.org/web/20170827153848/http://adamwhitcroft.com/apaxy/

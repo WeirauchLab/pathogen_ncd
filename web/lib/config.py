@@ -1,22 +1,20 @@
-##
-##  Helper functions for processing the TOML configs
-##
+"""
+Helper functions for processing the TOML configs
+"""
 import os, logging
+
+log = logging.getLogger(__name__)
+
+if os.getenv('DEBUG') or os.getenv('DEBUG_CONFIG'):
+    log.setLevel(logging.DEBUG)
 
 CONFDIR = os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..', 'conf'))
-logfmt = '%(asctime)s [%(levelname)s] %(message)s'
-logging.basicConfig(format=logfmt)
-log = logging.getLogger(__name__)
-config_list = {}
 
 # crudely emulating pass-by-reference for the recursive funtion; see
 # https://realpython.com/python-pass-by-reference/#replicating-pass-by-reference-with-python
-cfg = {}
-idx = {}
-
-if os.getenv('DEBUG'):
-    log.setLevel(logging.DEBUG)
+index = {}
+config_list = {}
 
 
 def use_config(f, configs=None):
@@ -31,10 +29,9 @@ def use_config(f, configs=None):
 
 
 def load_config(configs=None):
-    """ load TOML configs and return dict of them all merged together """
+    """ Load TOML configs and return dict of them all merged together """
     import os, tomli
-    global cfg
-    global config_list
+    config = {}
 
     if configs is None:
         import glob
@@ -48,27 +45,14 @@ def load_config(configs=None):
 
     for name, configfile in config_list.items():
         try:
-            cfg[name] = tomli.load(open(configfile, 'rb'))
+            config[name] = tomli.load(open(configfile, 'rb'))
         except tomli.TOMLDecodeError as e:
             raise RuntimeError(f"Error parsing '{configfile}': {e}") \
                 from None
 
-    interpolate(cfg)
-    post_process(cfg)
-    return cfg
-
-
-def post_process(cfg):
-    """ post-processing for a few "magic" config values """
-    from datetime import datetime as dt
-
-    cfg['site']['today'] = cfg['publication']['releasedate'] \
-            = dt.now().strftime('%Y-%m-%d')
-    # set site.urlbase appropriate to whatever `deployto` is set to
-    cfg['site']['urlbase'] = \
-            cfg['site']['deploy'][cfg['site']['deployto']]['urlbase']
-
-    return cfg
+    interpolate(config)
+    post_process(config)
+    return config
 
 
 def interpolate(x):
@@ -86,8 +70,6 @@ def interpolate(x):
     """
     import re
 
-    global idx
-
     if isinstance(x, list):
         for i in x:
             if isinstance(i, dict):
@@ -104,10 +86,11 @@ def interpolate(x):
                                   matches)
 
                         for match in matches:
-                            if match in idx:
+                            if match in index:
                                 log.debug("  ✓ Found '%s': '%s' in index",
-                                           match, idx[match])
-                                v = v.replace(f"{{{match}}}", idx[match])
+                                           match, index[match])
+                                v = v.replace(f"{{{match}}}",
+                                              str(index[match]))
                             else:
                                 log.debug("  ✗ No match for '%s' in index",
                                            match)
@@ -117,4 +100,59 @@ def interpolate(x):
                             x[k] = v
 
                 log.debug("Added '%s': '%s' to index", k, v)
-                idx[k] = v
+                index[k] = v
+
+
+def post_process(config):
+    """ post-processing for a few "magic" config values """
+    from datetime import datetime as dt
+
+    # a couple of dates for convenience
+    today = dt.now().strftime('%Y-%m-%d')
+    config['date'] = {
+        'today': today,
+        'releasedate': config['data']['releasedate'],
+        'currentyear': dt.now().year,
+    }
+
+    # make 'pub' an alias for 'publication'
+    config['pub'] = config['publication']
+
+    # set site.urlbase appropriate to whatever `deployto` is set to
+    config['site']['urlbase'] = \
+            config['site']['deploy'][config['site']['deployto']]['urlbase']
+
+    # record the active deployment settings in config['site']['deploy']
+    deployto = config['site']['deployto']
+    for k, v in config['site']['deploy'][deployto].items():
+        config['site']['deploy'][k] = v
+
+    # create `site.deploydir` and `site.datadir` for convenience
+    deploydir = config['site']['deploy']['deploydir']
+    config['site']['deploydir'] = deploydir
+    config['site']['deploydatadir'] = \
+        f"{deploydir}/{config['data']['artifacts']['subdir']}"
+
+
+if __name__ == '__main__':
+    import sys, json, pprint, argparse
+    from .config import load_config
+    from .attrdict import AttrDict
+
+    c = AttrDict(load_config())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-g', '--get')
+    parser.add_argument('-j', '--json', '--as-json', action='store_true')
+    opts = parser.parse_args()
+
+    def json_print(c):
+        import json
+        json.dump(c, sys.stdout, indent=True)
+        print();
+
+    printer = json_print if opts.json else pprint.pprint
+
+    if opts.get:
+        eval(f"printer(c.{opts.get})")
+    else:
+        printer(c)

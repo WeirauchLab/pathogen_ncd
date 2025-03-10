@@ -1,3 +1,5 @@
+# title with a <br) to break it at an aesthetically-pleasing spot
+title = "After the Infection: A Survey of Pathogens<br> and Non-communicable Human Disease"
 # used as the last path element in the URL
 shortname = "lape2023"
 # deploy.<deployto>.urlbase becomes the value of site.urlbase for templates
@@ -34,9 +36,10 @@ keywords = [
 
 [deploy.local]
 host = "localhost"
+port = 8000
 # when deployed, where is this site relative to the web server root?
 urlbase = ""
-publicurl = "https://localhost:8000{urlbase}"
+publicurl = "http://{host}:{port}{urlbase}"
 deploydir = "local.deploy"
 
 [deploy.dev]
