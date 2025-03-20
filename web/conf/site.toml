@@ -14,6 +14,8 @@ issuesurl = "{sourceurl}/issues"
 sourcever = "0.1.0"
 adminemail = "tftoolsadmin@cchmc.org"
 emailsubject = "Pathogenic Organism / NCD web site"
+# whether to credit Apaxy mod_autoindex theme in the footer
+creditinfooter = false
 
 [meta]
 lab = "Weirauch Lab"

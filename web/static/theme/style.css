@@ -162,6 +162,10 @@ hr {
   margin-bottom: 1em;
 }
 
+.indexbreakrow hr {
+  display: none;
+}
+
 .actions {
   text-align: center;
   padding: 1em;
@@ -204,6 +208,9 @@ div.dt-buttons > .dt-button {
   padding: 0.1em 1em;
 }
 
+button {
+  color: #61666c; /*#2a2a2a*/
+}
 button:hover {
   /* box-shadow: 0 1px 1px #2281d0; -- some kinda blue */
   /* background: linear-gradient(#fff, 10%, #ecf3ff); */
@@ -211,20 +218,13 @@ button:hover {
   box-shadow: 0 5px 5px -5px #666;
   border-color: #62666C;
   transition: box-shadow 100ms ease-in, border-color 100ms;
-}
-
-button:hover a {
-  color:inherit; /*#2a2a2a;*/
+  color: inherit;
 }
 
 button:active {
   box-shadow: none;
   /* background: linear-gradient(#ecf3ff, #ecf3ff); */
   transition: box-shadow 250ms ease-out;
-}
-
-button strong {
-  display: block;
 }
 
 button small {
@@ -333,6 +333,8 @@ pre code {
   line-height: 1.1em;
   background-color: #eee;
   border: 1px solid #ccc;
+  white-space: pre-wrap;
+  text-align: left;
 }
 
 code+h1, code+h2, code+h3, code+h4 {

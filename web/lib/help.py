@@ -3,7 +3,7 @@ from .util import BLUE, BOLD, BOLDUL, BOLDBLUE, RESET
 
 
 @use_config
-def make_help(makefile='Makefile', config=None):
+def make_help(makefile=None, config=None):
     """
     Scan through a `Makefile` passed as the first argument and automatically
     generate help for each target found
@@ -12,6 +12,9 @@ def make_help(makefile='Makefile', config=None):
     maxlen = 0
     groups = {}
     targets = []
+
+    if not makefile:
+        makefile = 'Makefile'
 
     with open(makefile, 'r') as f:
         for line in f.readlines():

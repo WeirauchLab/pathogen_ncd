@@ -13,9 +13,17 @@ basename = "Lape_et_al"
 subdir = "data"
 # the basename for the results dataset(s)
 resultsarchive = "{basename}_results.zip"
+resultsarchivedesc = "Results datasets as Excel <tt>.xlsx</tt> files"
 resultstarball = "{basename}_results.tar.gz"
+resultstarballdesc = "Results datasets as tab-delimited Unix text files"
 # the secondary .zip file containing all the supplemental datasets
-supplementarchive = "{basename}_supplement.zip"
+supplementarchive = "{basename}_supp_datasets.zip"
+supplementarchivedesc = "All supplemental datasets as Excel <tt>.xlsx</tt> files"
+
+[figures]
+infilename = "../supplemental_data/supplementary_info.pdf"
+outfilename = "{basename}_supp_figs_and_tables.pdf"
+description = "Supplemental figures and tables"
 
 [datasources.ICD10]
 order = 1

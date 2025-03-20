@@ -16,9 +16,10 @@
 	# HIDE PARTS OF THE THEME (config.json, footer.md, etc.)
 	IndexIgnore .htaccess header.html footer.html Makefile *.md *.json *.tsv *.xlsx
 
-    AddDescription "Results datasets as Excel <tt>.xlsx</tt> files" {{ data.artifacts.resultsarchive }}
-    AddDescription "Results datasets as tab-delimited Unix text files" {{ data.artifacts.resultstarball }}
-    AddDescription "All supplemental datasets as Excel <tt>.xlsx</tt> files" {{ data.artifacts.supplementarchive }}
+    AddDescription "{{ data.artifacts.resultsarchivedesc | safe }}" {{ data.artifacts.resultsarchive }}
+    AddDescription "{{ data.artifacts.resultstarballdesc }}" {{ data.artifacts.resultstarball }}
+    AddDescription "{{ data.artifacts.supplementarchivedesc | safe }}" {{ data.artifacts.supplementarchive }}
+    AddDescription "{{ data.figures.description }}" {{ data.figures.outfilename }}
     AddDescription "SHA1 checksums to validate archive integrity" SHA1SUMS
 
 #
@@ -91,3 +92,4 @@
 # MIME OVERRIDES
 #
     AddType text/plain .tsv 
+    AddType text/plain .md 

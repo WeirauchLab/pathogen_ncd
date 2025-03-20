@@ -1,7 +1,8 @@
 title = "After the Infection: A Survey of Pathogens and Non-communicable Human Disease"
 journal = "medRxiv"
 year = 2023
-url = "https://www.medrxiv.org/content/10.1101/2023.09.14.23295428v1"
+pubdoi = "10.1101/2023.09.14.23295428"
+url = "https://www.medrxiv.org/content/{pubdoi}"
 author = { given_name="Michael", surname="Lape", email="lapema@mail.uc.edu" }
 
 # whom to contact about the publication (or the data)
@@ -13,28 +14,38 @@ contacts = [
 [[authors]]
 given_name = "Michael"
 surname = "Lape"
-affiliations = [1, 3, 4]
+affiliations = [1, 2, 3]
 
 [[authors]]
 given_name = "Daniel"
 surname = "Schnell"
-affiliations = [3]
+affiliations = [2]
 
 [[authors]]
 given_name = "Sreeja"
 surname = "Parameswaran"
-affiliations = [4, 6]
+affiliations = [3, 6]
+
+[[authors]]
+given_name = "Kevin"
+surname = "Ernst"
+affiliations = [3]
+
+[[authors]]
+given_name = "Shannon"
+surname = "O’Connor"
+affiliations = [7]
 
 [[authors]]
 given_name = "Nathan"
 surname = "Salomonis"
-affiliations = [1, 2, 3]
+affiliations = [1, 2, 4]
 
 [[authors]]
 given_name = "Lisa"
 mi = "J"
 surname =  "Martin"
-affiliations = [2, 6]
+affiliations = [4, 6]
 
 [[authors]]
 given_name = "Brett"
@@ -47,14 +58,14 @@ given_name = "Leah"
 mi = "C"
 surname =  "Kottyan"
 email = "Leah.Kottyan@cchmc.org"
-affiliations = [2, 4, 6, "*"]
+affiliations = [3, 4, 6, 8, "*"]
 
 [[authors]]
 given_name = "Matthew"
 mi = "T"
 surname =  "Weirauch"
 email = "Matthew.Weirauch@cchmc.org"
-affiliations = [2, 3, 4, 5, 6, "*"]
+affiliations = [2, 3, 4, 5, 6, 8, "*"]
 
 ##
 ## Affiliations corresponding to the IDs above
@@ -66,17 +77,17 @@ url = "https://med.uc.edu/depart/bmi/home"
 
 [[affiliations]]
 id = 2
-name = "Department of Pediatrics, University of Cincinnati College of Medicine, Cincinnati, Ohio, USA"
-
-[[affiliations]]
-id = 3
 name = "Division of Biomedical Informatics, Cincinnati Children’s Hospital Medical Center, Cincinnati, Ohio, USA"
 url = "https://bmi.cchmc.org"
 
 [[affiliations]]
-id = 4
+id = 3
 name = "Center for Autoimmune Genomics and Etiology, Cincinnati Children’s Hospital Medical Center, Cincinnati, Ohio, USA"
 url = "https://www.cincinnatichildrens.org/research/divisions/a/genomics-etiology"
+
+[[affiliations]]
+id = 4
+name = "Department of Pediatrics, University of Cincinnati College of Medicine, Cincinnati, Ohio, USA"
 
 [[affiliations]]
 id = 5
@@ -85,6 +96,14 @@ name = "Division of Developmental Biology, Cincinnati Children’s Hospital Medi
 [[affiliations]]
 id = 6
 name = "Division of Human Genetics, Cincinnati Children’s Hospital Medical Center, Cincinnati, OH, USA"
+
+[[affiliations]]
+id = 7
+name = "Division of Rheumatology, Cincinnati Children’s Hospital Medical Center, Cincinnati, OH, USA"
+
+[[affiliations]]
+id = 8
+name = "Division of Allergy & Immunology, Cincinnati Children’s Hospital Medical Center, Cincinnati, OH, USA"
 
 [[affiliations]]
 id = "*"
