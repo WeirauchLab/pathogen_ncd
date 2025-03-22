@@ -1,5 +1,6 @@
 # title with a <br) to break it at an aesthetically-pleasing spot
 title = "After the Infection: A Survey of Pathogens<br> and Non-communicable Human Disease"
+shorttitle = "Mike's Pathogen/NCD project"
 # used as the last path element in the URL
 shortname = "lape2023"
 # deploy.<deployto>.urlbase becomes the value of site.urlbase for templates
@@ -56,31 +57,11 @@ host = "bmitfwebp1"
 urlbase = "/pubs/{shortname}"
 publicurl = "https://tf.cchmc.org{urlbase}"
 deploydir = "/var/www/html{urlbase}"
-#{
-#  "#TODO": "use this, someday",
-#
-#  "htacess": {
-#    "authname":
-#      "Pathogenic Organisms and Non-communicable Diseases - Reviewer Access",
-#    "authuserfile":
-#      "/etc/httpd24/htpasswd.pathncd",
-#
-#    "indexignores": [
-#      ".htaccess",
-#      "api",
-#      "img",
-#      "bin",
-#      "css",
-#      "font",
-#      "vendor",
-#      "Makefile",
-#      "header.html",
-#      "footer.html",
-#      "*.bak",
-#      "*.md",
-#      "*.json",
-#      "*.xls",
-#      "*.ini"
-#    ]
-#  }
-#}
+
+[htaccess]
+# currently unused, as the site is public
+#authname = "Pathogenic Organisms and Non-communicable Diseases - Reviewer Access",
+#authuserfile = "/etc/httpd24/htpasswd.pathncd"
+
+# for the `IndexIgnore` directive in data/.htaccess
+"indexignores" = ".htaccess header.html footer.html Makefile *.md *.json *.tsv *.xlsx"

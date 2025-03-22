@@ -14,13 +14,14 @@
     IndexOptions +NameWidth=* +DescriptionWidth=*
 
 	# HIDE PARTS OF THE THEME (config.json, footer.md, etc.)
-	IndexIgnore .htaccess header.html footer.html Makefile *.md *.json *.tsv *.xlsx
+    IndexIgnore {{ site.htaccess.indexignores }}
 
     AddDescription "{{ data.artifacts.resultsarchivedesc | safe }}" {{ data.artifacts.resultsarchive }}
     AddDescription "{{ data.artifacts.resultstarballdesc }}" {{ data.artifacts.resultstarball }}
     AddDescription "{{ data.artifacts.supplementarchivedesc | safe }}" {{ data.artifacts.supplementarchive }}
     AddDescription "{{ data.figures.description }}" {{ data.figures.outfilename }}
     AddDescription "SHA1 checksums to validate archive integrity" SHA1SUMS
+    AddDescription "MD5 checksums to validate archive integrity" MD5SUMS
 
 #
 # GENERAL ICONS (BLANK, DIRECTORY, PARENT DIRECTORY)

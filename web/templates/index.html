@@ -64,7 +64,7 @@
                title="Download results datasets as TSV, Unix LF line endings, released {{ releasedate }} ({{ tarballsize }}); .tar.gz format"
             >Results datasets as <tt>.tsv</tt> with Unix LF line endings</a>
             &nbsp;|&nbsp;
-            <a href="{{ data.artifacts.subdir }}/#validating-sha1-checksums"
+            <a href="{{ data.artifacts.subdir }}/SHA1SUMS"
                title="SHA1 checksums, for verifying download integrity"
             >Checksums</a>
             &nbsp;|&nbsp;
@@ -84,7 +84,7 @@
 
       <h2 id="how-to-cite">How to cite</h2>
       <p>
-      Please cite this article as: {{ pub.surname}} <em>et al.</em>, 
+      Please cite this article as: {{ pub.author.surname}} <em>et al.</em>, 
         {{ pub.title }}, {{ pub.journal }} ({{ pub.year }}),
         <a href="{{ pub.url }}">{{ pub.url }}</a>
       </p>
