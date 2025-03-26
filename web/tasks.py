@@ -85,15 +85,15 @@ class pushd:
 
 @invoke.task
 def npm_install(ctx):
-    """[hidden] downloads third-party JavaScript libraries"""
+    """[hidden] downloads third-party JavaScript libraries using `npm`"""
     wd = os.getcwd()
     logger.info("Installing third-party JavaScript libraries to 'static'…")
     with pushd('static'):
         ctx.run("npm install")
 
-@invoke.task(pre=[npm_install])
+@invoke.task
 def build_assets(ctx):
-    """[hidden] copy static assets into deploy destination directory"""
+    """[hidden] copies static assets into deploy destination directory"""
     import re
     def ignore(dir, contents):
         excludes = [r'.*\.swp', r'package.*\.json', 'node_modules']
@@ -107,7 +107,7 @@ def build_assets(ctx):
 
 @invoke.task
 def make_deploy_dir(ctx):
-    """[hidden] create the deploy destination directory structure"""
+    """[hidden] creates the deploy destination directory structure"""
     logger.info(f"Creating '{deploydatadir}' and any required subdirs…")
     os.makedirs(deploydatadir, exist_ok=True)
 
@@ -127,7 +127,7 @@ def build_tsvs(ctx):
 
 @invoke.task
 def update_readme(ctx):
-    """[hidden] create README.txt for inside the downloadable archives"""
+    """[hidden] creates the README.txt for inside the downloadable archives"""
     from lib.templates import process_templates
     logger.info("Updating 'README.txt' with values from TOML configs…")
     process_templates(os.path.join('data', 'README.txt'))
@@ -192,12 +192,12 @@ def deploy(ctx):
 
 @invoke.task(pre=[deploy])
 def build(ctx):
-    """[hidden] an alias for 'deploy'"""
+    """[hidden] is an alias for 'deploy'"""
     pass
 
 @invoke.task(pre=[deploy])
 def site(ctx):
-    """[hidden] an alias for 'deploy'"""
+    """[hidden] is an alias for 'deploy'"""
     pass
 
 
