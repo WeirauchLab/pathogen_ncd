@@ -202,7 +202,7 @@ def site(ctx):
 
 
 @invoke.task
-def serve(ctx, port=c.site.deploy.port, bind='127.0.0.1'):
+def serve(ctx, port=c.site.deploy.port, bind='127.0.0.1', browse=False):
     """serves the site locally using Python's http.server module"""
     import http.server, socketserver
 
@@ -223,6 +223,10 @@ def serve(ctx, port=c.site.deploy.port, bind='127.0.0.1'):
     #    except KeyboardInterrupt:
     #        print("\nKeyboard interrupt received, exiting.", file=sys.stderr)
     #        sys.exit(0)
+
+    if browse:
+        import webbrowser
+        webbrowser.open_new_tab(f"http://{bind}:{port}")
 
     http.server.test(HandlerClass=Handler, port=port, bind=bind)
 

@@ -42,13 +42,13 @@ pip install invoke colorama
 # test Invoke to make sure it works
 invoke -l  # or `invoke help`
 
-# start a local dev server using Python's http.server
-invoke serve
+# start a local dev server and open new browser tab to the site
+invoke serve --browse
 ```
 
 A `make.cmd` is provided for Windows which is just a rudimentary wrapper around
 `python -m invoke` that displays the `help` output by default. In PowerShell,
-you must invoke this as `.\make` because PowerShell.
+you must invoke this as `./make` because PowerShell.
 
 
 ## Deployment

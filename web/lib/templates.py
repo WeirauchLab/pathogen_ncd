@@ -55,6 +55,8 @@ def process_templates(templates=None, deploydir=None, config=None):
                     continue
 
                 destfile = os.path.join(destpath, f)
+                # the templates are UTF-8, so force this encoding for Windows,
+                # which defaults to cp1252
                 with open(destfile, 'w', encoding='utf-8') as df:
                     # https://github.com/pallets/jinja/issues/711#issuecomment-300070379
                     tpath = os.path.join(relpath, f).replace('\\', '/')
@@ -82,7 +84,6 @@ def process_templates(templates=None, deploydir=None, config=None):
             os.makedirs(destpath, exist_ok=True)
             destfile = os.path.join(destpath, os.path.basename(template))
 
-            breakpoint()
             with open(destfile, 'w') as df:
                 # https://github.com/pallets/jinja/issues/711 again, *sigh*
                 tpath = os.path.join('templates', template).replace('\\', '/')
