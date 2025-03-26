@@ -49,9 +49,20 @@ DATATABLES_DOWNLOAD_BUILDER_URL	= https://datatables.net/download/builder?dt/dt-
 	rm static/vendor/DataTables.zip
 	touch $@
 
+VENDOR_THESE_JS_LIBS = \
+	jquery/dist/jquery.min.js \
+	jquery/dist/jquery.min.map \
+	js-cookie/src/js.cookie.js \
+	marked/marked.min.js
+
 npm_install: .npm_installed
 .npm_installed:
 	cd static && npm install
+	# vendor the libraries we need, since Windows can't deal with the symlinks
+	cd static/vendor && \
+	for f in $(VENDOR_THESE_JS_LIBS); do \
+		cp ../node_modules/$$f . || exit 1; \
+	done
 	touch $@
 
 process_templates: .templates_processed
