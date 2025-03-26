@@ -1,15 +1,15 @@
-<div class="top" style="max-width:800px">
-  <div id="header">
-    <a href="..">
-      <h1 id="full-width-headline">{{ site.title }}</h1>
-    </a>
-
-    {% include "_partials/authors.html" %}
-
-    <p class="center subtle-link">
-      <a href="..">Back to home page</a>
-    </p>
-  </div><!--/#header-->
-
-<!-- we open the `wrapper` element here, but close it in the `footer.html` file -->
-<div class="wrapper">
+  <div class="top">
+    <div id="header">
+      <a href="..">
+        <h1 id="headline">{{ site.title }}</h1>
+      </a>
+{% include "_partials/authors.html" %}
+  
+      <p class="center subtle-link">
+        <a href="..">Back to home page</a>
+      </p>
+    </div><!--/#header-->
+  </div><!--/#top-->
+  
+  <!-- we open the `wrapper` element here, but close it in the `footer.html` file -->
+  <div class="wrapper">

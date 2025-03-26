@@ -27,7 +27,7 @@ subdirectory.
 It's assumed you'll already have Python ≥3.8 installed, and set up so that
 `python` and/or `python3` are in your `%PATH%` / `$PATH`.
 
-```
+```powershell
 cd path\to\where\you\cloned\pathogen_ncd
 cd web
 python -m venv venv
@@ -39,19 +39,24 @@ venv\scripts\activate
 pip install -r requirements.txt
 pip install invoke colorama
 
-# test Invoke to make sure it works
-invoke -l  # or `invoke help`
+invoke -l      # or `invoke help`
+invoke deploy  # builds static site in `local.deploy`
 
 # start a local dev server and open new browser tab to the site
 invoke serve --browse
 ```
 
-A `make.cmd` is provided for Windows which is just a rudimentary wrapper around
-`python -m invoke` that displays the `help` output by default. In PowerShell,
-you must invoke this as `./make` because PowerShell.
+A [`make.cmd`](make.cmd) wrapper script is provided for Windows, if you're in
+the habit of typing `make`. This is just a rudimentary wrapper around `python
+-m invoke` that displays the `help` output by default. In PowerShell, you must
+invoke this as `./make` because PowerShell.
+
+If you have [Docker][] available, you can also run `docker compose up` in the
+`web` subdirectory. The Dockerized website is served on
+<http://localhost:8000>.
 
 
-## Deployment
+## Deploying to a "real" web server
 
 Modify [`conf/site.toml`](conf/site.toml) and update the `deployto` key to
 point to the appropriate <code>[deploy.<em>something</em>]</code> section of
@@ -66,10 +71,9 @@ of the lab's VMs in order to deploy to the public web sites:
 
 ```bash
 ssh -tA gateway ssh vm
-cd path/to/your/clone
+cd path/to/where/you/cloned/pathogen_ncd
 make deploy
 ```
-
 
 
 ### Testing and troubleshooting
@@ -87,10 +91,10 @@ links and the link to the actual publication) work correctly on the live site.
 If things don't look right, try
 
 ```bash
-make clean && make deploy
+make distclean && make deploy
 
 # or, where `-B` = "force rebuild all"
-make clean && make -B deploy
+make distclean && make -B deploy
 ```
 
 before [filing an issue][issuetracker].
@@ -111,5 +115,6 @@ See [the old adamwhitcroft.com/apaxy website][waybackapaxy],
 `static/theme/README.md`, and `static/theme/License.md` for full details.
 
 [autoenv]: https://github.com/hyperupcall/autoenv
-[waybackapaxy]: https://web.archive.org/web/20170827153848/http://adamwhitcroft.com/apaxy/
+[docker]: https://docs.docker.com/desktop/setup/install/windows-install
+[waybackapaxy]: https://web.archive.org/web/20170827153848/http://adamwhitcroft.com/apaxy
 [issuetracker]: https://tfinternal.research.cchmc.org/gitlab/mike/pathogen_ncd/issues

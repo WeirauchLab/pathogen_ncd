@@ -13,6 +13,10 @@
     #IndexOptions +Charset=UTF-8 +FancyIndexing +IconsAreLinks +IgnoreCase +FoldersFirst +XHTML +HTMLTable +SuppressRules +NameWidth=* +SuppressDescription
     IndexOptions +NameWidth=* +DescriptionWidth=*
 
+    # https://httpd.apache.org/docs/2.4/mod/mod_autoindex.html#indexheadinsert
+    # via: https://stackoverflow.com/a/67950154
+    IndexHeadInsert "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+
 	# HIDE PARTS OF THE THEME (config.json, footer.md, etc.)
     IndexIgnore {{ site.htaccess.indexignores }}
 

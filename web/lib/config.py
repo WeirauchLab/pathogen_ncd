@@ -118,6 +118,14 @@ def post_process(config):
     # make 'pub' an alias for 'publication'
     config['pub'] = config['publication']
 
+    # FIXME: someday; `make deploy DEPLOYTO=prod` is not quite working
+    ## allow DEPLOYTO environment variable to override the TOML config
+    #maybedeployto = os.getenv('DEPLOYTO')
+    #if maybedeployto and config['site']['deploy'].get(maybedeployto):
+    #    log.warning("Overriding site.deployto from environment "
+    #                f"DEPLOYTO='{maybedeployto}'")
+    #    config['site']['deployto'] = maybedeployto
+
     # set site.urlbase appropriate to whatever `deployto` is set to
     config['site']['urlbase'] = \
             config['site']['deploy'][config['site']['deployto']]['urlbase']

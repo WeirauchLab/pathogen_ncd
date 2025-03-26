@@ -1,5 +1,5 @@
       <p id="authors">
-        {% for a in pub.authors %}
+        {% for a in pub.authors -%}
         <span>
           {{ a.given_name }} {% if a.mi %}{{ a.mi }}. {% endif %}{{ a.surname }}<sup>
           {%- for aff in a.affiliations %}<a href="#fn-{%- if aff == '*' -%}{%- set stars = 1 -%}star

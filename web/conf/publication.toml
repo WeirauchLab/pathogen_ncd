@@ -1,11 +1,11 @@
 title = "After the Infection: A Survey of Pathogens and Non-communicable Human Disease"
 journal = "medRxiv"
-year = 2023
+year = 2024
 pubdoi = "10.1101/2023.09.14.23295428"
 url = "https://www.medrxiv.org/content/{pubdoi}"
 author = { given_name="Michael", surname="Lape", email="lapema@mail.uc.edu" }
 
-# whom to contact about the publication (or the data)
+# whom to contact about the publication/data); included in the READMEs
 contacts = [
   { name="Matthew Weirauch", email="Matthew.Weirauch@cchmc.org" },
   { name="Michael Lape", email="lapema@mail.uc.edu" },

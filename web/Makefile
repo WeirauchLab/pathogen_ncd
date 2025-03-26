@@ -2,8 +2,6 @@ TITLE = Makefile tasks for Mike’s Pathogen/NCD project
 SHELL = bash
 THISMAKEFILE = $(firstword $(MAKEFILE_LIST))
 PYTHON = venv/bin/python3
-BIND = 127.0.0.1
-PORT = 8080
 CONTAINER = web
 # the UID of the user running this Makefile; used to `chown` the bind mount for
 # DEPLOYDIR so you can update it from the host side with `make deploy`; can't
@@ -12,7 +10,10 @@ CONTAINER = web
 #
 # this whole rigmarole just to get a variable inside a Dockerfile is irritating
 #LOCALUID = $(shell id -u)
+
 config = $(shell python -m lib.config --json --get $(1) | jq -r)
+host = $(call config,site.deploy.host)
+port = $(call config,site.deploy.port)
 deploydir = $(call config,site.deploydir)
 datasubdir = $(call config,data.artifacts.subdir)
 deploydatadir = $(deploydir)/$(datasubdir)
@@ -21,10 +22,10 @@ help: venv  # prints this help
 	@$(PYTHON) -m lib.help $(THISMAKEFILE)
 
 config: venv  # pretty-prints the parsed site and publication configs
-	@$(PYTHON) -m lib.config$(if $(KEY), --get $(KEY))
+	@$(PYTHON) -m lib.config$(if $(JSON), --json)$(if $(KEY), --get $(KEY))
 
 site: deploy
-deploy: .static_files_copied .downloads_created .templates_processed  # (alias: site) copies static assets, builds templates and downloads
+deploy: .static_files_copied .downloads_created .templates_processed  # (alias: site) copies static assets, HTML files, and downloads
 
 # copies static assets like theme files and JavaScript libs in place
 static: .static_files_copied
@@ -66,7 +67,7 @@ npm_install: .npm_installed
 	touch $@
 
 process_templates: .templates_processed
-.templates_processed: templates/* templates/*/* venv
+.templates_processed: conf/*.toml templates/* templates/*/* venv
 	$(PYTHON) -m lib.templates
 	# create a symlink from theme/dot-htaccess to anywhere that needs it
 	cd $(deploydatadir) && ln -sf ../theme/dot-htaccess .htaccess
@@ -119,7 +120,7 @@ $(deploydatadir)/$(resultsarchive): $(deploydatadir)/README.txt
 	-rm $@
 	mkdir -p $(deploydatadir)
 	cd $(deploydatadir) && \
-	zip -r $(resultsarchive) README.txt *Results.xlsx
+	zip $(resultsarchive) README.txt *Results.xlsx
 
 pubyear = $(call config,pub.year)
 archivesubdir = $(call config,data.artifacts.basename)_$(pubyear)
@@ -180,7 +181,7 @@ shell: venv  # [dev] (alias: s, sh) starts a root shell in the container
 b: browse
 browse: venv  # [dev] (alias: b) opens a web browser to the (local) server
 	@# python -m webbrowser prints a '\g' (BEL) to the terminal -- huff!
-	$(PYTHON) -m webbrowser -t http://$(BIND):$(PORT) >/dev/null
+	$(PYTHON) -m webbrowser -t http://$(host):$(port) >/dev/null
 
 check: lint
 lint: venv  # [dev] (alias: check) checks all Python source files for syntax errors

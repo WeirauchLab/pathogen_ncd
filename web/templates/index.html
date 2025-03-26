@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ site.meta.lab }} - {{ pub.title }}</title>
+{% include "_partials/meta.html" %}
+
   <link rel="stylesheet" href="vendor/datatables.min.css" media="all">
   <link rel="stylesheet" href="theme/style.css" media="all">
-
-{% include "_partials/meta.html" %}
 </head>
 <body>
   <div id="top" class="top">
@@ -18,7 +18,7 @@
     </div>
 
     <div id="header">
-      <h1 id="headline">{{ site.title | safe }}</h1>
+      <h1 id="headline">{{ site.h1 | safe }}</h1>
       <!--h3 id="tagline"></h3-->
 {% include "_partials/authors.html" %}
 

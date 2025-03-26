@@ -119,7 +119,7 @@ p+p, dl + p {
   margin: 0.5em;
 }
 
-#headline, #full-width-headline, #tagline, #authors, #affiliations {
+#headline, #tagline, #authors, #affiliations {
   text-align: center;
 }
 #tagline, #authors, #affiliations {
@@ -631,7 +631,7 @@ p.small {
 
 @media only screen and (max-width: 768px) {
   /* don't break headlines below this screen width */
-  #headline br, #full-width-headline br {
+  #headline br {
     display: none;
   }
 }

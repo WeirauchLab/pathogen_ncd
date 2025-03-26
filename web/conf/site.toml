@@ -1,8 +1,9 @@
-# title with a <br) to break it at an aesthetically-pleasing spot
-title = "After the Infection: A Survey of Pathogens<br> and Non-communicable Human Disease"
-shorttitle = "Mike's Pathogen/NCD project"
+title = "After the Infection: A Survey of Pathogens and Non-communicable Human Disease"
+# title with a <br> to break it at an aesthetically-pleasing spot
+h1 = "After the Infection: A Survey of Pathogens<br> and Non-communicable Human Disease"
+shorttitle = "Mike Lape's Pathogen/NCD project"
 # used as the last path element in the URL
-shortname = "lape2023"
+shortname = "lape2024"
 # deploy.<deployto>.urlbase becomes the value of site.urlbase for templates
 # see helpers/config.py:load_config()
 # FIXME: read from environment
@@ -23,12 +24,14 @@ lab = "Weirauch Lab"
 labhome = "https://weirauchlab.org"
 org = "Cincinnati Children's Hospital Medical Center"
 orghome = "https://cincinnatichildrens.org"
-generators = ["Vim", "GNU Make", "Python", "Jinja2"]
+generators = ["Vim", "GNU Make", "Invoke", "Python", "Jinja"]
 creators = [
   "Michael Lape",
   "Kevin Ernst",
   "Weirauch Transcription Factor Research Laboratory",
   "Center for Autoimmune Genomics and Etiology",
+  "Department of Human Genetics",
+  "Division of Allergy and Immunology",
   "Cincinnati Children's Hospital Medical Center",
 ]
 keywords = [
@@ -37,8 +40,10 @@ keywords = [
     "weirauch lab", "cincinnati children's hospital",
 ]
 
+# active `deploy` settings get copied to `site.host`, `site.publicurl`, etc.
 [deploy.local]
 host = "localhost"
+# NB: don't forget to update `compose.yml` if you change this
 port = 8000
 # when deployed, where is this site relative to the web server root?
 urlbase = ""
@@ -48,7 +53,6 @@ deploydir = "local.deploy"
 [deploy.dev]
 host = "bmitfwebd1"
 urlbase = "/pubs/{shortname}"
-# gets transformed to `site.host`, `site.publicurl`, and so on
 publicurl = "https://tfwebdev.research.cchmc.org{urlbase}"
 deploydir = "/var/www/html{urlbase}"
 
