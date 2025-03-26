@@ -65,9 +65,10 @@ class AttrDict(dict):
 
 
 class JSONAttrDictEncoder(json.JSONEncoder):
-    """An JSON serializer for :class:`AttrDict`\s.
+    """
+    A JSON serializer for :class:`AttrDict`s.
 
-    See :class:`py3:json.JSONEncoder` in the standard library for details.
+    See :class:``py3:json.JSONEncoder`` in the standard library for details.
     """
     def default(self, o):
         if isinstance(o, AttrDict):

@@ -10,7 +10,13 @@ if os.getenv('DEBUG') or os.getenv('DEBUG_TASKS'):
     logger.setLevel(logging.DEBUG)
 
 ansi = AnsiColors()
-ansi.boldblue = ansi.bold + ansi.blue
+ansi.target = ansi.bold + ansi.blue
+
+if sys.platform == 'win32':
+    import colorama
+    colorama.just_fix_windows_console()
+    ansi.target = ansi.bold + ansi.green
+
 c = AttrDict(load_config())
 deploydir = c.site.deploydir
 deploydatadir = c.site.deploydatadir
@@ -27,7 +33,7 @@ def help(ctx):
     maxlen = max([len(name) for name, _ in tasks])
     for name, desc in tasks:
         print("    {}{:<{}}{}    {}".format(
-            ansi.boldblue, name, maxlen, ansi.reset, desc))
+            ansi.target, name, maxlen, ansi.reset, desc))
 
     print(f"""
   Source + issues:
@@ -55,7 +61,7 @@ def config(ctx, key=None, json=False):
 
     if key:
         import re
-        if not re.fullmatch('\w+(.\w+)*', key):
+        if not re.fullmatch(r'\w+(.\w+)*', key):
             raise RuntimeError(f"Invalid config key '{key}'")
         if isinstance(eval(f"c.{key}"), AttrDict):
             eval(f"printer(c.{key})")
@@ -90,7 +96,7 @@ def build_assets(ctx):
     """[hidden] copy static assets into deploy destination directory"""
     import re
     def ignore(dir, contents):
-        excludes = ['.*\.swp', 'package.*\.json', 'node_modules']
+        excludes = [r'.*\.swp', r'package.*\.json', 'node_modules']
         return [x for x in contents
                 if any([re.match(regex, x) for regex in excludes])]
 
@@ -124,7 +130,7 @@ def update_readme(ctx):
     """[hidden] create README.txt for inside the downloadable archives"""
     from lib.templates import process_templates
     logger.info("Updating 'README.txt' with values from TOML configs…")
-    process_templates('data/README.txt')
+    process_templates(os.path.join('data', 'README.txt'))
 
 @invoke.task(pre=[make_deploy_dir, build_tsvs, update_readme])
 def build_downloads(ctx):
@@ -174,10 +180,10 @@ def process_templates(ctx):
     from lib.templates import process_templates
     logger.info("Processing templates…")
     process_templates()
-    logger.info("Creating '.htaccess' symlink for the 'data' directory…")
+    # kinda useless at the moment, since we're not serving with a real Apache
+    logger.info("Creating '.htaccess' for the 'data' directory…")
     with pushd(deploydatadir):
-        if not os.path.islink('.htaccess'):
-            os.symlink('../theme/dot-htaccess', '.htaccess')
+        shutil.copy('../theme/dot-htaccess', '.htaccess')
 
 @invoke.task(pre=[build_assets, build_downloads, process_templates])
 def deploy(ctx):

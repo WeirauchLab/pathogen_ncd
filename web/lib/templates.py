@@ -55,9 +55,11 @@ def process_templates(templates=None, deploydir=None, config=None):
                     continue
 
                 destfile = os.path.join(destpath, f)
-                with open(destfile, 'w') as df:
-                    t = env.get_template(os.path.join(relpath, f))
-                    df.write(t.render())
+                with open(destfile, 'w', encoding='utf-8') as df:
+                    # https://github.com/pallets/jinja/issues/711#issuecomment-300070379
+                    tpath = os.path.join(relpath, f).replace('\\', '/')
+                    t = env.get_template(tpath)
+                    df.write(t.render(), )
 
                 print(f"Wrote '{destfile}'.", file=sys.stderr)
 
@@ -80,8 +82,11 @@ def process_templates(templates=None, deploydir=None, config=None):
             os.makedirs(destpath, exist_ok=True)
             destfile = os.path.join(destpath, os.path.basename(template))
 
+            breakpoint()
             with open(destfile, 'w') as df:
-                t = env.get_template(os.path.join('templates', template))
+                # https://github.com/pallets/jinja/issues/711 again, *sigh*
+                tpath = os.path.join('templates', template).replace('\\', '/')
+                t = env.get_template(tpath)
                 df.write(t.render())
 
             print(f"Wrote '{destfile}'.", file=sys.stderr)

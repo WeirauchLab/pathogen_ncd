@@ -22,6 +22,34 @@ export AUTOENV_ENV_FILENAME=.autoenv
 the Python virtualenv will automatically be activated when you enter the `web`
 subdirectory.
 
+## Installation on Windows
+
+It's assumed you'll already have Python ≥3.8 installed, and set up so that
+`python` and/or `python3` are in your `%PATH%` / `$PATH`.
+
+```
+cd path\to\where\you\cloned\pathogen_ncd
+cd web
+python -m venv venv
+
+# required for PowerShell only; actually case-insensitive, but whatever
+Set-ExecutionPolicy -ExecutionPolicy allsigned -scope process -force
+
+venv\scripts\activate
+pip install -r requirements.txt
+pip install invoke colorama
+
+# test Invoke to make sure it works
+invoke -l  # or `invoke help`
+
+# start a local dev server using Python's http.server
+invoke serve
+```
+
+A `make.cmd` is provided for Windows which is just a rudimentary wrapper around
+`python -m invoke` that displays the `help` output by default. In PowerShell,
+you must invoke this as `.\make` because PowerShell.
+
 
 ## Deployment
 
@@ -41,6 +69,8 @@ ssh -tA gateway ssh vm
 cd path/to/your/clone
 make deploy
 ```
+
+
 
 ### Testing and troubleshooting
 
