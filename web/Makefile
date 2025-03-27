@@ -248,12 +248,27 @@ clean:  # removes compiled bytecode and other detritus
 	# same within the helper library
 	-rm -rf lib/__pycache__
 
+cleanjs:
+	-rm -rf static/node_modules
+
 distclean: clean cleanjs  # `make clean` plus removes checkpoint files and Node modules
 	# remove all checkpoint files like `.transformed`, `.converted`, et al.
 	-rm .*ed
 
-cleanjs:
-	-rm -rf static/node_modules
+reallyclean: distclean
+	@echo
+	@if [[ "$(call config,site.deployto)" != prod ]]; then \
+		read -p "This will remove the local deploy dir, '$(deploydir)', OK? [Y/n] "; \
+		if [[ -n $$REPLY && $$REPLY =~ ^[Nn] ]]; then \
+			echo -e "OK, not removing the deploy directory. Quitting.\n" >&2; \
+			exit 1; \
+		fi; \
+		rm -rf $(deploydir); \
+	else \
+		echo -e "Sorry, this target only works for non-production deployments." >&2; \
+		echo -e "To prevent mishaps, you must remove '$(deploydir)' yourself." >&2; \
+		exit 1; \
+	fi
 
 
 venv:
