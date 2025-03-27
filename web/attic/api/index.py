@@ -5,7 +5,7 @@ import cgi
 import sqlite3
 import json
 
-if os.getenv('VTR_ENVIRON') == 'dev':
+if os.getenv('RESULTS_API_ENVIRON') == 'dev':
     # tracebacks in the browser... in GLORIOUS lavender and magenta!
     # source: https://docs.python.org/3.8/library/cgi.html
     import cgitb; cgitb.enable()
@@ -17,8 +17,8 @@ try:
 except NameError:
     MYPATH = 'api'
 
-DATABASE_FILE    = MYPATH + '/../data/vtrsurvey.sqlite3'
-TABLE            = 'vtrsurvey'
+DATABASE_FILE    = MYPATH + '/../data/results.sqlite3'
+TABLE            = 'results'
 RECS_PER_REQUEST = 10
 
 

@@ -246,7 +246,7 @@ clean:  # removes compiled bytecode and other detritus
 	# Python precompiled bytecode inside the virtualenv
 	-find venv -prune -name "*.pyc"
 	# same within the helper library
-	-rm -rf lib/__pycache__
+	-rm -rf __pycache__ lib/__pycache__
 
 cleanjs:
 	-rm -rf static/node_modules
@@ -254,6 +254,7 @@ cleanjs:
 distclean: clean cleanjs  # `make clean` plus removes checkpoint files and Node modules
 	# remove all checkpoint files like `.transformed`, `.converted`, et al.
 	-rm .*ed
+	-rm -rf .ipynb_checkpoints
 
 reallyclean: distclean
 	@echo
