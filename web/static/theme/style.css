@@ -237,10 +237,6 @@ button small {
   line-height: 1.0em;
 }
 
-#authors span {
-  white-space:nowrap; 
-}
-
 #authors sup a, .footnote {
   text-decoration: none !important;
 }

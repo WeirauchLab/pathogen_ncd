@@ -8,8 +8,8 @@ shortname = "lape2024"
 # see helpers/config.py:load_config()
 # FIXME: read from environment
 deployto = "local"
-# whether to live-reload assets with Live.js
-livereload = false
+# live-reload assets with Live.js; automatically disabled if deployto="prod"
+livereload = true
 sourceurl = "https://tfinternal.research.cchmc.org/gitlab/mike/pathogen_ncd"
 issuesurl = "{sourceurl}/issues"
 # version string for the repository (code + web site)

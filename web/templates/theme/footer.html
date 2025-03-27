@@ -20,6 +20,9 @@
 
   <script src="{{ site.urlbase }}/vendor/marked.min.js"></script>
   <script src="{{ site.urlbase }}/vendor/jquery.min.js"></script>
+  {% if site.deployto != 'prod' and site.livereload -%}
+  <script src="{{ site.urlbase}}/vendor/live.js"></script>
+  {%- endif %}
 
   <script>
     $(document).ready(function() {
@@ -50,7 +53,6 @@
         .done(function(data, status, xhr) {
           console.info("Fetched '" + footermd + "'; HTTP status " +
                        xhr.status);
-          console.info(marked);
           marked.setOptions({ sanitize: true });
           $('#footer-md').html(marked.parse(data));
         }) // done

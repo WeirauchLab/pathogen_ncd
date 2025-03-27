@@ -287,7 +287,7 @@
   <script src="vendor/js.cookie.js"></script>
   <script src="vendor/datatables.min.js"></script>
   <script src="js/index.js"></script>
-  {%- if site.deployto != 'prod' and site.livereload %}
+  {% if site.deployto != 'prod' and site.livereload -%}
   <script src="vendor/live.js"></script>
   {%- endif %}
 </body>

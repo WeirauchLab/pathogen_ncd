@@ -69,8 +69,8 @@ npm_install: .npm_installed
 process_templates: .templates_processed
 .templates_processed: conf/*.toml templates/* templates/*/* venv
 	$(PYTHON) -m lib.templates
-	# create a symlink from theme/dot-htaccess to anywhere that needs it
-	cd $(deploydatadir) && ln -sf ../theme/dot-htaccess .htaccess
+	# copy theme/dot-htaccess to the 'data' directory
+	cd $(deploydatadir) && cp ../theme/dot-htaccess .htaccess
 	touch $@
 
 data: downloads
