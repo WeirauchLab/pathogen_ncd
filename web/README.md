@@ -1,4 +1,3 @@
-<!--[![site status](https://tfinternal.research.cchmc.org/gitlab/tftools/teds-viral-tf-survey/badges/master/pipeline.svg)](https://tfinternal.research.cchmc.org/gitlab/tftools/teds-viral-tf-survey/commits/master)-->
 # Pathogens and non-communicable diseases web site
 
 Deployment steps (from a fresh clone):

@@ -115,6 +115,32 @@ p+p, dl + p {
   border:0;
 }
 
+/*-----------------------------------------*\
+ *  development mode informational banner  *
+\*-----------------------------------------*/
+.dev-banner {
+  margin: 0 0 1em;
+  padding: 0.2em;
+  text-align: center;
+  /* attempting to use "brand" colors */
+  background: repeating-linear-gradient(45deg,#e64479,#e64479 20px,#a32d4e 20px,#a32d4e 40px);
+}
+
+.dev-info {
+  background: rgba(255,255,255,0.75);
+  padding: 0.25em;
+}
+.dev-info input {
+  padding: 0.1em 0.2em;
+  margin-right: 0.5em;
+  border: none;
+  background: rgba(255,255,255,0.5);
+}
+.dev-info input::last-of-type {
+  margin-right: 0;
+}
+
+
 #header {
   margin: 0.5em;
 }
@@ -321,11 +347,13 @@ ul ul>li {
   padding-top: 0.5em;
 }
 
+pre code, .dev-info input {
+  font-family: consolas,monospace;  
+}
 pre code {
   display: block;
   padding: 1em;
   margin: 0.5em 1em;
-  font-family: consolas,monospace;  
   line-height: 1.1em;
   background-color: #eee;
   border: 1px solid #ccc;

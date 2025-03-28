@@ -6,28 +6,15 @@ from datetime import datetime as dt
 from collections.abc import Iterable
 from jinja2 import Environment, FileSystemLoader, pass_context
 
-from .util import filesize
-from .config import use_config
+from . import filters
+from . import globalfunctions
+from ..config import use_config
 
 DEFAULT_TEMPLATE_DIR = 'templates'
 log = logging.getLogger(__name__)
 
 if os.getenv('DEBUG') or os.getenv('DEBUG_TEMPLATES'):
     log.setLevel(logging.DEBUG)
-
-
-class Issue711Environment(Environment):
-    """
-    Work around pallets/jinja issue #711
-
-    Jinja "template paths are not necessarily filesystem paths and […] use
-    forward slashes," so just do a crude subsitution and hope for the best
-
-    ref. https://github.com/pallets/jinja/issues/711#issuecomment-300070379
-    """
-    def get_template(self, name, parent=None, globals=None):
-        name = name.replace('\\', '/')
-        return super().get_template(name, parent, globals)
 
 
 class BackslashFriendlyFileSystemLoader(FileSystemLoader):
@@ -64,7 +51,7 @@ def process_templates(templates=None, deploydir=None, config=None):
 
     # use 'templates' in the c.w.d. by default, unless specified
     loader = BackslashFriendlyFileSystemLoader(DEFAULT_TEMPLATE_DIR)
-    env = Issue711Environment(loader=loader)
+    env = Environment(loader=loader)
 
     # - default to `templates` subdir in the current working directory
     # - if passed a custom template directory, iterate over that instead
@@ -84,10 +71,14 @@ def process_templates(templates=None, deploydir=None, config=None):
     env.globals = config
 
     ##
-    ##  Jinja custom template filters
+    ##  Register custom filters and other globals
     ##  ref. https://jinja.palletsprojects.com/en/stable/api/#writing-filters
     ##
-    env.filters['filesize'] = lambda p: filesize(p)
+    for f in filters.__all__:
+        env.filters[f] = getattr(filters, f)
+
+    for g in globalfunctions.__all__:
+        env.globals[g] = getattr(globalfunctions, g)()
 
     if isinstance(templates, str) and os.path.isdir(templates):
         print(f"Searching template directory '{templates}'...",
@@ -130,7 +121,3 @@ def process_templates(templates=None, deploydir=None, config=None):
                 df.write(t.render())
 
             print(f"Wrote '{destfile}'.", file=sys.stderr)
-
-
-if __name__ == '__main__':
-    process_templates(sys.argv[1:])

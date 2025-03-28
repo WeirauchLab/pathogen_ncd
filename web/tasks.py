@@ -1,6 +1,6 @@
 import os, sys, shutil, logging, invoke
 from lib.config import load_config
-from lib.color import AnsiColors
+from lib.util import pushd, UL, BOLDBLUE, BOLDGREEN, RESET
 from lib.attrdict import AttrDict
 
 logger = logging.getLogger(__name__)
@@ -9,13 +9,12 @@ logger.setLevel(logging.INFO)
 if os.getenv('DEBUG') or os.getenv('DEBUG_TASKS'):
     logger.setLevel(logging.DEBUG)
 
-ansi = AnsiColors()
-ansi.target = ansi.bold + ansi.blue
-
 if sys.platform == 'win32':
     import colorama
     colorama.just_fix_windows_console()
-    ansi.target = ansi.bold + ansi.green
+    BOLDCOLOR = BOLDGREEN
+else:
+    BOLDCOLOR = BOLDBLUE
 
 c = AttrDict(load_config())
 deploydir = c.site.deploydir
@@ -26,14 +25,14 @@ deploydatadir = c.site.deploydatadir
 def help(ctx):
     """prints help for all Invoke tasks"""
     print(f"""
-  {ansi.ul}Invoke tasks for {c.site.shorttitle}{ansi.reset}
+  {UL}Invoke tasks for {c.site.shorttitle}{RESET}
 """)
     # _tasks is defined below, *after* entire script file is parsed
     tasks = [(n,d) for n,d in _tasks if not d.startswith('[hidden]')]
     maxlen = max([len(name) for name, _ in tasks])
     for name, desc in tasks:
         print("    {}{:<{}}{}    {}".format(
-            ansi.target, name, maxlen, ansi.reset, desc))
+            BOLDCOLOR, name, maxlen, RESET, desc))
 
     print(f"""
   Source + issues:
@@ -71,17 +70,6 @@ def config(ctx, key=None, json=False):
     else:
         printer(c)
 
-
-
-class pushd:
-    def __init__(self, newdir):
-        self.olddir = os.getcwd(); self.newdir = newdir
-    def __enter__(self):
-        logger.debug(f"Entering into '{self.newdir}'…")
-        os.chdir(self.newdir)
-    def __exit__(self, exc_type, exc_value, traceback):
-        os.chdir(self.olddir)
-        logger.debug(f"Left '{self.newdir}'; c.w.d. is now '{self.olddir}'.")
 
 @invoke.task
 def npm_install(ctx):

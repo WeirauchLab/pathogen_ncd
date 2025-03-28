@@ -13,7 +13,7 @@ services:
     #network_mode: host
     #restart: always
     ports:
-      - "127.0.0.1:8000:80"
+      - "127.0.0.1:${PORT:-8000}:80"
     volumes:
       - ./local.deploy:/usr/local/apache2/htdocs:rw
     #command: "httpd -D FOREGROUND"  # <-- this is the default for httpd:alpine

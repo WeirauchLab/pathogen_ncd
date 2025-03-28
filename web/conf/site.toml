@@ -9,7 +9,7 @@ shortname = "lape2024"
 # FIXME: read from environment
 deployto = "local"
 # live-reload assets with Live.js; automatically disabled if deployto="prod"
-livereload = true
+livereload = false
 sourceurl = "https://tfinternal.research.cchmc.org/gitlab/mike/pathogen_ncd"
 issuesurl = "{sourceurl}/issues"
 # version string for the repository (code + web site)

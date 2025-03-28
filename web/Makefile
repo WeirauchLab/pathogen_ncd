@@ -157,7 +157,7 @@ up: serve
 serve: venv  # [dev] (alias: up) serves site locally using Docker
 ifneq ($(BUILD)$(REBUILD),)
 	@#docker compose build --build-arg LOCALUID=$(LOCALUID) $(CONTAINER)
-	docker compose build $(CONTAINER)
+	PORT=$(if $(PORT),$(PORT),$(port)) docker compose build $(CONTAINER)
 endif
 	docker compose up $(CONTAINER)
 	#venv/bin/watchfiles \

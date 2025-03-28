@@ -10,6 +10,20 @@
   <link rel="stylesheet" href="theme/style.css" media="all">
 </head>
 <body>
+{% if site.deployto != 'prod' -%}
+  <div class="dev-banner">
+    <p class="dev-info">
+      Deploy target:
+      <input size={{ site.deployto | length }} value="{{ site.deployto }}"
+             onclick="javascript:this.setSelectionRange(0, this.value.length)">
+      Git branch:
+      <input size={{ gitinfo[0] | length }} value="{{ gitinfo[0] }}"
+             onclick="javascript:this.setSelectionRange(0, this.value.length)">
+      @ <input size={{ gitinfo[1] | length }} value="{{ gitinfo[1] }}"
+               onclick="javascript:this.setSelectionRange(0, this.value.length)">
+    </p>
+  </div><!--/.dev-banner-->
+{%- endif %}
   <div id="top" class="top">
     <div id="logos">
       <a href="{{ site.meta.labhome }}" title="Visit the {{ site.meta.lab }} home page">
