@@ -3,6 +3,8 @@ SHELL = bash
 THISMAKEFILE = $(firstword $(MAKEFILE_LIST))
 PYTHON = venv/bin/python3
 CONTAINER = web
+# apparently they only keep the most recent release up >:(
+DATATABLES_DOWNLOAD_BUILDER_URL	= https://datatables.net/download/builder?dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3/fh-4.0.2
 # the UID of the user running this Makefile; used to `chown` the bind mount for
 # DEPLOYDIR so you can update it from the host side with `make deploy`; can't
 # just read this from the environment because it's not exported by default; see
@@ -42,7 +44,6 @@ datatables: .datatables_installed
 #
 # instead, see https://datatables.net/download and right-click to copy the URL
 # from the "Download files" button here, then run this target
-DATATABLES_DOWNLOAD_BUILDER_URL	= https://datatables.net/download/builder?dt/dt-2.2.2/b-3.2.2/b-html5-3.2.2/fh-4.0.1
 .datatables_installed:
 	-rm static/vendor/DataTables.zip
 	cd static/vendor && curl -sLOJ $(DATATABLES_DOWNLOAD_BUILDER_URL)
