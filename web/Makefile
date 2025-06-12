@@ -23,7 +23,8 @@ deploydatadir = $(deploydir)/$(datasubdir)
 help: venv  # prints this help
 	@$(PYTHON) -m lib.help $(THISMAKEFILE)
 
-config: venv  # pretty-prints the parsed site and publication configs
+conf: config
+config: venv  # (alias: conf) pretty-prints the parsed site and publication configs
 	@$(PYTHON) -m lib.config$(if $(JSON), --json)$(if $(KEY), --get $(KEY))
 
 site: deploy
@@ -189,7 +190,7 @@ lint: venv  # [dev] (alias: check) checks all Python source files for syntax err
 	$(PYTHON) -m compileall -f lib
 
 publicurl = $(call config,site.deploy.publicurl)
-sitetitle = $(call config,site.title)
+pubtitle = $(call config,pub.title)
 
 tests: test
 test: isitup dothelinkswork  # [dev] run some simple functional tests on live web site
@@ -202,7 +203,7 @@ isitup:  # [dev] (alias: isup) quick check to see if the site is up
 	
 	@echo
 	# make sure the site's title is intact
-	curl -s $(publicurl) | grep --color '$(sitetitle)'
+	curl -s $(publicurl) | grep --color '$(pubtitle)'
 
 puburl = $(call config,pub.url)
 pubdoi = $(call config,pub.pubdoi)

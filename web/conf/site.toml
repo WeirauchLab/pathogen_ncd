@@ -1,9 +1,11 @@
-title = "After the Infection: A Survey of Pathogens and Non-communicable Human Disease"
-# title with a <br> to break it at an aesthetically-pleasing spot
-h1 = "After the Infection: A Survey of Pathogens<br> and Non-communicable Human Disease"
-shorttitle = "Mike Lape's Pathogen/NCD project"
+# an informal name for the web site; use pub.title for the publication title
+name = "Mike Lape's Pathogen/NCD project"
+# main site title; should probably match conf/publication.toml, with the
+# addition of a <br> to break it at an aesthetically-pleasing spot
+headline = "A survey of pathogenic involvement<br>in non-communicable human diseases"
 # used as the last path element in the URL
 shortname = "lape2024"
+
 # deploy.<deployto>.urlbase becomes the value of site.urlbase for templates
 # see helpers/config.py:load_config()
 # FIXME: read from environment
@@ -68,4 +70,4 @@ deploydir = "/var/www/html{urlbase}"
 #authuserfile = "/etc/httpd24/htpasswd.pathncd"
 
 # for the `IndexIgnore` directive in data/.htaccess
-"indexignores" = ".htaccess header.html footer.html Makefile *.md *.json *.tsv *.xlsx"
+indexignores = ".htaccess header.html footer.html Makefile *.md *.json *.tsv *.xlsx"

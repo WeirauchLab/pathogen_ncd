@@ -25,7 +25,7 @@ deploydatadir = c.site.deploydatadir
 def help(ctx):
     """prints help for all Invoke tasks"""
     print(f"""
-  {UL}Invoke tasks for {c.site.shorttitle}{RESET}
+  {UL}Invoke tasks for {c.site.name}{RESET}
 """)
     # _tasks is defined below, *after* entire script file is parsed
     tasks = [(n,d) for n,d in _tasks if not d.startswith('[hidden]')]
@@ -190,9 +190,16 @@ def site(ctx):
 
 
 @invoke.task
-def serve(ctx, port=c.site.deploy.port, bind='127.0.0.1', browse=False):
+def serve(ctx, port=None, bind='127.0.0.1', browse=False):
     """serves the site locally using Python's http.server module"""
     import http.server, socketserver
+
+    if not port:
+        try:
+            port = c.site.deploy.port
+        except AttributeError:
+            raise RuntimeError("Please define "
+                    f"`deploy.{c.site.deployto}.port` in the site config.")
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):

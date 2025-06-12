@@ -67,7 +67,7 @@ def process_templates(templates=None, deploydir=None, config=None):
             raise RunTimeError(f"Unexpected value templates='{templates}'")
 
     # add parsed TOML config to the environment for all templates; so that
-    # `title` from `site.toml` becomes `{{ site.title }}` in Jinja templates
+    # `name` from `site.toml` becomes `{{ site.name }}` in Jinja templates
     env.globals = config
 
     ##
