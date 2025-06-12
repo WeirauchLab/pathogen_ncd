@@ -45,7 +45,8 @@ keywords = [
 # active `deploy` settings get copied to `site.host`, `site.publicurl`, etc.
 [deploy.local]
 host = "localhost"
-# NB: don't forget to update `compose.yml` if you change this
+# port number used by http.server in `invoke serve`
+# FIXME: `invoke` uses http.server, but `make up` uses Docker
 port = 8000
 # when deployed, where is this site relative to the web server root?
 urlbase = ""

@@ -51,8 +51,12 @@ the habit of typing `make`. This is just a rudimentary wrapper around `python
 invoke this as `./make` because PowerShell.
 
 If you have [Docker][] available, you can also run `docker compose up` in the
-`web` subdirectory. The Dockerized website is served on
-<http://localhost:8000>.
+`web` subdirectory.
+
+By default, both the `invoke serve` (which uses `http.server` from the Python
+standard library) and the Docker container serve the site at
+<http://localhost:8000>. If you need to change this, see `conf/site.toml` and
+`compose.yml`, respectively.
 
 
 ## Deploying to a "real" web server
