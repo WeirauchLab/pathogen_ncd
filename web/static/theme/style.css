@@ -76,12 +76,13 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1em;
 }
 
-/* #abstract h1, #abstract h2,
-#search h1, #search h2 {
-  padding-left: 10px;
-} */
 #header h1 {
   margin-bottom: 0.5em;
+}
+
+#abstract h3 {
+  padding-left: 1.5em;
+  /* text-decoration: underline; */
 }
 
 ul+h1, ul+h2, ul+h3,
