@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+if git status --porcelain | grep -qE 'supplemental_data/.*\.(pdf|(doc|ppt|xls)x?)'; then
+    cd supplemental_data
+    make check
+fi

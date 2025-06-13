@@ -142,7 +142,7 @@ $(deploydatadir)/$(supplementarchive): $(deploydatadir)/README.txt
 	@echo
 	-rm $@
 	mkdir -p $(deploydatadir)
-	zip --junk-paths $@ ../supplemental_data/supplemental_dataset_*.xlsx
+	zip --junk-paths $@ ../supplementary_data/supplementary_dataset_*.xlsx
 	zip --junk-paths $@ $<
 
 sums: checksums

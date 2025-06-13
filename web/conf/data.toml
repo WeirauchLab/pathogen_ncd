@@ -1,5 +1,5 @@
 build = "1.0.0"
-releasedate = "30 December 2024"
+releasedate = "12 June 2025"
 # currently unused
 ## what to tag new DB builds in Git (build # is appended)
 #buildtagprefix = ""
@@ -16,29 +16,29 @@ resultsarchive = "{basename}_results.zip"
 resultsarchivedesc = "Results datasets as Excel <tt>.xlsx</tt> files"
 resultstarball = "{basename}_results.tar.gz"
 resultstarballdesc = "Results datasets as tab-delimited Unix text files"
-# the secondary .zip file containing all the supplemental datasets
+# the secondary .zip file containing all the supplementary datasets
 supplementarchive = "{basename}_supp_datasets.zip"
-supplementarchivedesc = "All supplemental datasets as Excel <tt>.xlsx</tt> files"
+supplementarchivedesc = "All supplementary datasets as Excel <tt>.xlsx</tt> files"
 
 [figures]
-infilename = "../supplemental_data/supplementary_info.pdf"
+infilename = "../supplementary_data/supplementary_info.pdf"
 outfilename = "{basename}_supp_figs_and_tables.pdf"
-description = "Supplemental figures and tables"
+description = "Supplementary figures and tables"
 
 [datasources.ICD10]
 order = 1
 tabname = "ICD10"
 tooltip = "Results based on ICD10 code from UKB data"
 # pathname relative to the 'web' directory
-infilename = "../supplemental_data/supplemental_dataset_2.xlsx"
+infilename = "../supplementary_data/supplementary_data_8.xlsx"
 sheetname = "Results"
 outfilename = "{basename}_{tabname}_{sheetname}.xlsx"
 
 [datasources.PHE]
 order = 2
 tabname = "PHE"
-tooltip = "Results based on Phenome-Wide Association Studies (PheWAS)"
-infilename = "../supplemental_data/supplemental_dataset_3.xlsx"
+tooltip = "Results based on Phecodes"
+infilename = "../supplementary_data/supplementary_data_2.xlsx"
 sheetname = "Results"
 outfilename = "{basename}_{tabname}_{sheetname}.xlsx"
 
@@ -64,7 +64,7 @@ width = "8%"
 targets = 2
 name = "Pathogen"
 title = "Pathogen"
-description = "Organism abbreviation"
+description = "Pathogen abbreviation"
 width = "10%"
 
 [[datasources.ICD10.columns]]
@@ -78,7 +78,7 @@ width = "8%"
 targets = 4
 name = "Std. Lev."
 title = "Std. lev."
-description = "Standard group this pair is part of [Unknown (unk), Tier 1, Tier 2, Expected Negative (exp_neg)]"
+description = "Standard group this pair is part of [Tier 1, Tier 2, Expected Negative (exp_neg), Unknown (unk)]"
 width = "8%"
 
 [[datasources.ICD10.columns]]
@@ -101,14 +101,14 @@ type = "num"
 targets = 7
 name = "UKB OR"
 title = "UKB OR"
-description = "Odds ratio for UKB titer [continuous]"
+description = "Odds ratio for UKB pathogen titer [continuous]"
 #width = "5%"
 
 [[datasources.ICD10.columns]]
 targets = 8
-name = "TNX_OR"
+name = "TNX OR"
 title = "TNX OR"
-description = "Odds ratio for TNX association test [categorical]"
+description = "Odds ratio for TNX test [categorical]"
 #width = "5%"
 
 #[[datasources.ICD10.columns]]

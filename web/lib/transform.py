@@ -67,8 +67,8 @@ def transform_icd(config=None):
         'Pathogen': 'Pathogen',
         'Pair is Associated': 'Pair is Assoc?',
         'Standard Level': 'Std. Lev.',
-        'UKB FDR': 'UKB FDR',
-        'TNX FDR': 'TNX FDR',
+        'UKB adj p': 'UKB FDR',
+        'TNX adj p': 'TNX FDR',
         'UKB OR': 'UKB OR',
         'TNX OR': 'TNX OR',
     }
@@ -124,14 +124,14 @@ def transform_phe(config=None):
     # map of original column names to desired ones
     phe_col_map = {
         'Disease_Description': 'Disease',
-        'Phecode': 'Phecode',
+        'phecode': 'Phecode',
         'Pathogen': 'Pathogen',
-        'Pair is Associated': 'Pair is Assoc?',
-        'Standard Level': 'Std. Lev.',
-        'UKB FDR': 'UKB FDR',
-        'TNX FDR': 'TNX FDR',
-        'UKB OR': 'UKB OR',
-        'TNX OR': 'TNX OR'
+        'pair_is_associated': 'Pair is Assoc?',
+        'std_lev': 'Std. Lev.',
+        'ukb_per_dis_bh_fdr_corr_nom_p': 'UKB FDR',
+        'tnx_per_dis_bh_fdr_corr_p': 'TNX FDR',
+        'ukb_OR': 'UKB OR',
+        'tnx_OR': 'TNX OR'
     }
 
     phe = phe.loc[:, phe_col_map.keys()].copy()

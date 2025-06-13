@@ -51,8 +51,8 @@
         {%- set figuresandtables = data.artifacts.subdir ~ "/" ~ data.figures.outfilename %}
         {% set figuresfilesize = (site.deploydatadir ~ "/" ~ data.figures.outfilename) | filesize -%}
         <a href="{{ figuresandtables }}">
-          <button title="Supplemental figures and tables from the {{ pub.journal }} {{ pub.year }} paper">
-              Download Figures &amp; Tables
+          <button title="Supplementary figures and tables from the {{ pub.journal }} {{ pub.year }} paper">
+              Download Supplementary Figures &amp; Tables
               <small>From the {{ pub.journal }} {{ pub.year }} paper ({{ figuresfilesize }})</small>
           </button>
         </a>
@@ -60,14 +60,14 @@
         {%- set supplementzip = data.artifacts.subdir ~ "/" ~ data.artifacts.supplementarchive %}
         {% set supplementfilesize = (site.deploydatadir ~ "/" ~ data.artifacts.supplementarchive) | filesize -%}
         <a href="{{ supplementzip }}">
-          <button type="button" title="Download supplemental tables from the publication (as a .zip archive)">
-            Download Supplemental Datasets
+          <button type="button" title="Download supplementary datasets from the publication (as a .zip archive)">
+            Download Supplementary Datasets
             <small>From the {{ pub.journal }} {{ pub.year }} paper ({{ supplementfilesize }})</small>
           </button>
         </a>
 
         <a href="#search">
-          <button id="search-btn" onclick="location.href='#search'">Search Data</button>
+          <button id="search-btn" onclick="location.href='#search'">Explore Results<small>No Download Required</small></button>
         </a>
 
         <div class="subtle-link" id="links-to-footer">
@@ -148,7 +148,7 @@
 
   <div id="search" class="top">
     <h1>
-      Search all data
+      Explore all results
       <button title="Back to the top" id="search-to-top-btn"
               onclick="location.href='#top'">
         <a href="#top">&uparrow;</a>

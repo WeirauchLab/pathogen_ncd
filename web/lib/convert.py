@@ -84,7 +84,7 @@ def write_tsv(xlfile, tsvfile, sheetname=None, maxcols=None,
     sheet = trim_data_area(sheet)
 
     class UnquotedTsv(csv.unix_dialect):
-        escapechar = None
+        escapechar = '\\'
         quoting = csv.QUOTE_NONE
 
     with open(tsvfile, 'w', newline='') as tsv:
