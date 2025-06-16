@@ -73,8 +73,11 @@ def transform_icd(config=None):
         'TNX OR': 'TNX OR',
     }
 
-    icd = icd.loc[:, icd_col_map.keys()].copy()
-    icd.columns = icd_col_map.values()
+    #icd = icd.loc[:, icd_col_map.keys()].copy()
+    #icd.columns = icd_col_map.values()
+
+    icd = icd.rename(columns=icd_col_map).copy(deep = True)
+
 
     # Fill in any empty TNX results, just pairs where
     # replication didn't need to be attempted, with -1 as
@@ -134,8 +137,11 @@ def transform_phe(config=None):
         'tnx_OR': 'TNX OR'
     }
 
-    phe = phe.loc[:, phe_col_map.keys()].copy()
-    phe.columns = phe_col_map.values()
+    #phe = phe.loc[:, phe_col_map.keys()].copy()
+    #phe.columns = phe_col_map.values()
+
+    phe = phe.rename(columns=phe_col_map).copy(deep = True)
+
 
     # Fill in any empty TNX results, just pairs where
     # replication didn't need to be attempted, with -1 as
