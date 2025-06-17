@@ -24,6 +24,7 @@ help: venv  # prints this help
 	@$(PYTHON) -m lib.help $(THISMAKEFILE)
 
 conf: config
+# don't get confused by `config` above, which is used with `call` as a function
 config: venv  # (alias: conf) pretty-prints the parsed site and publication configs
 	@$(PYTHON) -m lib.config$(if $(JSON), --json)$(if $(KEY), --get $(KEY))
 
@@ -80,14 +81,14 @@ downloads: .downloads_created  # [data] creates downloadable archives from suppl
 .downloads_created: .transformed .converted .figures_created .archives_created $(deploydatadir)/SHA1SUMS
 	touch $@
 
-transform: .transformed
+transform: .transformed  # [data] transform supplementary data into formats needed for the web site
 .transformed:
 	@echo
 	mkdir -p $(deploydatadir)
 	$(PYTHON) -m lib.transform
 	touch $@
 
-convert: .converted
+convert: .converted  # [data] convert supplementary data into other formats (e.g., .tsv)
 .converted:
 	@echo
 	mkdir -p $(deploydatadir)
@@ -253,7 +254,7 @@ clean:  # removes compiled bytecode and other detritus
 cleanjs:
 	-rm -rf static/node_modules
 
-distclean: clean cleanjs  # `make clean` plus removes checkpoint files and Node modules
+distclean: clean cleanjs  # 'make clean' plus removes checkpoint files and Node modules
 	# remove all checkpoint files like `.transformed`, `.converted`, et al.
 	-rm .*ed
 	-rm -rf .ipynb_checkpoints
@@ -273,24 +274,33 @@ reallyclean: distclean
 		exit 1; \
 	fi
 
+venv: venv/bin/activate
+	@if [[ $$(realpath $$(which python)) != $$(realpath $(PYTHON)) ]] || \
+	    ! python -c 'import tomli' 2>/dev/null ; then \
+		echo -e "\n  Please activate the virtualenv with 'source $<', then try again.\n" >&2; \
+		exit 1; \
+	fi
 
-venv:
-	@if ! [[ -x $(PYTHON) ]]; then \
-		echo "Setting up virtual environment and installing dependencies…" >&2; \
-		if [[ $$(python3 --version) =~ 3.([789]|[1-9][0-9]) ]]; then \
-			python3 -m venv venv; \
-		else \
-			if [[ $$(uname -s) != Linux ]] || ! scl enable rh-python38 -- python3 -m venv venv; then \
-				echo "ERROR: Please manually create a Python ≥3.7 virtualenv at 'venv' and try again." >&2; \
-				exit 1; \
-			fi; \
-		fi; \
-		if source venv/bin/activate && pip install -r requirements.txt; then \
-			echo "Finished setting up virtualenv" >&2; \
-		else \
-			echo "ERROR: Unable to create the virtualenv. Please troubleshoot." >&2; \
+venv/bin/activate:
+	@echo "Setting up virtual environment…" >&2; \
+	if [[ $$(python3 --version) =~ 3.([789]|[1-9][0-9]) ]]; then \
+		python3 -m venv venv; \
+	else \
+		if [[ $$(uname -s) != Linux ]] || ! scl enable rh-python38 -- python3 -m venv venv; then \
+			echo -e "\nERROR: Unable to create the virtual environment.\n" >&2; \
+			echo -e "       Please manually create a Python ≥3.7 virtualenv at 'venv'.\n" >&2; \
 			exit 1; \
 		fi; \
+	fi; \
+	echo -e "\nFinished setting up the Python virtual environment." >&2; \
+	echo -e "Don't forget to activate it with 'source $@'.\n" >&2
+	
+	@echo "Installing Python dependencies…" >&2; \
+	if source venv/bin/activate && pip install -r requirements.txt; then \
+		echo -e "Finished installing Python dependencies." >&2; \
+	else \
+		echo -e "  ERROR: Unable to install dependencies. Please troubleshoot.\n" >&2; \
+		exit 1; \
 	fi
 
 
