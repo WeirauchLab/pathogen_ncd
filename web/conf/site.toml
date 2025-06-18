@@ -9,7 +9,7 @@ shortname = "lape2025"
 # deploy.<deployto>.urlbase becomes the value of site.urlbase for templates
 # see helpers/config.py:load_config()
 # FIXME: read from environment
-deployto = "local"
+deployto = "${DEPLOYTO:-local}"
 # live-reload assets with Live.js; automatically disabled if deployto="prod"
 livereload = false
 sourceurl = "https://tfinternal.research.cchmc.org/gitlab/mike/pathogen_ncd"

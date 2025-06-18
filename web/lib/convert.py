@@ -1,3 +1,6 @@
+"""
+Convert supplementary data into other formats, e.g., Excel to TSV
+"""
 import os
 import logging
 from .config import use_config
@@ -84,6 +87,7 @@ def write_tsv(xlfile, tsvfile, sheetname=None, maxcols=None,
     sheet = trim_data_area(sheet)
 
     class UnquotedTsv(csv.unix_dialect):
+        # FIXME: unnecessary, except to prevent the library from erroring out
         escapechar = '\\'
         quoting = csv.QUOTE_NONE
 
@@ -91,12 +95,15 @@ def write_tsv(xlfile, tsvfile, sheetname=None, maxcols=None,
         # without `dialect='unix'`, you get CRLF line endings
         writer = csv.writer(tsv, delimiter=delim, dialect=UnquotedTsv)
 
+        #rownum = 0
         for row in sheet.iter_rows(values_only=True):
             # trim leading/trailing whitespace
             row = [
                 x.strip() if isinstance(x, str) else x
                 for x in row
             ]
+            #rownum += 1
+            #log.debug(f"Working on row #{rownum} from '{tsvfile}.'")
             writer.writerow(row)
 
         log.info(f"Wrote {sheet.max_row} rows of {sheet.max_column} columns "

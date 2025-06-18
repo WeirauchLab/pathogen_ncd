@@ -51,6 +51,7 @@ def make_help(makefile=None, config=None):
                 for t in groups[g]:
                     print(fmt % (t[0], t[1]))
 
+    print("\n  Problems? Try 'make -B [targetname]' to force a target to rebuild.")
     print(f"\n  Source + issues:\n    {config['site']['sourceurl']}\n")
 
 

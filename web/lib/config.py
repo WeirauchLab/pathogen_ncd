@@ -1,7 +1,7 @@
 """
 Helper functions for processing the TOML configs
 """
-import os, logging
+import os, sys, logging
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +30,11 @@ def use_config(f, configs=None):
 
 def load_config(configs=None):
     """ Load TOML configs and return dict of them all merged together """
-    import os, tomli
+    if sys.version_info.minor < 11:
+        import tomli as tomllib
+    else:
+        import tomllib
+
     config = {}
 
     if configs is None:
@@ -45,8 +49,9 @@ def load_config(configs=None):
 
     for name, configfile in config_list.items():
         try:
-            config[name] = tomli.load(open(configfile, 'rb'))
-        except tomli.TOMLDecodeError as e:
+            toml = pre_process(configfile)
+            config[name] = tomllib.loads(toml)
+        except tomllib.TOMLDecodeError as e:
             raise RuntimeError(f"Error parsing '{configfile}': {e}") \
                 from None
 
@@ -54,6 +59,24 @@ def load_config(configs=None):
     post_process(config)
     return config
 
+def pre_process(tomlfile):
+    """
+    Do any necessary pre-processing before handing off to TOML library
+    """
+    import re
+    newtoml = []
+    t = open(tomlfile, 'r')
+    for line in t.readlines():
+        # Bash-style expansion to yield a default, e.g., ${var:-default}
+        matches = re.search(r'\$\{(\w+)(?::-?(.*?))?\}', line)
+        if matches:
+            envvar = matches[1]
+            default = matches[2] if matches[2] else ""
+            line = line.replace(matches[0], os.getenv(envvar, default))
+            log.info(f"Substituted ${envvar} in '{tomlfile}' input line '{line.strip()}'")
+        newtoml += [line]
+    t.close()
+    return "\n".join(newtoml)
 
 def interpolate(x):
     """
@@ -143,7 +166,7 @@ def post_process(config):
 
 
 if __name__ == '__main__':
-    import sys, json, pprint, argparse
+    import json, pprint, argparse
     from .config import load_config
     from .attrdict import AttrDict
 

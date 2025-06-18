@@ -1,22 +1,23 @@
 """
-Transform supplemental data spreadsheets into the ones for the web site
+Transform supplementary data spreadsheets into the ones for the web site
 
 Author:  Mike Lape, PhD.
 Date:    3 January 2025
 """
-import os
+import os, sys
 import pandas as pd
 
 from .config import use_config
 
 # Convert and fix numerical columns
-NUM_COLS = ['UKB FDR', 'UKB OR', 'TNX FDR', 'TNX OR']
+NUMERICAL_COLS = ['UKB FDR', 'UKB OR', 'TNX FDR', 'TNX OR']
 
 # Update Pathogen names
 PATHOGEN_MAP = {
     'bkv': 'BKV',
     'chlam': 'C. trach.',
     'c_trach': 'C. trach.',
+    'C. trachomatis': 'C. trach.',
     'cmv': 'CMV', 
     'ebv': 'EBV',
     'hbv': 'HBV',
@@ -75,9 +76,7 @@ def transform_icd(config=None):
 
     #icd = icd.loc[:, icd_col_map.keys()].copy()
     #icd.columns = icd_col_map.values()
-
-    icd = icd.rename(columns=icd_col_map).copy(deep = True)
-
+    icd = icd.rename(columns=icd_col_map).copy(deep=True)
 
     # Fill in any empty TNX results, just pairs where
     # replication didn't need to be attempted, with -1 as
@@ -86,7 +85,7 @@ def transform_icd(config=None):
 
     # Convert all 4 value columns from str to float - 
     # apparently pd.to_numeric is more robust than as_type(float)
-    for col in NUM_COLS:
+    for col in NUMERICAL_COLS:
         icd[col] = pd.to_numeric(icd[col], errors='coerce')
 
     # Round ORs to 2 decimal points
@@ -139,9 +138,7 @@ def transform_phe(config=None):
 
     #phe = phe.loc[:, phe_col_map.keys()].copy()
     #phe.columns = phe_col_map.values()
-
-    phe = phe.rename(columns=phe_col_map).copy(deep = True)
-
+    phe = phe.rename(columns=phe_col_map).copy(deep=True)
 
     # Fill in any empty TNX results, just pairs where
     # replication didn't need to be attempted, with -1 as
@@ -150,7 +147,7 @@ def transform_phe(config=None):
 
     # Convert all 4 value columns from str to float - 
     # apparently pd.to_numeric is more robust than as_type(float)
-    for col in NUM_COLS:
+    for col in NUMERICAL_COLS:
         phe[col] = pd.to_numeric(phe[col], errors='coerce')
 
     # Round ORs to 2 decimal points
@@ -184,13 +181,22 @@ def cross_check(icd, phe):
     """
     Make sure there are no pathogens in one workbook that aren't in the other
     """
-    assert len(set(icd['Pathogen'].unique().tolist())
-            .difference(set(phe['Pathogen'].unique().tolist()))) == 0
-    assert len(set(phe['Pathogen'].unique().tolist())
-          .difference(set(icd['Pathogen'].unique().tolist()))) == 0
+    in_icd_not_phe = set(icd['Pathogen'].unique().tolist()).difference(
+            set(phe['Pathogen'].unique().tolist()))
+    if len(in_icd_not_phe) > 0:
+        print(f"Pathogens in PHE set not in ICD: {in_icd_not_phe}",
+              file=sys.stderr)
+        return 1
+
+    in_phe_not_icd = set(phe['Pathogen'].unique().tolist()).difference(
+          set(icd['Pathogen'].unique().tolist()))
+    if len(in_phe_not_icd) > 0:
+        print(f"Pathogens in ICD set not in PHE: {in_phe_not_icd}",
+              file=sys.stderr)
+        return 1
 
 
 if __name__ == '__main__':
     icd = transform_icd()
     phe = transform_phe()
-    cross_check(icd, phe)
+    sys.exit(cross_check(icd, phe))

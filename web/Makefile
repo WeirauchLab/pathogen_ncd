@@ -25,17 +25,18 @@ help: venv  # prints this help
 
 conf: config
 # don't get confused by `config` above, which is used with `call` as a function
-config: venv  # (alias: conf) pretty-prints the parsed site and publication configs
+config: venv  # (alias: conf) pretty-prints parsed TOML configs [try JSON=1, KEY=]
 	@$(PYTHON) -m lib.config$(if $(JSON), --json)$(if $(KEY), --get $(KEY))
 
 site: deploy
-deploy: .static_files_copied .downloads_created .templates_processed  # (alias: site) copies static assets, HTML files, and downloads
+deploy: .static_files_copied .downloads_created .templates_processed  # (alias: site) copies HTML, assets, and downloads [try DEPLOYTO=]
 
 # copies static assets like theme files and JavaScript libs in place
 static: .static_files_copied
 .static_files_copied: static/theme/* .datatables_installed .npm_installed
-	rsync -av --copy-links --exclude=".*.swp" --exclude=node_modules \
-		--exclude="package*.json" --no-perms$(if $(DRYRUN), --dry-run) \
+	# rsync static files but *don't* try to preserve owner/group/perms
+	rsync -rv --copy-links$(if $(DRYRUN), --dry-run) \
+	    --exclude=".*.swp" --exclude=node_modules --exclude="package*.json" \
 		static/ $(deploydir)
 	touch $@
 
@@ -143,7 +144,7 @@ $(deploydatadir)/$(supplementarchive): $(deploydatadir)/README.txt
 	@echo
 	-rm $@
 	mkdir -p $(deploydatadir)
-	zip --junk-paths $@ ../supplementary_data/supplementary_dataset_*.xlsx
+	zip --junk-paths $@ ../supplementary_data/supplementary_data_*.{xlsx,pdf}
 	zip --junk-paths $@ $<
 
 sums: checksums
@@ -246,9 +247,7 @@ dothelinkswork:
 
 
 clean:  # removes compiled bytecode and other detritus
-	# Python precompiled bytecode inside the virtualenv
-	-find venv -prune -name "*.pyc"
-	# same within the helper library
+	# remove Python precompiled bytecode
 	-rm -rf __pycache__ lib/__pycache__
 
 cleanjs:
