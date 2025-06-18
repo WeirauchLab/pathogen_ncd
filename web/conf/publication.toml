@@ -7,8 +7,8 @@ author = { given_name="Michael", surname="Lape", email="lapema@mail.uc.edu" }
 
 # whom to contact about the publication/data); included in the READMEs
 contacts = [
-  { name="Matthew Weirauch", email="Matthew.Weirauch@cchmc.org" },
-  { name="Michael Lape", email="lapema@mail.uc.edu" },
+  { name="Matthew Weirauch, PhD", email="Matthew.Weirauch@cchmc.org" },
+  { name="Leah Kottyan, PhD", email="Leah.Kottyan@cchmc.org" },
 ]
 
 [[authors]]
