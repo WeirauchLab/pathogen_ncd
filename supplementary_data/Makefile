@@ -39,6 +39,17 @@ check:  # check if any data files contain sensitive metadata
 	done < <( $(FIND) )
 	exit $$count
 
+clean: cleanpdfs
+cleanpdfs:  # remove metadata from PDFs (requires `pdftk`)
+	@if ! type pdftk &>/dev/null; then
+		echo "ERROR: required utility 'pdftk' not found in the PATH." >&2; \
+		exit 1; \
+	fi
+	for pdf in *.pdf; do \
+		pdftk "$$pdf" cat output "$$pdf".new || exit 1; \
+		mv "$$pdf"{.new,}; \
+	done
+
 
 ##
 ##  internals you can safely ignore
