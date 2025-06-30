@@ -1,5 +1,13 @@
 """
 Convert supplementary data into other formats, e.g., Excel to TSV
+
+Mike brought up the fact that his cleanup script is _already_ loading pandas,
+so why not just use pandas' `.to_csv()` method, and rightly so. I wrote this
+before incorporating Mike's cleanup script, which became `transform.py`.
+
+Still, this can be useful for another project, where the Excel-formatted data
+is already in its final state, and _just_ needs to be converted to a delimited
+text format.
 """
 import os
 import logging
@@ -50,9 +58,17 @@ def trim_data_area(sheet):
 
 
 def write_tsv(xlfile, tsvfile, sheetname=None, maxcols=None,
-              overwrite=False, delim=None):
+              overwrite=False, delim=None, ctypes=None):
     """
     Write a single Excel file to a named tab-delimited output file
+
+    :param str xlsfile: path to input XLSX file; parsed with openpyxl
+    :param str tsvfile: path to output TSV file
+    :param str sheetname: workbook sheet to output; defaults to active sheet
+    :param int maxcols: maximum # of columns to include in the output TSV
+    :param bool overwrite: overwrite destination if it exists? default: no
+    :param str delim: output file delimiter; default: ``DEFAULT_DELIM``
+    :param dict ctypes: mapping of column names to data types
     """
     if os.path.exists(tsvfile) and not overwrite:
         raise RuntimeError(f"File '{tsvfile}' exists and overwrite=False")
@@ -86,6 +102,10 @@ def write_tsv(xlfile, tsvfile, sheetname=None, maxcols=None,
     # trim "data area" by removing non-data columns and rows
     sheet = trim_data_area(sheet)
 
+    # force specific columns to a non-auto-detected data type, if requested
+    if ctypes:
+        pass  # FIXME
+
     class UnquotedTsv(csv.unix_dialect):
         # FIXME: unnecessary, except to prevent the library from erroring out
         escapechar = '\\'
@@ -97,11 +117,8 @@ def write_tsv(xlfile, tsvfile, sheetname=None, maxcols=None,
 
         #rownum = 0
         for row in sheet.iter_rows(values_only=True):
-            # trim leading/trailing whitespace
-            row = [
-                x.strip() if isinstance(x, str) else x
-                for x in row
-            ]
+            # trim leading/trailing whitespace, but not for `None`s
+            row = [x.strip() if isinstance(x, str) else x for x in row]
             #rownum += 1
             #log.debug(f"Working on row #{rownum} from '{tsvfile}.'")
             writer.writerow(row)

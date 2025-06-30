@@ -4,7 +4,7 @@ THISMAKEFILE = $(firstword $(MAKEFILE_LIST))
 PYTHON = venv/bin/python3
 CONTAINER = web
 # apparently they only keep the most recent release up >:(
-DATATABLES_DOWNLOAD_BUILDER_URL	= https://datatables.net/download/builder?dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3/fh-4.0.2
+DATATABLES_DOWNLOAD_BUILDER_URL	= https://datatables.net/download/builder?dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3/fh-4.0.3
 # the UID of the user running this Makefile; used to `chown` the bind mount for
 # DEPLOYDIR so you can update it from the host side with `make deploy`; can't
 # just read this from the environment because it's not exported by default; see
@@ -79,7 +79,7 @@ process_templates: .templates_processed
 
 data: downloads
 downloads: .downloads_created  # [data] creates downloadable archives from supplemental datasets
-.downloads_created: .transformed .converted .figures_created .archives_created $(deploydatadir)/SHA1SUMS
+.downloads_created: .transformed .figures_created .archives_created $(deploydatadir)/SHA1SUMS
 	touch $@
 
 transform: .transformed  # [data] transform supplementary data into formats needed for the web site
@@ -89,12 +89,13 @@ transform: .transformed  # [data] transform supplementary data into formats need
 	$(PYTHON) -m lib.transform
 	touch $@
 
-convert: .converted  # [data] convert supplementary data into other formats (e.g., .tsv)
-.converted:
-	@echo
-	mkdir -p $(deploydatadir)
-	$(PYTHON) -m lib.convert
-	touch $@
+## unused, as the TSV conversion can readily be added to transform.py instead
+#convert: .converted  # [data] convert supplementary data into other formats (e.g., .tsv)
+#.converted:
+#	@echo
+#	mkdir -p $(deploydatadir)
+#	$(PYTHON) -m lib.convert
+#	touch $@
 
 figuresinfile = $(call config,data.figures.infilename)
 figuresoutfile = $(call config,data.figures.outfilename)
@@ -225,13 +226,13 @@ dothelinkswork:
 	
 	@echo
 	# now the figures & tables
-	figuresandtables=$(call linkcontains,Download Figures); \
+	figuresandtables=$(call linkcontains,Download Supplementary Figures & Tables); \
 	curl -sSIL $(publicurl)/$$figuresandtables \
  	  | grep --color 'Content-Type:.*/pdf'
 	
 	@echo
 	# now the supplemental datasets
-	supplemental=$(call linkcontains,Download Supplemental); \
+	supplemental=$(call linkcontains,Download Supplementary Datasets); \
 	curl -sSIL $(publicurl)/$$supplemental | grep --color 'Content-Type:.*/zip'
 	
 	@echo
@@ -253,7 +254,7 @@ clean:  # removes compiled bytecode and other detritus
 cleanjs:
 	-rm -rf static/node_modules
 
-distclean: clean cleanjs  # 'make clean' plus removes checkpoint files and Node modules
+distclean: clean cleanjs  # 'make clean' plus removes checkpoint files and Node.js modules
 	# remove all checkpoint files like `.transformed`, `.converted`, et al.
 	-rm .*ed
 	-rm -rf .ipynb_checkpoints

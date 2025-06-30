@@ -71,4 +71,4 @@ deploydir = "/var/www/html{urlbase}"
 #authuserfile = "/etc/httpd24/htpasswd.pathncd"
 
 # for the `IndexIgnore` directive in data/.htaccess
-indexignores = ".htaccess header.html footer.html Makefile *.md *.json *.tsv *.xlsx"
+indexignores = ".htaccess header.html footer.html Makefile *.md"

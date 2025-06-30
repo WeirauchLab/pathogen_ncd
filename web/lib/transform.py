@@ -1,180 +1,161 @@
 """
 Transform supplementary data spreadsheets into the ones for the web site
 
-Author:  Mike Lape, PhD.
+Authors:  Mike Lape, PhD; Kevin Ernst
 Date:    3 January 2025
 """
-import os, sys
+import os
+import sys
+import logging
 import pandas as pd
 
 from .config import use_config
 
-# Convert and fix numerical columns
-NUMERICAL_COLS = ['UKB FDR', 'UKB OR', 'TNX FDR', 'TNX OR']
+log = logging.getLogger(__name__)
 
-# Update Pathogen names
-PATHOGEN_MAP = {
-    'bkv': 'BKV',
-    'chlam': 'C. trach.',
-    'c_trach': 'C. trach.',
-    'C. trachomatis': 'C. trach.',
-    'cmv': 'CMV', 
-    'ebv': 'EBV',
-    'hbv': 'HBV',
-    'hcv': 'HCV',
-    'hhv6': 'HHV-6',
-    'hhv_6': 'HHV-6',
-    'hhv7': 'HHV-7',
-    'hhv_7': 'HHV-7',
-    'hpv16': 'HPV-16',
-    'hpv_16': 'HPV-16',    
-    'hpv18': 'HPV-18',
-    'hpv_18': 'HPV-18',
-    'hpylori': 'H. pylori',
-    'h_pylor': 'H. pylori',
-    'hsv1': 'HSV-1',
-    'hsv_1': 'HSV-1',
-    'hsv2': 'HSV-2',
-    'hsv_2': 'HSV-2',
-    'htlv': 'HTLV-1',
-    'jcv': 'JCV',
-    'kshv': 'KSHV',
-    'mcv': 'MCV',
-    'tox': 'T. gondii',
-    't_gond': 'T. gondii',    
-    'vzv': 'VZV',
-    'hiv': 'HIV'
+if os.getenv('DEBUG') or os.getenv('DEBUG_TRANSFORM'):
+    log.setLevel(logging.DEBUG)
+
+# coerce these columns to numerical values
+COERCE_NUMERIC = ['UKB FDR', 'UKB OR', 'TNX FDR', 'TNX OR']
+
+# FIXME: this duplicates mappings in `conf/data.toml`
+RENAME_COLUMNS = {
+    # ICD
+    'Disease': 'Disease',
+    'ICD10': 'ICD10',
+    'Pathogen': 'Pathogen',
+    'Pair is Associated': 'Pair is Assoc?',
+    'Standard Level': 'Std. Lev.',
+    'UKB adj p': 'UKB FDR',
+    'TNX adj p': 'TNX FDR',
+    'UKB OR': 'UKB OR',
+    'TNX OR': 'TNX OR',
+    # PHE
+    'Disease_Description': 'Disease',
+    'phecode': 'Phecode',
+    'pair_is_associated': 'Pair is Assoc?',
+    'std_lev': 'Std. Lev.',
+    'ukb_per_dis_bh_fdr_corr_nom_p': 'UKB FDR',
+    'tnx_per_dis_bh_fdr_corr_p': 'TNX FDR',
+    'ukb_OR': 'UKB OR',
+    'tnx_OR': 'TNX OR',
 }
 
-# Updated standard level column values
-STD_REP_MAP = {
-    'unk': 'Unknown',
-    'exp_neg': 'Exp. Neg.'
+# top level keys are column name; sub-dicts are the replacement maps
+REPLACE_VALUES = {
+    'Pathogen': {
+        'bkv': 'BKV',
+        'chlam': 'C. trach.',
+        'c_trach': 'C. trach.',
+        'C. trachomatis': 'C. trach.',
+        'cmv': 'CMV',
+        'ebv': 'EBV',
+        'hbv': 'HBV',
+        'hcv': 'HCV',
+        'hhv6': 'HHV-6',
+        'hhv_6': 'HHV-6',
+        'hhv7': 'HHV-7',
+        'hhv_7': 'HHV-7',
+        'hpv16': 'HPV-16',
+        'hpv_16': 'HPV-16',
+        'hpv18': 'HPV-18',
+        'hpv_18': 'HPV-18',
+        'hpylori': 'H. pylori',
+        'h_pylor': 'H. pylori',
+        'hsv1': 'HSV-1',
+        'hsv_1': 'HSV-1',
+        'hsv2': 'HSV-2',
+        'hsv_2': 'HSV-2',
+        'htlv': 'HTLV-1',
+        'jcv': 'JCV',
+        'kshv': 'KSHV',
+        'mcv': 'MCV',
+        'tox': 'T. gondii',
+        't_gond': 'T. gondii',
+        'vzv': 'VZV',
+        'hiv': 'HIV',
+    },
+    'Std. Lev.': {
+        'unk': 'Unknown',
+        'exp_neg': 'Exp. Neg.',
+        'Exp. Negative': 'Exp. Neg.',
+    },
 }
 
 
-@use_config
-def transform_icd(config=None):
-    xls = config['data']['datasources']['ICD10']['infilename']
-    outxls = config['data']['datasources']['ICD10']['outfilename']
-    sheet_name = config['data']['datasources']['ICD10']['sheetname']
-    # FIXME: likely some duplication with helpers.data and helpers.site here
-    outpath = os.path.join(config['site']['deploydatadir'], outxls)
-    icd = pd.read_excel(xls, sheet_name=sheet_name, dtype=str)
+def coerce_numeric(col):
+    cname = col.name
+    # Fill in any empty TNX results, just pairs where replication didn't need
+    # to be attempted, with -1 as a placeholder
+    if cname.startswith("TNX"):
+        log.debug(f"Filling column '{cname}' with -1 for n/a values")
+        col.fillna(-1, inplace=True)
 
-    icd_col_map = {
-        'Disease': 'Disease',
-        'ICD10': 'ICD10',
-        'Pathogen': 'Pathogen',
-        'Pair is Associated': 'Pair is Assoc?',
-        'Standard Level': 'Std. Lev.',
-        'UKB adj p': 'UKB FDR',
-        'TNX adj p': 'TNX FDR',
-        'UKB OR': 'UKB OR',
-        'TNX OR': 'TNX OR',
-    }
-
-    #icd = icd.loc[:, icd_col_map.keys()].copy()
-    #icd.columns = icd_col_map.values()
-    icd = icd.rename(columns=icd_col_map).copy(deep=True)
-
-    # Fill in any empty TNX results, just pairs where
-    # replication didn't need to be attempted, with -1 as
-    # a placeholder
-    icd[['TNX FDR', 'TNX OR']] = icd[['TNX FDR', 'TNX OR']].fillna(-1)
-
-    # Convert all 4 value columns from str to float - 
-    # apparently pd.to_numeric is more robust than as_type(float)
-    for col in NUMERICAL_COLS:
-        icd[col] = pd.to_numeric(icd[col], errors='coerce')
+    # Convert all numerical value columns from str to float - apparently
+    # pd.to_numeric is more robust than as_type(float)
+    col = pd.to_numeric(col)  #, errors='coerce')
 
     # Round ORs to 2 decimal points
-    icd[['UKB OR', 'TNX OR']] = icd[['UKB OR', 'TNX OR']].round(2)
+    if cname.endswith("OR"):
+        if col.dtype in ['float64', 'int64']:
+            log.debug(f"Rounding column '{cname}' to 2 decimal places")
+            col = col.round(2)
+        else:
+            raise ValueError(f"Column '{cname}' contains non-numeric values.")
 
     # Put FDRs in Sci notation with 1 decimal point
-    if icd['UKB FDR'].dtype in ['float64', 'int64']:
-        icd['UKB FDR'] = icd['UKB FDR'].map(lambda x: f'{x:.1e}')
-    else:
-        raise ValueError("UKB FDR column contains non-numeric values.")
+    if cname.endswith("FDR"):
+        if col.dtype in ['float64', 'int64']:
+            col = col.map(lambda x: f'{x:.1e}')
+        else:
+            raise ValueError(f"Column '{cname}' contains non-numeric values.")
 
-    if icd['TNX FDR'].dtype in ['float64', 'int64']:
-        icd['TNX FDR'] = icd['TNX FDR'].map(lambda x: f'{x:.1e}')
-    else:
-        raise ValueError("TNX FDR column contains non-numeric values.")
+    # Finally, replace all remaining placeholder values
+    if cname.startswith("TNX"):
+        log.debug(f"Replacing -1's in column '{cname}' with 'n/a'")
+        col = col.replace(-1, 'n/a').replace('-1.0e+00', 'n/a')
 
-    # Finally, replace our placeholder with an empty string
-    icd['TNX OR']  = icd['TNX OR'].replace(-1, '')
-    icd['TNX FDR'] = icd['TNX FDR'].replace('-1.0e+00', '')
+    return col
 
-    icd.loc[:, 'Pathogen'] = \
-        icd.loc[:, 'Pathogen'].replace(PATHOGEN_MAP)
 
-    icd['Std. Lev.'] = icd['Std. Lev.'].replace(STD_REP_MAP)
-    icd.to_excel(outpath, index = False)
-    return icd
+def write_out(df, outbasename):
+    df.to_excel(f"{outbasename}.xlsx", index=False)
+    df.to_csv(f"{outbasename}.tsv", index=False, sep="\t")
 
 
 @use_config
-def transform_phe(config=None):
-    xls = config['data']['datasources']['PHE']['infilename']
-    outxls = config['data']['datasources']['PHE']['outfilename']
-    sheet_name = config['data']['datasources']['PHE']['sheetname']
-    # FIXME: likely some duplication with helpers.data and helpers.site here
-    outpath = os.path.join(config['site']['deploydatadir'], outxls)
-    phe = pd.read_excel(xls, sheet_name=sheet_name, dtype=str)
+def transform(source, config=None):
+    xls = config['data']['datasources'][source]['infilename']
+    sheetname = config['data']['datasources'][source]['sheetname']
 
-    # map of original column names to desired ones
-    phe_col_map = {
-        'Disease_Description': 'Disease',
-        'phecode': 'Phecode',
-        'Pathogen': 'Pathogen',
-        'pair_is_associated': 'Pair is Assoc?',
-        'std_lev': 'Std. Lev.',
-        'ukb_per_dis_bh_fdr_corr_nom_p': 'UKB FDR',
-        'tnx_per_dis_bh_fdr_corr_p': 'TNX FDR',
-        'ukb_OR': 'UKB OR',
-        'tnx_OR': 'TNX OR'
-    }
+    df = pd.read_excel(xls, sheet_name=sheetname, dtype={'phecode': 'string'})
+    # FIXME: mike/pathogen_ncd#50
+    if source == 'PHE':
+        df['std_lev'] = df['std_lev'].fillna('NA')
 
-    #phe = phe.loc[:, phe_col_map.keys()].copy()
-    #phe.columns = phe_col_map.values()
-    phe = phe.rename(columns=phe_col_map).copy(deep=True)
+    df.rename(columns=RENAME_COLUMNS, inplace=True)
 
-    # Fill in any empty TNX results, just pairs where
-    # replication didn't need to be attempted, with -1 as
-    # a placeholder
-    phe[['TNX FDR', 'TNX OR']] = phe[['TNX FDR', 'TNX OR']].fillna(-1)
+    for column in REPLACE_VALUES.keys():
+        newcol = df[column].replace(REPLACE_VALUES[column])
+        df[column] = newcol
 
-    # Convert all 4 value columns from str to float - 
-    # apparently pd.to_numeric is more robust than as_type(float)
-    for col in NUMERICAL_COLS:
-        phe[col] = pd.to_numeric(phe[col], errors='coerce')
+    for column in COERCE_NUMERIC:
+        newcol = coerce_numeric(df[column])
+        df[column] = newcol
 
-    # Round ORs to 2 decimal points
-    phe.loc[: , ['UKB OR', 'TNX OR']] = \
-        phe.loc[: , ['UKB OR', 'TNX OR']].round(2)
+    outbasename = os.path.join(
+        config['site']['deploydatadir'],
+        config['data']['datasources'][source]['outbasefilename']
+    )
 
-    # Put FDRs in scientific notation with 1 decimal point
-    if phe['UKB FDR'].dtype in ['float64', 'int64']:
-        phe['UKB FDR'] = phe['UKB FDR'].map(lambda x: f'{x:.1e}')
-    else:
-        raise ValueError("UKB FDR column contains non-numeric values.")
+    # select only the subset of columns specified in `conf/data.toml`
+    cutcols = [x['name'] for x in
+               config['data']['datasources'][source]['columns']]
+    df = df[cutcols]
 
-    if phe['TNX FDR'].dtype in ['float64', 'int64']:
-        phe['TNX FDR'] = phe['TNX FDR'].map(lambda x: f'{x:.1e}')
-    else:
-        raise ValueError("TNX FDR column contains non-numeric values.")
-
-    # Finally, replace our placeholder with an empty string
-    phe['TNX OR']  = phe['TNX OR'].replace(-1, '')
-    phe['TNX FDR'] = phe['TNX FDR'].replace('-1.0e+00', '')
-
-    phe.loc[:, 'Pathogen'] = \
-        phe.loc[:, 'Pathogen'].replace(PATHOGEN_MAP)
-
-    phe['Std. Lev.'] = phe['Std. Lev.'].replace(STD_REP_MAP)
-    phe.to_excel(outpath, index=False)
-    return phe
+    write_out(df, outbasename)
+    return df
 
 
 def cross_check(icd, phe):
@@ -197,6 +178,6 @@ def cross_check(icd, phe):
 
 
 if __name__ == '__main__':
-    icd = transform_icd()
-    phe = transform_phe()
+    icd = transform('ICD')
+    phe = transform('PHE')
     sys.exit(cross_check(icd, phe))

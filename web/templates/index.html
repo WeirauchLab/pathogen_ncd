@@ -92,11 +92,9 @@
 
     <div id="abstract">
       <h2>Abstract</h2>
-      <p>
 {% include "_partials/abstract.html" %}
-      </p>
 
-      <h2 id="how-to-cite">How to cite</h2>
+      <h2 id="how-to-cite">How to Cite</h2>
       <p>
       Please cite this article as: {{ pub.author.surname}} <em>et al.</em>, 
         {{ pub.title }}, {{ pub.journal }} ({{ pub.year }}),
@@ -112,7 +110,7 @@
       <br>
 
 {#-
-      <h2>Database release history</h2>
+      <h2>Database Release History</h2>
       <p>
         The latest database build is
         <a title="Download database build PUBDBVER as .zip bundle (PUBDBZIPSIZE)" href="PUBDBZIP"><strong>PUBDBVER</strong></a>,
@@ -147,13 +145,13 @@
   </div><!--/#top-->
 
   <div id="search" class="top">
-    <h1>
-      Explore all results
+    <h2>
+      Explore All Results
       <button title="Back to the top" id="search-to-top-btn"
               onclick="location.href='#top'">
         <a href="#top">&uparrow;</a>
       </button>
-    </h1>
+    </h2>
 
     <div id="search-help-container">
       <div id="search-help" style="display:none">
@@ -162,8 +160,8 @@
         fields for the associated record. Fields not shown are still
         searchable.
 #}
-        <p>Hover your mouse pointer over <strong>column names</strong> for a
-        full description.
+        <p>Hover your mouse pointer over tabs and <strong>column names</strong>
+        for a full description.
 
         <p>The search box performs "fuzzy" matching, and may match across
         multiple columns. To search for an exact phrase, put it in double
@@ -171,12 +169,8 @@
       
         <p>The <strong>Copy</strong> and <strong>Download CSV</strong> buttons
         will copy the current record set (<em>i.e.</em>, all records on all
-        pages, or the results of a search if one is active) to the system
-        clipboard, or download them as a comma-separated values file.  The
-        former can be pasted directly into a spreadsheet program such as Excel,
-        LibreOffice Calc, or Google Sheets with
-        <span class="hotkey"><kbd>Ctrl</kbd>&thinsp;+&thinsp;<kbd>V</kbd></span>,
-        or <kbd>⌘&thinsp;V</kbd> on a Mac. See
+        pages, or the results of the current search) to the system clipboard,
+        or download it as comma-separated values. See
         <a class="ul-link" href="{{ data.artifacts.subdir }}">
           the <code>{{ data.artifacts.subdir }}</code> directory
         </a> for other formats.

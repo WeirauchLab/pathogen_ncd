@@ -25,14 +25,14 @@ infilename = "../supplementary_data/supplementary_info.pdf"
 outfilename = "{basename}_supp_figs_and_tables.pdf"
 description = "Supplementary figures and tables"
 
-[datasources.ICD10]
+[datasources.ICD]
 order = 1
-tabname = "ICD10"
+tabname = "ICD"
 tooltip = "Results based on ICD10 code from UKB data"
 # pathname relative to the 'web' directory
 infilename = "../supplementary_data/supplementary_data_8.xlsx"
 sheetname = "Results"
-outfilename = "{basename}_{tabname}_{sheetname}.xlsx"
+outbasefilename = "{basename}_{tabname}_{sheetname}"
 
 [datasources.PHE]
 order = 2
@@ -40,48 +40,48 @@ tabname = "PHE"
 tooltip = "Results based on Phecodes"
 infilename = "../supplementary_data/supplementary_data_2.xlsx"
 sheetname = "Results"
-outfilename = "{basename}_{tabname}_{sheetname}.xlsx"
+outbasefilename = "{basename}_{tabname}_{sheetname}"
 
 
 # > …it is strongly discouraged to break an inline table onto multiples lines.
 # > If you find yourself gripped with this desire, it means you should be using
 # > standard tables. -- https://toml.io/en/v1.0.0#inline-table
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 0
 name = "Disease"
 title = "Disease"
 description = "Disease name"
 #width = "25%"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 1
 name = "ICD10"
 title = "ICD10"
 description = "ICD10 3-character code from UKB"
 width = "8%"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 2
 name = "Pathogen"
 title = "Pathogen"
 description = "Pathogen abbreviation"
 width = "10%"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 3
 name = "Pair is Assoc?"
 title = "Pair is assoc?"
 description = "Boolean indicating whether this pair is considered replicated"
 width = "8%"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 4
 name = "Std. Lev."
 title = "Std. lev."
 description = "Standard group this pair is part of [Tier 1, Tier 2, Expected Negative (exp_neg), Unknown (unk)]"
 width = "8%"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 5
 name = "UKB FDR"
 title = "UKB FDR"
@@ -89,7 +89,7 @@ description = "Per-disease BH FDR adjusted UKB nominal p-value"
 #width = "8%"
 type = "num"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 6
 name = "TNX FDR"
 title = "TNX FDR"
@@ -97,62 +97,62 @@ description = "Per-disease BH FDR adjusted TNX nominal p-value"
 #width = "8%"
 type = "num"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 7
 name = "UKB OR"
 title = "UKB OR"
 description = "Odds ratio for UKB pathogen titer [continuous]"
 #width = "5%"
 
-[[datasources.ICD10.columns]]
+[[datasources.ICD.columns]]
 targets = 8
 name = "TNX OR"
 title = "TNX OR"
 description = "Odds ratio for TNX test [categorical]"
 #width = "5%"
 
-#[[datasources.ICD10.columns]]
+#[[datasources.ICD.columns]]
 #targets = 6
 #name = "UKB_adj_p"
 #title = "UKB adj. p"
 #description = "Per-disease BH FDR adjusted UKB nominal p-value"
 #width = "8%"
 #
-#[[datasources.ICD10.columns]]
+#[[datasources.ICD.columns]]
 #targets = 7
 #name = "TNX_adj_p"
 #title = "TNX adj. p"
 #description = "Per-disease BH FDR adjusted TNX nominal p-value"
 #width = "10%"
-#[[datasources.ICD10.columns]]
+#[[datasources.ICD.columns]]
 #targets = 10
 #name = "Replication_Status"
 #title = "Replication status"
 #description = "The UKB-TNX replication status for this dis-org pair [could_not: UKB sig, not enough TNX data to try replication; did_not_attempt: UKB not sig, so no replication attempted; did_not: UKB sig, TNX not sig; rep: UKB sig, TNX sig]"
 #visible = false
 #
-#[[datasources.ICD10.columns]]
+#[[datasources.ICD.columns]]
 #targets = 11
 #name = "UKB_nCase"
 #title = "UKB number of cases"
 #description = "Number of cases in UKB analysis"
 #visible = false
 #
-#[[datasources.ICD10.columns]]
+#[[datasources.ICD.columns]]
 #targets = 12
 #name = "UKB_nControl"
 #title = "UKB number of controls"
 #description = "Number of controls in UKB analysis"
 #visible = false
 #
-#[[datasources.ICD10.columns]]
+#[[datasources.ICD.columns]]
 #targets = 13
 #name = "TNX_nCase"
 #title = "TNX number of cases"
 #description = "Number of cases in TNX analysis"
 #visible = false
 #
-#[[datasources.ICD10.columns]]
+#[[datasources.ICD.columns]]
 #targets = 14
 #name = "TNX_nControl"
 #title = "TNX number of controls"
@@ -162,7 +162,7 @@ description = "Odds ratio for TNX test [categorical]"
 
 [[datasources.PHE.columns]]
 targets = 0
-name = "Disease_Description"
+name = "Disease"
 title = "Disease"
 description = "Disease name"
 #width = "26%"
@@ -231,7 +231,7 @@ type = "num"
 
 # for 'order' parameter in the DataTable initializer; applies to both tables
 [[ordering]]
-name = "Pair is Assoc?"
+name = "Pair is assoc?"
 dir = "desc"
 
 [[ordering]]

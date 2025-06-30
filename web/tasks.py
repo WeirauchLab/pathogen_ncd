@@ -102,16 +102,13 @@ def make_deploy_dir(ctx):
 @invoke.task(pre=[make_deploy_dir])
 def build_tsvs(ctx):
     """[hidden] creates .tsv files from from supplemental datasets"""
-    from lib.transform import (transform_icd, transform_phe)
-    from lib.convert import write_tsvs
+    from lib.transform import transform
     # FIXME: kinda gross; should use dependency inversion and specify the
     # transformers and converters in the TOML config instead
     logger.info("Transforming the ICD10 spreadsheet…")
-    transform_icd()
+    transform('ICD')
     logger.info("Transforming the Phecode spreadsheet…")
-    transform_phe()
-    logger.info(f"Writing .tsv files to '{deploydatadir}'…")
-    write_tsvs()
+    transform('PHE')
 
 @invoke.task
 def update_readme(ctx):

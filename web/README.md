@@ -50,6 +50,9 @@ the habit of typing `make`. This is just a rudimentary wrapper around `python
 -m invoke` that displays the `help` output by default. In PowerShell, you must
 invoke this as `./make` because PowerShell.
 
+
+## Notes on local deployment
+
 If you have [Docker][] available, you can also run `docker compose up` in the
 `web` subdirectory.
 

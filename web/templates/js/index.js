@@ -187,34 +187,38 @@ function loadTab(which, scrollTo = true) {
         data = data.map(e => e.split(/\t/));
 
         var dt = table.DataTable({
-            data: data,
-            columnDefs: columnDefs,
-            order: {{ data.ordering | tojson }},
-            layout: {
-                //topStart: [ 'pageLength', { buttons: ['colvis'] } ],
-                topEnd: [
-                    { buttons:
-                      [
-                        { extend: 'copy', text: 'Copy' },
-                        { extend: 'csv', text: 'Download CSV' }
-                      ]
-                    },
-                    'search',
-                ],
-            },
-            scrollX: false,
-            lengthMenu: [[10, 25, 100, -1], [10, 25, 100, "All"]],
-            pageLength: 100,
-            // disabled for now; doesn't work with the tabs
-            //fixedHeader: true,
-            // https://datatables.net/reference/option/deferRender
-            deferRender: true,
-            // https://datatables.net/examples/advanced_init/row_callback.html
-        createdRow: (r, d, i) => {
-          // XXX: replace empty cells in both TNX columns with 'n/a'
-          if (d[6] == "") r.querySelector(':nth-child(7)').textContent = 'n/a';
-          if (d[8] == "") r.querySelector(':nth-child(9)').textContent = 'n/a';
-        },
+          data: data,
+          columnDefs: columnDefs,
+          order: {{ data.ordering | tojson }},
+          layout: {
+              //topStart: [ 'pageLength', { buttons: ['colvis'] } ],
+              topEnd: [
+                  { buttons:
+                    [
+                      { extend: 'copy', text: 'Copy' },
+                      { extend: 'csv', text: 'Download CSV' }
+                    ]
+                  },
+                  'search',
+              ],
+          },
+          scrollX: false,
+          lengthMenu: [[10, 25, 100, 500, -1], [10, 25, 100, 500, "All"]],
+          pageLength: 100,
+          // disabled for now; doesn't work with the tabs
+          //fixedHeader: true,
+          // https://datatables.net/reference/option/deferRender
+          deferRender: true,
+          // https://datatables.net/examples/advanced_init/row_callback.html
+          // better to do stuff like this in lib/transform.py, but here's how…
+          //createdRow: (r, d, i) => {
+          //  // debugging:
+          //  //for (let i = 0; i < d.length; i++) {
+          //  //  console.log(`data cell d[${i}] (${d[i]}) is ${r.querySelector(`:nth-child(${i+1})`).textContent}`);
+          //  //}
+          //  //if (d[6] == "") r.querySelector(':nth-child(7)').textContent = 'n/a';
+          //  //if (d[8] == "") r.querySelector(':nth-child(9)').textContent = 'n/a';
+          //},
       }); // DataTable init
 
       // onclick handler for opening and closing details (not currently used)
