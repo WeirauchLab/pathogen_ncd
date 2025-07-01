@@ -11,11 +11,6 @@ releasedate = "12 June 2025"
 basename = "Lape_et_al"
 # path relative to deployment root
 subdir = "data"
-# the basename for the results dataset(s)
-resultsarchive = "{basename}_results.zip"
-resultsarchivedesc = "Results datasets as Excel <tt>.xlsx</tt> files"
-resultstarball = "{basename}_results.tar.gz"
-resultstarballdesc = "Results datasets as tab-delimited Unix text files"
 # the secondary .zip file containing all the supplementary datasets
 supplementarchive = "{basename}_supp_datasets.zip"
 supplementarchivedesc = "All supplementary datasets as Excel <tt>.xlsx</tt> files"

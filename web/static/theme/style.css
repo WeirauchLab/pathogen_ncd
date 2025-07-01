@@ -46,14 +46,6 @@
   box-sizing: border-box; 
 }
 
-select, input[type="text"], input[type="search"] {
-  padding: 5px;
-}
-
-.dt-search label {
-  padding-right: 0.3em;
-}
-
 html {
   min-height:100%;
   border-top:10px solid #ECEEF1;
@@ -76,13 +68,19 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1em;
 }
 
-#header h1 {
-  margin-bottom: 0.5em;
+.section-links {
+  line-height: 1em;
+  padding: 0 0.5em;
+  font-size: large;
+  font-weight: normal;
+  margin-bottom: 1em;
+}
+.section-links a {
+  text-decoration: underline;
 }
 
-#abstract h3 {
-  padding-left: 1.5em;
-  /* text-decoration: underline; */
+#header h1 {
+  margin-bottom: 0.5em;
 }
 
 ul+h1, ul+h2, ul+h3,
@@ -152,15 +150,13 @@ p+p, dl + p {
 #tagline, #authors, #affiliations {
   padding:0 2rem;
 }
-
-.subtle-link {
-  font-size: 0.8em;
+#tagline a {
+  text-decoration: underline;
 }
 
-a.subtle-link, .subtle-link a {
+.underlinks a {
+  font-size: 0.8em;
   text-decoration:underline;
-  /* text-transform: lowercase; */
-  /* font-variant: small-caps; */
 }
 
 .center {
@@ -179,10 +175,6 @@ a.subtle-link, .subtle-link a {
   line-height: 1.3em !important;
 }
 
-#header p a, #abstract p a {
-  text-decoration:underline;
-}
-
 hr {
   border: none;
   border-top: 1px solid #afafaf;
@@ -197,13 +189,18 @@ hr {
   text-align: center;
   padding: 1em;
 }
+.actions h3 {
+  margin-bottom: 1em;
+}
+.actions h3 a {
+  text-decoration: underline;
+}
 
 .actions-top {
-  /* border-bottom: 1px solid #afafaf; */
   margin-bottom: 1em;
 }
 
-#search-to-top-btn {
+.back-to-top-btn {
   height: 2em;
   font-size: 0.4em;
 }
@@ -227,12 +224,6 @@ button {
   box-shadow: none;
   font-size: 1em;
   font-family: 'Roboto', sans-serif;
-}
-
-/* need to be at least as specific as DataTables' CSS */
-div.dt-buttons > .dt-button {
-  height: auto;
-  padding: 0.1em 1em;
 }
 
 button {
@@ -291,9 +282,43 @@ button small {
   text-decoration: underline;
 }
 
-#abstract p, #downloads p, #search p {
+#summary p, #summary p, #cite-and-feedback p, #downloads p, #search p {
   padding-left: 3em;
   padding-right: 3em;
+}
+
+#summary, #cite-and-feedback {
+  margin-bottom: 1em;
+}
+
+#summary hr {
+  margin-top: 1em;
+}
+
+#summary h3 {
+  padding-left: 1.5em;
+}
+
+figure {
+  /* display: flex; */
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+figure img {
+  height: 750px;
+  margin: 0.5em 0 0.2em;
+}
+
+figcaption {
+  /* font-size: small; */
+  font-style: italic;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+#header p a, #summary p a, #cite-and-feedback p a {
+  text-decoration:underline;
 }
 
 #search-help-container {
@@ -335,16 +360,15 @@ dt, dd {
   display: inline-block;
 }
 
-#abstract ul {
+.top ul {
   margin-left: 3em;
   padding-right: 2em;
 }
-#abstract li {
+.top li {
   line-height: 1.1em;
   padding-bottom: 0.5em;
 }
-
-ul ul>li {
+.top ul ul>li {
   padding-top: 0.5em;
 }
 
@@ -408,7 +432,7 @@ kbd {
 }
 
 /*------------------------------------*\
-    Demo block
+    Generic block element (Apaxy)
 \*------------------------------------*/
 .block {
   font-size:.875em;
@@ -606,13 +630,28 @@ table.dataTable thead th:hover {
   cursor: help;
 }
 
+/* other minor style tweaks */
+.dt-search label {
+  padding-right: 0.3em;
+}
+
+/*
+`div` seems extraneous here, but you need to be at least as specific as
+DataTables' own CSS
+*/
+div.dt-buttons > .dt-button {
+  height: auto;
+  padding: 0.1em 1em;
+}
+
+select, input[type="text"], input[type="search"] {
+  padding: 5px;
+}
+
 /*------------------------------------*\
     Loading message for data tables
 \*------------------------------------*/
 .loading {
-  /* box-shadow: inset 0 0 3px #62666C; */
-  /* background: radial-gradient(white, #f9f9f9); */
-  /* margin:0 10em; */
   padding: 2em 1em;
   color: #9099a3;
   text-align: center;

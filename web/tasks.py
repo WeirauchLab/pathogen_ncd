@@ -119,33 +119,8 @@ def update_readme(ctx):
 
 @invoke.task(pre=[make_deploy_dir, build_tsvs, update_readme])
 def build_downloads(ctx):
-    """[hidden] creates downloadable archives from supplemental datasets"""
-    import glob, zipfile, tarfile
-    logger.info("Creating .zip containing README and the .tsv files…")
-
-    resultsarchive= os.path.join(deploydatadir,
-                                 c.data.artifacts.resultsarchive)
-    logger.info(f"Creating results archive '{resultsarchive}'…")
-    with zipfile.ZipFile(resultsarchive, 'w') as z:
-        for xlsx in glob.glob(os.path.join(deploydatadir, '*Results.xlsx')):
-            z.write(xlsx, arcname=os.path.basename(xlsx))
-        z.write(os.path.join(deploydatadir, 'README.txt'), 'README.txt')
-
-    resultstarball = os.path.join(deploydatadir,
-                                  c.data.artifacts.resultstarball)
-    assert resultstarball.endswith('.gz')
-    logger.info(f"Creating results tarball '{resultstarball}'…")
-    archivesubdir = f"{c.data.artifacts.basename}_{c.pub.year}"
-    # apparently, `w:gz` doesn't work with the context manager
-    tarball = tarfile.open(resultstarball, 'w:gz')
-    for tsv in glob.glob(os.path.join(deploydatadir, '*.tsv')):
-        tarball.add(
-            tsv,
-            arcname=os.path.join(archivesubdir, os.path.basename(tsv))
-        )
-    tarball.add(os.path.join(deploydatadir, 'README.txt'),
-            arcname=os.path.join(archivesubdir, 'README.txt'))
-    tarball.close()
+    """[hidden] creates downloadable archive from supplemental datasets"""
+    import glob, zipfile
 
     logger.info("Copying figures and tables PDF into place…")
     shutil.copy(c.data.figures.infilename,

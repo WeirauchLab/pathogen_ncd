@@ -1,0 +1,16 @@
+{% macro authorlist(howmany, etal=false) -%}
+{% for a in pub.authors[0:howmany] -%}
+{% set fi = a.given_name[0:1] -%}
+<span class="author-{{ loop.index }}">{{ a.surname }}, {{ fi }}.</span>
+{%- if loop.last %}{% if etal %} <em>et al.</em>{% endif %}{% else %}, {% endif %}
+{%- endfor %}
+{%- endmacro %}
+{% macro top() -%}
+      <button title="Back to the top" class="back-to-top-btn"
+              onclick="location.href='#top'">
+        <a href="#top">🢁</a>
+      </button>
+{%- endmacro %}
+{#-
+vim ft=html+jinja2
+-#}

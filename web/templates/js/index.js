@@ -239,11 +239,10 @@ function loadTab(which, scrollTo = true) {
 
       // wire up the "Search" button to focus the search box
       var searchBox = $('#' + tableID + '_wrapper input[type="search"]');
-      var searchButton = $('#search-btn');
+      var searchLink = $('#search-link');
       var searchHeader = $('#search');
 
-      // FIXME: animate or highlight somehow
-      searchButton.click(function(e) {
+      searchLink.click(function(e) {
         e.preventDefault();
         // just like the anchor would've done
         searchHeader[0].scrollIntoView();

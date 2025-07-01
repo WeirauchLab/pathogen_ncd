@@ -1,8 +1,10 @@
-title = "A Survey of Pathogenic Involvement in Non-Communicable Human Diseases"
-journal = "medRxiv"
-year = 2024
-pubdoi = "10.1101/2023.09.14.23295428"
-url = "https://www.medrxiv.org/content/{pubdoi}"
+title = "A survey of pathogenic involvement in non-communicable human diseases"
+headline = "A Survey of Pathogenic Involvement<br>in Non-Communicable Human Diseases"
+journal = "Commun Med"
+issue = "5, 242"
+year = 2025
+doi = "10.1038/s43856-025-00956-x"
+url = "https://doi.org/{doi}"
 author = { given_name="Michael", surname="Lape", email="lapema@mail.uc.edu" }
 
 # whom to contact about the publication/data); included in the READMEs

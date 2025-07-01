@@ -1,23 +1,12 @@
 {{ pub.title }}
 ==============================================================================
 
-{{ pub.author.surname }} et al., {{ pub.journal}}, {{ pub.year}}.
+{{ pub.author.surname }} et al., {{ pub.journal}} {{ pub.issue }} ({{ pub.year}}).
 {{ pub.url }}
 
 These files were obtained from:
 
     {{ site.deploy.publicurl }}
-
-
-Included files
---------------
-
-The `.tar.gz` archive at the above URL contains data files in `.tsv`
-(tab-delimited) format, with ASCII 0x0a (LF) line endings. These files are
-intended for post-processing in the Unix shell environment with standard "Unix
-toolbox" utilities such as `cut`, `sort`, and `awk`.
-
-A `.zip` file containing Excel `.xlsx` files is provided for any other uses.
 
 
 Verifying download integrity

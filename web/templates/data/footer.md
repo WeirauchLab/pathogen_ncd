@@ -1,8 +1,7 @@
-The [`{{ data.artifacts.resultsarchive }}`][0] archive contains the ICD10 and
-Phecode results seen on the parent page in Excel (`.xlsx`) format. The
-[`.tar.gz` version][1] is tab-delimited Unix text files with LF [line
-endings][2], intended for post-processing with standard Unix utilities like
-`cut`, `sort`, and `awk`.
+The `.xlxs` and `.tsv` files contain the same ICD10 and Phecode results seen on
+the parent page in Excel 2007-365 (OOXML) and tab-separated value formats,
+respectively. The `.tsv` versions have Unix LF [line endings][2], intended for
+post-processing with standard Unix utilities like `cut`, `sort`, and `awk`.
 
 The [`{{ data.artifacts.supplementarchive }}`][3] archive contains **all
 supplemental datasets** from the [_{{ pub.journal }}_ ({{ pub.year }})

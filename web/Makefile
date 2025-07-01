@@ -3,12 +3,32 @@ SHELL = bash
 THISMAKEFILE = $(firstword $(MAKEFILE_LIST))
 PYTHON = venv/bin/python3
 CONTAINER = web
-# apparently they only keep the most recent release up >:(
-DATATABLES_DOWNLOAD_BUILDER_URL	= https://datatables.net/download/builder?dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3/fh-4.0.3
+# return non-zero for 4xx/5xx errors; silent except errors; follow redirects
+CURL = curl -fsSL
+# Using the DataTables download builder was easier than trying to 'npm install'
+# and then figure out which source files to include in <script> tags -- a
+# complete nightmare.
+#
+# Instead, visit[1] (don't worry about the version numbers, they're ignored),
+# switch to the "Download" tab under Step 3, click the "CDN" tab, copy the base
+# part of that URL (without the filename), use that to update
+# `DATATABLES_CDN_URL` below, then run `make datatables` to build the relevant
+# target.
+#
+# The minimized .js and .css files have URLs at the top that remind you how to
+# re-download. The "Download Builder" (which delivers a .zip file) only
+# supplies the latest release, though which is why we use the CDN URL here[2].
+#
+# [1]: https://datatables.net/download/#dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3
+# [2]: https://datatables.net/forums/discussion/comment/240517/#Comment_240517
+DATATABLES_CDN_URL = https://cdn.datatables.net/v/dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3
+# fixed header didn't work well with the ICD/PHE tabs but add /fh-4.0.3 (or the
+# latest version available from [1]) if you want it
+
 # the UID of the user running this Makefile; used to `chown` the bind mount for
 # DEPLOYDIR so you can update it from the host side with `make deploy`; can't
 # just read this from the environment because it's not exported by default; see
-# https://unix.stackexchange.com/q/541417
+# https://unix.stackexchange.com/q/541417 and comments in `Dockerfile`
 #
 # this whole rigmarole just to get a variable inside a Dockerfile is irritating
 #LOCALUID = $(shell id -u)
@@ -33,27 +53,19 @@ deploy: .static_files_copied .downloads_created .templates_processed  # (alias: 
 
 # copies static assets like theme files and JavaScript libs in place
 static: .static_files_copied
-.static_files_copied: static/theme/* .datatables_installed .npm_installed
+.static_files_copied: static/theme/* static/vendor/datatables.* .npm_installed
 	# rsync static files but *don't* try to preserve owner/group/perms
 	rsync -rv --copy-links$(if $(DRYRUN), --dry-run) \
 	    --exclude=".*.swp" --exclude=node_modules --exclude="package*.json" \
 		static/ $(deploydir)
 	touch $@
 
-datatables: .datatables_installed
-# using the DataTables download builder was easier than trying to 'npm install'
-# and then figure out which source files to include in <script> tags -- a
-# complete nightmare
-#
-# instead, see https://datatables.net/download and right-click to copy the URL
-# from the "Download files" button here, then run this target
-.datatables_installed:
-	-rm static/vendor/DataTables.zip
-	cd static/vendor && curl -sLOJ $(DATATABLES_DOWNLOAD_BUILDER_URL)
-	cd static/vendor && unzip -ou DataTables.zip
-	rm static/vendor/DataTables.zip
-	touch $@
+datatables: static/vendor/datatables.min.js static/vendor/datatables.min.css
+static/vendor/datatables.%:
+	cd static/vendor && $(CURL) --remote-name $(DATATABLES_CDN_URL)/$(notdir $@)
 
+# copy these libraries from static/node_modules to the static site so that it's
+# not necessary to `npm install` for each fresh clone
 VENDOR_THESE_JS_LIBS = \
 	jquery/dist/jquery.min.js \
 	jquery/dist/jquery.min.map \
@@ -89,25 +101,14 @@ transform: .transformed  # [data] transform supplementary data into formats need
 	$(PYTHON) -m lib.transform
 	touch $@
 
-## unused, as the TSV conversion can readily be added to transform.py instead
-#convert: .converted  # [data] convert supplementary data into other formats (e.g., .tsv)
-#.converted:
-#	@echo
-#	mkdir -p $(deploydatadir)
-#	$(PYTHON) -m lib.convert
-#	touch $@
-
 figuresinfile = $(call config,data.figures.infilename)
 figuresoutfile = $(call config,data.figures.outfilename)
-figures: .figures_created
-.figures_created:
+figures: $(deploydatadir)/$(figuresoutfile)
+$(deploydatadir)/$(figuresoutfile):
 	@echo
 	mkdir -p $(deploydatadir)
 	cp -f $(figuresinfile) $(deploydatadir)/$(figuresoutfile)
-	touch $@
 
-resultsarchive = $(call config,data.artifacts.resultsarchive)
-resultstarball = $(call config,data.artifacts.resultstarball)
 supplementarchive = $(call config,data.artifacts.supplementarchive)
 
 archives: .archives_created
@@ -119,27 +120,6 @@ archives: .archives_created
 # refer to the file size of the archives)!
 $(deploydatadir)/README.txt: templates/$(datasubdir)/README.txt
 	$(PYTHON) -m lib.templates $(datasubdir)/README.txt
-
-$(deploydatadir)/$(resultsarchive): $(deploydatadir)/README.txt
-	@echo
-	-rm $@
-	mkdir -p $(deploydatadir)
-	cd $(deploydatadir) && \
-	zip $(resultsarchive) README.txt *Results.xlsx
-
-pubyear = $(call config,pub.year)
-archivesubdir = $(call config,data.artifacts.basename)_$(pubyear)
-
-# like the .zip, except tarballs work better when everything's in a subdir
-$(deploydatadir)/$(resultstarball): $(deploydatadir)/README.txt
-	@echo
-	-rm -r $@ $(deploydatadir)/$(archivesubdir)
-	mkdir -p $(deploydatadir)
-	cd $(deploydatadir) && \
-	mkdir $(archivesubdir) && \
-	cp README.txt *Results.tsv $(archivesubdir) && \
-	tar czvf $(resultstarball) $(archivesubdir)
-	rm -r $(deploydatadir)/$(archivesubdir)
 
 $(deploydatadir)/$(supplementarchive): $(deploydatadir)/README.txt
 	@echo
@@ -155,7 +135,7 @@ $(deploydatadir)/SHA1SUMS:
 	@echo
 	# computing checksums
 	cd $(deploydatadir) && \
-	sha1sum *.zip *.tar.gz > SHA1SUMS
+	sha1sum *.zip > SHA1SUMS
 
 up: serve
 ## not currently used; see comments in `Dockerfile`
@@ -202,15 +182,15 @@ isup: isitup
 isitup:  # [dev] (alias: isup) quick check to see if the site is up
 	@echo
 	# make sure the site is accessible
-	curl -sfL $(publicurl) >/dev/null
+	$(CURL) $(publicurl) >/dev/null
 	
 	@echo
 	# make sure the site's title is intact
-	curl -s $(publicurl) | grep --color '$(pubtitle)'
+	$(CURL) $(publicurl) | grep --color '$(pubtitle)'
 
 puburl = $(call config,pub.url)
 pubdoi = $(call config,pub.pubdoi)
-linkcontains = $$(curl -s $(publicurl) | xmllint --html --xpath 'string(//a[contains(.,"$(1)")]/@href)' -)
+linkcontains = $$($(CURL) $(publicurl) | xmllint --html --xpath 'string(//a[contains(.,"$(1)")]/@href)' -)
 dothelinkswork:
 	@if ! which xmllint >/dev/null 2>&1; then \
 		echo >&2; \
@@ -220,29 +200,19 @@ dothelinkswork:
 	fi
 	
 	@echo
-	# make sure the main links are working; first the .zip file
-	tarball=$(call linkcontains,Download Results); \
-	curl -sSIL $(publicurl)/$$tarball | grep --color 'Content-Type:.*/zip'
-	
-	@echo
 	# now the figures & tables
 	figuresandtables=$(call linkcontains,Download Supplementary Figures & Tables); \
-	curl -sSIL $(publicurl)/$$figuresandtables \
+	$(CURL) -I $(publicurl)/$$figuresandtables \
  	  | grep --color 'Content-Type:.*/pdf'
 	
 	@echo
 	# now the supplemental datasets
 	supplemental=$(call linkcontains,Download Supplementary Datasets); \
-	curl -sSIL $(publicurl)/$$supplemental | grep --color 'Content-Type:.*/zip'
-	
-	@echo
-	# now the Unix .tar.gz file
-	tarball=$(call linkcontains,Unix LF line endings); \
-	curl -sSIL $(publicurl)/$$tarball | grep --color 'Content-Type:.*/x-gzip'
+	$(CURL) -I $(publicurl)/$$supplemental | grep --color 'Content-Type:.*/zip'
 	
 	@echo
 	# make sure the publication link is working
-	curl -s $(publicurl) \
+	$(CURL) $(publicurl) \
 	  | xmllint --html --xpath '//p[contains(.,"Please cite")]/a/@href' - \
 	  | grep --color "$(puburl)"
 

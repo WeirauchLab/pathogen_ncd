@@ -1,3 +1,4 @@
+{% from  "_macros.html" import authorlist, top -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,28 +33,34 @@
     </div>
 
     <div id="header">
-      <h1 id="headline">{{ site.headline }}</h1>
-      <!--h3 id="tagline"></h3-->
+      <h1 id="headline">{{ pub.headline }}</h1>
+      <h3 id="tagline"><em>{{ pub.journal }}</em>&thinsp; {{ pub.issue }} ({{ pub.year }}). 
+        <a href="{{ pub.url }} ">{{ pub.doi }}</a>
+      </h3>
+      
 {% include "_partials/authors.html" %}
 
       <div class="actions actions-top">
-        {%- set resultszip = data.artifacts.subdir ~ "/" ~ data.artifacts.resultsarchive %}
-        {%- set resultsfilesize = (site.deploydatadir ~ "/" ~ data.artifacts.resultsarchive) | filesize -%}
-        <a href="{{ resultszip }}">
-          <button id="download-btn"
-                  title="Download results datasets, released {{ date.releasedate }} ({{ resultsfilesize }}); .zip format"
-          >
-              <strong>Download Results</strong>
-              <small>Excel format ({{ resultsfilesize }})</small>
-          </button>
-        </a>
+        <div class="section-links">
+          <a href="#abstract" title="View the paper's abstract">Abstract</a>
+          |
+          <a href="#overview" title="View a graphical overview of the study in flowchart form"
+          >Study Overview</a>
+          |
+          <a id="search-link" href="#search"
+             title="A searchable, tabular view of pathogen-disease associations"
+          ><strong>Explore All Results</strong></a>
+          |
+          <a href="#how-to-cite" title="View citation information or contact the corresponding authors"
+          >Cite or Give Feedback</a>
+        </div><!-- /.section-links -->
 
         {%- set figuresandtables = data.artifacts.subdir ~ "/" ~ data.figures.outfilename %}
         {% set figuresfilesize = (site.deploydatadir ~ "/" ~ data.figures.outfilename) | filesize -%}
         <a href="{{ figuresandtables }}">
           <button title="Supplementary figures and tables from the {{ pub.journal }} {{ pub.year }} paper">
               Download Supplementary Figures &amp; Tables
-              <small>From the {{ pub.journal }} {{ pub.year }} paper ({{ figuresfilesize }})</small>
+              <small>from the {{ pub.journal }} {{ pub.year }} paper ({{ figuresfilesize }})</small>
           </button>
         </a>
 
@@ -62,83 +69,41 @@
         <a href="{{ supplementzip }}">
           <button type="button" title="Download supplementary datasets from the publication (as a .zip archive)">
             Download Supplementary Datasets
-            <small>From the {{ pub.journal }} {{ pub.year }} paper ({{ supplementfilesize }})</small>
+            <small>from the {{ pub.journal }} {{ pub.year }} paper ({{ supplementfilesize }})</small>
           </button>
         </a>
 
-        <a href="#search">
-          <button id="search-btn" onclick="location.href='#search'">Explore Results<small>No Download Required</small></button>
-        </a>
-
-        <div class="subtle-link" id="links-to-footer">
+        <div class="underlinks">
           <p>
-            {% set tarball = data.artifacts.subdir ~ "/" ~ data.artifacts.resultstarball -%}
-            {%- set tarballsize = (site.deploydatadir ~ "/" ~ data.artifacts.resultstarball) | filesize -%}
-            <a href="{{ tarball }}"
-               title="Download results datasets as TSV, Unix LF line endings, released {{ releasedate }} ({{ tarballsize }}); .tar.gz format"
-            >Results datasets as <tt>.tsv</tt> with Unix LF line endings</a>
-            &nbsp;|&nbsp;
             <a href="{{ data.artifacts.subdir }}/SHA1SUMS"
                title="SHA1 checksums, for verifying download integrity"
             >Checksums</a>
             &nbsp;|&nbsp;
             <a href="data" title="View all available downloads">All downloads</a>
           </p>
-        </div>
+        </div><!--/.underlinks-->
       </div><!--/.actions.actions-top-->
     </div><!--/#header-->
 
     <hr>
 
-    <div id="abstract">
-      <h2>Abstract</h2>
+    <div id="summary">
+      <h2>Plain Language Summary</h2>
+{% include "_partials/summary.html" %}
+
+      <hr>
+
+      <h2 id="abstract">Abstract {{ top() }}</h2>
 {% include "_partials/abstract.html" %}
 
-      <h2 id="how-to-cite">How to Cite</h2>
-      <p>
-      Please cite this article as: {{ pub.author.surname}} <em>et al.</em>, 
-        {{ pub.title }}, {{ pub.journal }} ({{ pub.year }}),
-        <a href="{{ pub.url }}">{{ pub.url }}</a>
-      </p>
-
-      <h2 id="feedback">Feedback</h2>
-      <p>
-        Have feedback on how we can make this resource better?
-        <a href="mailto:{{ site.adminemail }}?subject={{ site.emailsubject | urlencode }}">
-          Let us know</a>.
-      </p>
-      <br>
-
-{#-
-      <h2>Database Release History</h2>
-      <p>
-        The latest database build is
-        <a title="Download database build PUBDBVER as .zip bundle (PUBDBZIPSIZE)" href="PUBDBZIP"><strong>PUBDBVER</strong></a>,
-        released <strong>PUBDBRELEASEDATE</strong>.
-        m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', `A description of previous builds follows:')
-       A description of previous builds follows:
-      </p>
-      <!-- generated by 'git tag -n' -->
-      <!-- m4_ifelse(m4_len(PUBDBRELEASEHISTORY), `0', `', PUBDBRELEASEHISTORY) -->
-      <p>
-        The data searchable in the table below is also
-        <a href="data">provided for download</a> in several different formats,
-        including tab-delimited (suitable for import into a spreadsheet program
-        like Excel or LibreOffice Calc) and SQLite.
-      </p>
-      <p>
-        The <a href="PUBDBZIP"><code>.zip</code> archive</a> simply
-        contains all of them in one compressed bundle.
-      </p>
-
-      <div class="actions">
-        <button type="button" title="Download data in other formats such as tab-delimited, SQLite database" onclick="location.href='data'">
-          <a href="data">Download Other Formats<small>Tab-delimited, SQLite database</small></a>
-        </button>
-      </div><!--/.actions-->
--#}
-
-    </div><!--/#abstract-->
+      <h2 id="overview">Study Overview {{ top() }}</h2>
+      <figure>
+        <a href="img/figure_1.svg" title="View or download figure">
+          <img alt="Study overview illustrated as a flowchart" src="img/figure_1.svg">
+        </a>
+        <figcaption>Overview of study design</figcaption>
+      </figure>
+    </div><!--/#summary-->
 
     <hr>
 
@@ -146,11 +111,7 @@
 
   <div id="search" class="top">
     <h2>
-      Explore All Results
-      <button title="Back to the top" id="search-to-top-btn"
-              onclick="location.href='#top'">
-        <a href="#top">&uparrow;</a>
-      </button>
+      Explore All Results {{ top() }}
     </h2>
 
     <div id="search-help-container">
@@ -175,12 +136,10 @@
           the <code>{{ data.artifacts.subdir }}</code> directory
         </a> for other formats.
 {#
-        <p>
-          Cell values with dotted underlines styling are clickable, and will
-          open in the relevant web site <strong>in the current window/tab</strong>.
-          Hold down the <kbd>Ctrl</kbd> key on the keyboard (or <kbd>⌘</kbd> on
-          a Mac) as you click to open these links in a new tab.
-        </p>
+        <p>Cell values with dotted underlines styling are clickable, and will
+        open in the relevant web site <strong>in the current window/tab</strong>.
+        Hold down the <kbd>Ctrl</kbd> key on the keyboard (or <kbd>⌘</kbd> on
+        a Mac) as you click to open these links in a new tab.
 #}
       </div><!-- /.search-help -->
 
@@ -262,11 +221,28 @@
   </div><!-- /#credits -->
 {% endif -%}
 
-  <div class="actions actions-bottom">
+
+  <div id="cite-and-feedback" class="wrapper">
+    <h2 id="how-to-cite">How to Cite {{ top() }}</h2>
+    <p>
+    Please cite this resource as: {{ authorlist(3, etal=true) }}, 
+      {{ pub.title }}. <em>{{ pub.journal }}</em>&thinsp; {{ pub.issue}} ({{ pub.year }}).
+      <a href="{{ pub.url }}">{{ pub.url }}</a>
+    </p>
+
+    <h2 id="feedback">Feedback</h2>
+    <p>
+      Have feedback on how we can make this resource better?
+      <a href="mailto:{{ pub.contacts | map(attribute='email') | join(',') }}?subject={{ site.emailsubject | urlencode }}">
+        Let us know</a>.
+    </p>
+  </div><!--/#cite-and-feedback.wrapper-->
+
+  <div class="actions actions-bottom wrapper">
     <button id="to-top-btn" onclick="location.href='#top'">
-      <a href="#top">&uparrow; Back to Top &uparrow;</a>
+      <a href="#top">🢁 Back to Top 🢁</a>
     </button>
-  </div>
+  </div> <!--/.actions-bottom-->
 
   <div id="footer" class="footer">
     <p>
