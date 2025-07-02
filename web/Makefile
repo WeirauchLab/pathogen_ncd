@@ -33,7 +33,10 @@ DATATABLES_CDN_URL = https://cdn.datatables.net/v/dt/dt-2.3.2/b-3.2.3/b-html5-3.
 # this whole rigmarole just to get a variable inside a Dockerfile is irritating
 #LOCALUID = $(shell id -u)
 
-config = $(shell python -m lib.config --json --get $(1) | jq -r)
+# the seemingly-superfluous DEPLOYTO here makes sure DEPLOYTO is actually in
+# the environment if you call e.g. `make site DEPLOYTO=dev` instead of
+# `DEPLOYTO=dev make site`
+config = $(shell $(if $(DEPLOYTO),DEPLOYTO=$(DEPLOYTO) )python -m lib.config --json --get $(1) | jq -r)
 host = $(call config,site.deploy.host)
 port = $(call config,site.deploy.port)
 deploydir = $(call config,site.deploydir)
@@ -91,7 +94,7 @@ process_templates: .templates_processed
 
 data: downloads
 downloads: .downloads_created  # [data] creates downloadable archives from supplemental datasets
-.downloads_created: .transformed .figures_created .archives_created $(deploydatadir)/SHA1SUMS
+.downloads_created: .transformed .archives_created .figures_created $(deploydatadir)/SHA1SUMS
 	touch $@
 
 transform: .transformed  # [data] transform supplementary data into formats needed for the web site
@@ -103,7 +106,8 @@ transform: .transformed  # [data] transform supplementary data into formats need
 
 figuresinfile = $(call config,data.figures.infilename)
 figuresoutfile = $(call config,data.figures.outfilename)
-figures: $(deploydatadir)/$(figuresoutfile)
+figures: .figures_created
+.figures_created: $(deploydatadir)/$(figuresoutfile)
 $(deploydatadir)/$(figuresoutfile):
 	@echo
 	mkdir -p $(deploydatadir)
@@ -112,7 +116,7 @@ $(deploydatadir)/$(figuresoutfile):
 supplementarchive = $(call config,data.artifacts.supplementarchive)
 
 archives: .archives_created
-.archives_created: $(deploydatadir)/$(resultsarchive) $(deploydatadir)/$(resultstarball) $(deploydatadir)/$(supplementarchive)
+.archives_created: $(deploydatadir)/$(supplementarchive)
 	touch $@
 
 # this has to be processed first, so it can be put inside the archives, which

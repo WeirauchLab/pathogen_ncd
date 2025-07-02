@@ -90,7 +90,7 @@ def process_templates(templates=None, deploydir=None, config=None):
             os.makedirs(destpath, exist_ok=True)
 
             for f in files:
-                if f.endswith('.swp'):  # FIXME: other editor swap files
+                if f.startswith('_') or f.endswith('.swp'):
                     continue
 
                 destfile = os.path.join(destpath, f)
