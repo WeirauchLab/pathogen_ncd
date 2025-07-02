@@ -7,7 +7,6 @@ What's here:
   - described below; run `make` for help
 - `git-pre-commit-hook`
   - described below; use this to block Git checkins if metadata present
-- `samples.xlsx`
 - `supplementary_data_1.xlsx`
 - `supplementary_data_2.xlsx`
   - results based on Phecodes; used for the "PHE" tab on the website
@@ -21,7 +20,9 @@ What's here:
 - `supplementary_data_9.xlsx`
 - `supplementary_data_10.xlsx`
 - `supplementary_data_legends.pdf`
+  - description of datasets; same as "README" tab for each workbook
 - `supplementary_info.pdf`
+  - supplementary figures and tables from the publication
 
 Sanitizing metadata
 -------------------
@@ -41,10 +42,11 @@ files that contain sensitive metadata.
 
 ### Scrubbing metadata from Office file formats
 
-The best option for the time being is to use the built-in facilities of Excel,
-Word, and so on for this. They appear to be the most full-featured with the
-Windows versions, and may not exist (or may be present only in a limited form)
-with the online / Office 365 versions of the Office apps.
+If you already have Microsoft Office, the best (no-extra-cost) option for the
+time being is to use the built-in facilities of Excel, Word, and so on for
+this. They appear to be the most full-featured with the Windows versions, and
+may not exist (or may be present only in a limited form) with the online /
+Office 365 versions of the Office apps.
 
 An example of this procedure (using Excel) is documented as an SOP on the lab's
 wiki.
@@ -68,9 +70,19 @@ system, various bits of Python, and [GLib], which is not a straightforward
 install in our computing environment. PDFtk on the other hand requires only
 Java, and a standalone binary is also available.
 
+BatchPurifier, mentioned above, will handle scrubbing PDF metadata as well.
 
-// Kevin Ernst, 14 Dec 2023; updated Dec 2024
 
+### Commercial software alternatives
+
+I also had success with [BatchPurifier][bp], after widening the search to
+include commerical software. It's licensed per-_computer_ rather than per-user,
+but individual licenses are cheap and it does what it says on the tin.
+
+
+// Kevin Ernst, 14 Dec 2023; updated 2 July 2025
+
+[bp]: https://www.digitalconfidence.com/BatchPurifier.html
 [mat2]: https://0xacab.org/jvoisin/mat2
 [tika]: https://tika.apache.org
 [pdftk]: https://gitlab.com/pdftk-java/pdftk
