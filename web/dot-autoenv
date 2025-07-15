@@ -1,0 +1,7 @@
+# an example `.autoenv` for use with https://github.com/hyperupcall/autoenv
+# copy to `.autoenv` in the project directory, and be sure to add `export
+# AUTOENV_ENV_FILENAME=.autoenv` to your .bashrc
+source "$AUTOENV_CUR_DIR"/venv/bin/activate
+eval "$(invoke --print-completion-script=bash)"
+# the default is 'local'
+#export DEPLOYTO=local

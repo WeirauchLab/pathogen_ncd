@@ -53,7 +53,7 @@ config: venv  # (alias: conf) pretty-prints parsed TOML configs [try JSON=1, KEY
 	@$(PYTHON) -m lib.config$(if $(JSON), --json)$(if $(KEY), --get $(KEY))
 
 site: deploy
-deploy: .static_files_copied .downloads_created .templates_processed  # (alias: site) copies HTML, assets, and downloads [try DEPLOYTO=]
+deploy: .static_files_copied .templates_processed $(deploydatadir)/SHA1SUMS  # (alias: site) copies HTML, assets, and downloads [try DEPLOYTO=]
 
 # copies static assets like theme files and JavaScript libs in place
 static: .static_files_copied
@@ -95,7 +95,7 @@ process_templates: .templates_processed
 
 data: downloads
 downloads: .downloads_created  # [data] creates downloadable archives from supplemental datasets
-.downloads_created: .transformed .archives_created .figures_created $(deploydatadir)/SHA1SUMS
+.downloads_created: .transformed .archives_created .figures_created
 	touch $@
 
 transform: .transformed  # [data] transform supplementary data into formats needed for the web site
@@ -136,7 +136,7 @@ $(deploydatadir)/$(supplementarchive): $(deploydatadir)/README.txt
 sums: checksums
 checksum: checksums
 checksums: $(deploydatadir)/SHA1SUMS  # [data] re-computes checksums of downloadable archives
-$(deploydatadir)/SHA1SUMS:
+$(deploydatadir)/SHA1SUMS: .downloads_created
 	@echo
 	# computing checksums
 	cd $(deploydatadir) && \
@@ -181,7 +181,8 @@ publicurl = $(call config,site.deploy.publicurl)
 pubtitle = $(call config,pub.title)
 
 tests: test
-test: isitup dothelinkswork  # [dev] run some simple functional tests on live web site
+test: isitup dothelinkswork arechecksumsok  # [dev] run some simple functional tests on live web site
+	@echo -e "\nAll tests OK."
 
 isup: isitup
 isitup:  # [dev] (alias: isup) quick check to see if the site is up
@@ -221,10 +222,19 @@ dothelinkswork:
 	  | xmllint --html --xpath '//p[contains(.,"Please cite")]/a/@href' - \
 	  | grep --color "$(puburl)"
 
+arechecksumsok:
+	@echo
+	# make sure checksums for all downloads match computed
+	$(CURL) -O $(publicurl)/$(datasubdir)/SHA1SUMS
+	$(CURL) -O $(publicurl)/$(datasubdir)/$(supplementarchive)
+	sha1sum -c SHA1SUMS
+	-rm SHA1SUMS $(supplementarchive)
+
 
 clean:  # removes compiled bytecode and other detritus
 	# remove Python precompiled bytecode
 	-rm -rf __pycache__ lib/__pycache__
+	-rm $(supplementarchive) SHA1SUMS
 
 cleanjs:
 	-rm -rf static/node_modules

@@ -1,6 +1,7 @@
 # for https://github.com/hyperupcall/autoenv; basically just runs
 # `venv/bin/active`, so not super-useful to anyone else right now
 .env
+.autoenv
 .ipynb_checkpoints/
 *.ipynb
 .~lock*
