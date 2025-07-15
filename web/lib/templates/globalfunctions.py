@@ -10,9 +10,10 @@ License:  GPL; see LICENSE.txt in the top-level directory
 import os
 from ..util import pushd
 
-__all__ = ['gitinfo']
 # how many parent directories to search looking for `.git`
 GIT_CHECK_ANCESTORS = 2
+
+__all__ = ['gitinfo']
 
 
 def find_git_dir(ancestors=GIT_CHECK_ANCESTORS):

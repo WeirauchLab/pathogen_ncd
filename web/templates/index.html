@@ -1,4 +1,4 @@
-{% from  "_macros.html" import authorlist, top -%}
+{% from  "_macros.html" import authorlist, top, sectionlink -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +25,8 @@
     </p>
   </div><!--/.dev-banner-->
 {%- endif %}
-  <div id="top" class="top">
+  <div class="top">
+    <span id="stop"></span>
     <div id="logos">
       <a href="{{ site.meta.labhome }}" title="Visit the {{ site.meta.lab }} home page">
         <img src="img/cchmc.png" alt="Children's Hospital logo">
@@ -44,10 +45,7 @@
         <div class="section-links">
           <a href="#abstract" title="View the paper's abstract">Abstract</a>
           |
-          <a href="#overview" title="View a graphical overview of the study in flowchart form"
-          >Study Overview</a>
-          |
-          <a id="search-link" href="#search"
+          <a id="search-link" href="#explore-all-results"
              title="A searchable, tabular view of pathogen-disease associations"
           ><strong>Explore All Results</strong></a>
           |
@@ -90,15 +88,15 @@
     <hr>
 
     <div id="summary">
-      <h2>Plain Language Summary</h2>
+    <h2>{{ sectionlink("Plain Language Summary") }}</h2>
 {% include "_partials/summary.html" %}
 
       <hr>
 
-      <h2 id="abstract">Abstract {{ top() }}</h2>
+      <h2>{{ sectionlink("Abstract") }}</h2>
 {% include "_partials/abstract.html" %}
 
-      <h2 id="overview">Study Overview {{ top() }}</h2>
+      <h2>{{ sectionlink("Study Overview") }}</h2>
       <figure>
         <a href="img/figure_1.svg" title="View or download figure">
           <img alt="Study overview illustrated as a flowchart" src="img/figure_1.svg">
@@ -112,9 +110,7 @@
   </div><!--/#top-->
 
   <div id="search" class="top">
-    <h2>
-      Explore All Results {{ top() }}
-    </h2>
+    <h2>{{ sectionlink("Explore All Results") }}</h2>
 
     <div id="search-help-container">
       <div id="search-help" style="display:none">
@@ -225,14 +221,14 @@
 
 
   <div id="cite-and-feedback" class="wrapper">
-    <h2 id="how-to-cite">How to Cite {{ top() }}</h2>
+    <h2>{{ sectionlink("How to Cite") }}</h2>
     <p>
     Please cite this resource as: {{ authorlist(3, etal=true) }}, 
       {{ pub.title }}. <em>{{ pub.journal }}</em>&thinsp; {{ pub.issue}} ({{ pub.year }}).
       <a href="{{ pub.url }}">{{ pub.url }}</a>
     </p>
 
-    <h2 id="feedback">Feedback</h2>
+    <h2>{{ sectionlink("Feedback") }}</h2>
     <p>
       Have feedback on how we can make this resource better?
       <a href="mailto:{{ pub.contacts | map(attribute='email') | join(',') }}?subject={{ site.emailsubject | urlencode }}">
@@ -240,11 +236,11 @@
     </p>
   </div><!--/#cite-and-feedback.wrapper-->
 
-  <div class="actions actions-bottom wrapper">
+  <!--div class="actions actions-bottom wrapper">
     <button id="to-top-btn" onclick="location.href='#top'">
       <a href="#top">🢁 Back to Top 🢁</a>
     </button>
-  </div> <!--/.actions-bottom-->
+  </div--> <!--/.actions-bottom-->
 
   <div id="footer" class="footer">
     <p>

@@ -203,6 +203,7 @@ hr {
 .back-to-top-btn {
   height: 2em;
   font-size: 0.4em;
+  vertical-align: bottom;
 }
 
 .actions-bottom {
@@ -678,6 +679,11 @@ p.small {
 
 .footer h1, .footer h2, .footer h3, .footer h4, .footer h5, .footer h6 {
   padding:0;
+}
+
+/* Source: https://css-tricks.com/on-target */
+:target {
+  animation: highlight 1.5s 1;
 }
 
 @keyframes highlight {

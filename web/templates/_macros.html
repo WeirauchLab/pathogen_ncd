@@ -5,12 +5,19 @@
 {%- if loop.last %}{% if etal %} <em>et al.</em>{% endif %}{% else %}, {% endif %}
 {%- endfor %}
 {%- endmacro %}
+
 {% macro top() -%}
       <button title="Back to the top" class="back-to-top-btn"
               onclick="location.href='#top'">
         <a href="#top">🢁</a>
       </button>
 {%- endmacro %}
+
+{% macro sectionlink(title, slug=None) %}
+{%- if not slug %}{% set slug = title | slugify %}{% endif %}
+      <span id="{{ slug }}"><a href="#{{ slug }}">{{ title }}</a></span>
+      {{ top() }}
+    {% endmacro %}
 {#-
 vim ft=html+jinja2
 -#}
