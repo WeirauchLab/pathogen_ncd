@@ -83,6 +83,7 @@ title = "UKB FDR"
 description = "Per-disease BH FDR adjusted UKB nominal p-value"
 #width = "8%"
 type = "num"
+renderer = "naSortsLast"
 
 [[datasources.ICD.columns]]
 targets = 6
@@ -91,6 +92,7 @@ title = "TNX FDR"
 description = "Per-disease BH FDR adjusted TNX nominal p-value"
 #width = "8%"
 type = "num"
+renderer = "naSortsLast"
 
 [[datasources.ICD.columns]]
 targets = 7
@@ -99,6 +101,7 @@ title = "UKB OR"
 description = "Odds ratio for UKB pathogen titer [continuous]"
 #width = "5%"
 type = "num"
+renderer = "naSortsLast"
 
 [[datasources.ICD.columns]]
 targets = 8
@@ -107,6 +110,7 @@ title = "TNX OR"
 description = "Odds ratio for TNX test [categorical]"
 #width = "5%"
 type = "num"
+renderer = "naSortsLast"
 
 
 [[datasources.PHE.columns]]
@@ -152,6 +156,7 @@ title = "UKB FDR"
 description = "Per-disease BH FDR adjusted UKB nominal p-value"
 #width = "8%"
 type = "num"
+renderer = "naSortsLast"
 
 [[datasources.PHE.columns]]
 targets = 6
@@ -160,6 +165,7 @@ title = "TNX FDR"
 description = "Per-disease BH FDR adjusted TNX nominal p-value"
 #width = "8%"
 type = "num"
+renderer = "naSortsLast"
 
 [[datasources.PHE.columns]]
 targets = 7
@@ -168,6 +174,7 @@ title = "UKB OR"
 description = "Odds ratio for UKB titer [continuous]"
 #width = "8%"
 type = "num"
+renderer = "naSortsLast"
 
 [[datasources.PHE.columns]]
 targets = 8
@@ -176,6 +183,7 @@ title = "TNX OR"
 description = "Odds ratio for TNX association test [categorical]"
 #width = "8%"
 type = "num"
+renderer = "naSortsLast"
 
 
 # for 'order' parameter in the DataTable initializer; applies to both tables

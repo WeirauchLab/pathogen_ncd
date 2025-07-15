@@ -1,3 +1,11 @@
+"""
+Tasks for `invoke`; run `invoke help` for usage.
+
+Author:    Kevin Ernst <kevin.ernst -at- cchmc.org>
+License:   GPL; see LICENSE.txt in the parent directory
+
+© 2025 Cincinnati Children's Hospital Medical Center and the author(s)
+"""
 import os, sys, shutil, logging, invoke
 from lib.config import load_config
 from lib.util import pushd, UL, BOLDBLUE, BOLDGREEN, RESET

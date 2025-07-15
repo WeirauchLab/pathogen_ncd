@@ -2,7 +2,10 @@
 Transform supplementary data spreadsheets into the ones for the web site
 
 Authors:  Mike Lape, PhD; Kevin Ernst
-Date:    3 January 2025
+Date:     3 January 2025
+License:  GPL; see LICENSE.txt in the top-level directory
+
+© 2025 Cincinnati Children's Hospital Medical Center and the author(s)
 """
 import os
 import sys

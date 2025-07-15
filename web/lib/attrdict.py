@@ -1,3 +1,10 @@
+"""
+Attribute-accessible dicts (like JavaScript); primarily for use in Jinja
+templates
+
+Authors:  Kevin Ernst <kevin.ernst -at- cchmc.org>; Chris Griffith
+License:  MIT; under the same terms as cdgriffith/Reusables
+"""
 import json
 from collections.abc import Mapping
 
@@ -10,7 +17,7 @@ class AttrDict(dict):
     * see also this SO thread: `Accessing dict keys like an attribute?`_"
     * see also `cdgriffith/Box`_, which is what `Dynaconf`_ uses under the hood
 
-    Incorporates code from `cdgriffith/Reusables`_ (c) 2014-2020 - Chris
+    Incorporates code from `cdgriffith/Reusables` (c) 2014-2020 - Chris
     Griffith - MIT License
 
     .. _cdgriffith/Reusables: https://github.com/cdgriffith/Reusables

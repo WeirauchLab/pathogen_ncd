@@ -1,3 +1,11 @@
+"""
+Python functions for self-documenting a Makefile
+
+Author:   Kevin Ernst <kevin.ernst -at- cchmc.org>
+License:  GPL; see LICENSE.txt in the top-level directory
+
+© 2025 Cincinnati Children's Hospital Medical Center and the author(s)
+"""
 from .config import use_config
 from .util import BLUE, BOLD, BOLDUL, BOLDBLUE, RESET
 
