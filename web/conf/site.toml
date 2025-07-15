@@ -12,10 +12,10 @@ shortname = "lape2025"
 deployto = "${DEPLOYTO:-local}"
 # live-reload assets with Live.js; automatically disabled if deployto="prod"
 livereload = false
-sourceurl = "https://tfinternal.research.cchmc.org/gitlab/mike/pathogen_ncd"
+sourceurl = "https://github.com/weirauchlab/pathogen_ncd"
 issuesurl = "{sourceurl}/issues"
 # version string for the repository (code + web site)
-sourcever = "0.1.0"
+#sourcever = "1.0.0"
 adminemail = "tftoolsadmin@cchmc.org"
 emailsubject = "Pathogen / NCD Website"
 # whether to credit Apaxy mod_autoindex theme in the footer
@@ -54,13 +54,11 @@ publicurl = "http://{host}:{port}{urlbase}"
 deploydir = "local.deploy"
 
 [deploy.dev]
-host = "bmitfwebd1"
 urlbase = "/pubs/{shortname}"
 publicurl = "https://tfwebdev.research.cchmc.org{urlbase}"
 deploydir = "/var/www/html{urlbase}"
 
 [deploy.prod]
-host = "bmitfwebp1"
 urlbase = "/pubs/{shortname}"
 publicurl = "https://tf.cchmc.org{urlbase}"
 deploydir = "/var/www/html{urlbase}"

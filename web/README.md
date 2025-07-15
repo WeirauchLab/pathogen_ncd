@@ -1,5 +1,7 @@
 # Pathogens and non-communicable diseases web site
 
+_See [the parent directory's README](../README.md) for citation information._
+
 Deployment steps (from a fresh clone):
 
 ```bash
