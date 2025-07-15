@@ -143,6 +143,15 @@ function scrollTabsToTop() {
   $('html, body').animate({ scrollTop: tabsTop }, 500);
 }
 
+function naSortsLast(data, type, row) {
+  // custom DataTables renderer that makes sure "n/a"s sort at the bottom
+  if (type == 'display') {
+    return data;
+  } else if (type == 'sort' || type == 'filter') {
+    return data == 'n/a' ? -1 : parseFloat(data);
+  }
+}
+
 function loadTab(which, scrollTo = true) {
   var tsv = `data/{{ data.artifacts.basename }}_${which}_Results.tsv`;
   var tableDiv = $('#table-' + which.toLowerCase());
@@ -152,6 +161,14 @@ function loadTab(which, scrollTo = true) {
 {%- endfor %}
   };
   var columnDefs = columnDefs[which];
+
+  // sort ORs and FDRs with a custom renderer
+  for (i = 0; i < columnDefs.length; i++) {
+    if (columnDefs[i].name.endsWith('OR') || columnDefs[i].name.endsWith('FDR')) {
+      columnDefs[i].render = naSortsLast;
+    }
+  }
+
   var loadingMsg = $('#table-viewer .loading');
 
   $('#table-viewer').children().hide();
@@ -191,16 +208,15 @@ function loadTab(which, scrollTo = true) {
           columnDefs: columnDefs,
           order: {{ data.ordering | tojson }},
           layout: {
-              //topStart: [ 'pageLength', { buttons: ['colvis'] } ],
-              topEnd: [
-                  { buttons:
-                    [
-                      { extend: 'copy', text: 'Copy' },
-                      { extend: 'csv', text: 'Download CSV' }
-                    ]
-                  },
-                  'search',
-              ],
+            //topStart: [ 'pageLength', { buttons: ['colvis'] } ],
+            topEnd: [
+              { buttons: [
+                  { extend: 'copy', text: 'Copy' },
+                  { extend: 'csv', text: 'Download CSV' },
+                ]
+              },
+              'search',
+            ],
           },
           scrollX: false,
           lengthMenu: [[10, 25, 100, 500, -1], [10, 25, 100, 500, "All"]],
@@ -209,15 +225,9 @@ function loadTab(which, scrollTo = true) {
           //fixedHeader: true,
           // https://datatables.net/reference/option/deferRender
           deferRender: true,
-          // https://datatables.net/examples/advanced_init/row_callback.html
-          // better to do stuff like this in lib/transform.py, but here's how…
-          //createdRow: (r, d, i) => {
-          //  // debugging:
-          //  //for (let i = 0; i < d.length; i++) {
-          //  //  console.log(`data cell d[${i}] (${d[i]}) is ${r.querySelector(`:nth-child(${i+1})`).textContent}`);
-          //  //}
-          //  //if (d[6] == "") r.querySelector(':nth-child(7)').textContent = 'n/a';
-          //  //if (d[8] == "") r.querySelector(':nth-child(9)').textContent = 'n/a';
+          //columnControl: {
+          //  target: 1,
+          //  content: ['search']
           //},
       }); // DataTable init
 

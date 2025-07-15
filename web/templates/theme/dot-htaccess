@@ -24,7 +24,7 @@
     AddDescription "{{ data.figures.description }}" {{ data.figures.outfilename }}
     AddDescription "SHA1 checksums to validate archive integrity" SHA1SUMS
     AddDescription "MD5 checksums to validate archive integrity" MD5SUMS
-    AddDescription "Tab-delmited text, Unix LF line endings" *.tsv
+    AddDescription "Tab-delimited text, Unix LF line endings" *.tsv
     AddDescription "Excel 2007-365 (OOXML) workbook" *.xlsx
 
 #

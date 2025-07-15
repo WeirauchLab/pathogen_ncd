@@ -98,6 +98,7 @@ name = "UKB OR"
 title = "UKB OR"
 description = "Odds ratio for UKB pathogen titer [continuous]"
 #width = "5%"
+type = "num"
 
 [[datasources.ICD.columns]]
 targets = 8
@@ -105,54 +106,7 @@ name = "TNX OR"
 title = "TNX OR"
 description = "Odds ratio for TNX test [categorical]"
 #width = "5%"
-
-#[[datasources.ICD.columns]]
-#targets = 6
-#name = "UKB_adj_p"
-#title = "UKB adj. p"
-#description = "Per-disease BH FDR adjusted UKB nominal p-value"
-#width = "8%"
-#
-#[[datasources.ICD.columns]]
-#targets = 7
-#name = "TNX_adj_p"
-#title = "TNX adj. p"
-#description = "Per-disease BH FDR adjusted TNX nominal p-value"
-#width = "10%"
-#[[datasources.ICD.columns]]
-#targets = 10
-#name = "Replication_Status"
-#title = "Replication status"
-#description = "The UKB-TNX replication status for this dis-org pair [could_not: UKB sig, not enough TNX data to try replication; did_not_attempt: UKB not sig, so no replication attempted; did_not: UKB sig, TNX not sig; rep: UKB sig, TNX sig]"
-#visible = false
-#
-#[[datasources.ICD.columns]]
-#targets = 11
-#name = "UKB_nCase"
-#title = "UKB number of cases"
-#description = "Number of cases in UKB analysis"
-#visible = false
-#
-#[[datasources.ICD.columns]]
-#targets = 12
-#name = "UKB_nControl"
-#title = "UKB number of controls"
-#description = "Number of controls in UKB analysis"
-#visible = false
-#
-#[[datasources.ICD.columns]]
-#targets = 13
-#name = "TNX_nCase"
-#title = "TNX number of cases"
-#description = "Number of cases in TNX analysis"
-#visible = false
-#
-#[[datasources.ICD.columns]]
-#targets = 14
-#name = "TNX_nControl"
-#title = "TNX number of controls"
-#description = "Number of controls in TNX analysis"
-#visible = false
+type = "num"
 
 
 [[datasources.PHE.columns]]

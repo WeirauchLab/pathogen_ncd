@@ -83,6 +83,12 @@ REPLACE_VALUES = {
     },
 }
 
+# drop entire rows if any of these columns contain the listed values
+# (ref: GitLab mike/pathogen_ncd#50)
+DROP_VALUES = {
+    'Std. Lev.': ['NA'],
+}
+
 
 def coerce_numeric(col):
     cname = col.name
@@ -139,6 +145,9 @@ def transform(source, config=None):
     for column in REPLACE_VALUES.keys():
         newcol = df[column].replace(REPLACE_VALUES[column])
         df[column] = newcol
+
+    for column in DROP_VALUES.keys():
+        df = df[~df[column].isin(DROP_VALUES[column])]
 
     for column in COERCE_NUMERIC:
         newcol = coerce_numeric(df[column])

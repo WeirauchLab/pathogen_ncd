@@ -22,6 +22,7 @@ CURL = curl -fsSL
 # [1]: https://datatables.net/download/#dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3
 # [2]: https://datatables.net/forums/discussion/comment/240517/#Comment_240517
 DATATABLES_CDN_URL = https://cdn.datatables.net/v/dt/dt-2.3.2/b-3.2.3/b-html5-3.2.3
+# for ColumnControl, add /cc-1.0.6
 # fixed header didn't work well with the ICD/PHE tabs but add /fh-4.0.3 (or the
 # latest version available from [1]) if you want it
 
@@ -233,7 +234,7 @@ distclean: clean cleanjs  # 'make clean' plus removes checkpoint files and Node.
 	-rm .*ed
 	-rm -rf .ipynb_checkpoints
 
-reallyclean: distclean
+reallyclean: distclean  # 'make distclean' plus remove local deploy dir
 	@echo
 	@if [[ "$(call config,site.deployto)" != prod ]]; then \
 		read -p "This will remove the local deploy dir, '$(deploydir)', OK? [Y/n] "; \
