@@ -157,7 +157,6 @@ it easier to follow the code as well as inputs and outputs.
 ### Results Post-processing
 
 <img src="./flow_diagram_of_code/phecode_post_proc_pub.svg" alt="Phecode Post-processing" width="600"/>
-<hr style="border: 1.5px solid #EC5C42; background-color: #EC5C42;">
 
 ## How to Cite
 
@@ -180,10 +179,10 @@ email with any questions or suggestions.
 
 ## Contributors
 
-| Name        | Institution                    | Remarks
-|-------------|--------------------------------|------------------
-| Mike Lape   | University of Cincinnati       | _primary author_
-| Kevin Ernst | Cincinnati Children's Hospital | _contributor_
+| Name            | Institution                    | Remarks
+|-----------------|--------------------------------|------------------
+| Mike Lape, PhD  | University of Cincinnati       | _primary author_
+| Kevin Ernst     | Cincinnati Children's Hospital | _contributor_
 
 ## License
 

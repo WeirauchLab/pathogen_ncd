@@ -14,14 +14,15 @@ make serve                 # bring up a web server in a Docker container
 make browse                # opens the local web server in your browser
 ```
 
-If you set up [autoenv][] under your user profile and set
+If you set up [autoenv][] under your user profile, copy `dot-autoenv` to
+`.autoenv`, and add
 
 ```bash
 export AUTOENV_ENV_FILENAME=.autoenv
 ```
 
-the Python virtualenv will automatically be activated when you enter the `web`
-subdirectory.
+to your `.bashrc`, the Python virtualenv will automatically be activated when
+you enter the `web` subdirectory.
 
 ## Installation on Windows
 
@@ -66,22 +67,26 @@ standard library) and the Docker container serve the site at
 
 ## Deploying to a "real" web server
 
-Modify [`conf/site.toml`](conf/site.toml) and update the `deployto` key to
-point to the appropriate <code>[deploy.<em>something</em>]</code> section of
-the config file. Note that modifying this file for deployment, _e.g._ to
-production will always make the Git work tree "dirty" on the production server.
-A better solution could be found, where the deployment settings aren't tracked
-in the Git repo, but… sometimes you've got to say something's "good enough."
-
 Replace `gateway` and `vm` with actual hostnames, and run this command on one
 of the lab's VMs in order to deploy to the public web sites:
-
 
 ```bash
 ssh -tA gateway ssh vm
 cd path/to/where/you/cloned/pathogen_ncd
+```
+
+For example, let's say you want to deploy to the production VM. First, SSH to
+the VM as shown above, then either update the `deployto` key in
+[`conf/site.toml`](conf/site.toml) to `prod` or set `DEPLOYTO=prod` in
+`.autoenv` (see above). Now,
+
+```bash
 make deploy
 ```
+
+will build the JS/CSS assets, static HTML pages from templates, and the
+downloads, and copy these to the appropriate directory under the web root on
+the production server.
 
 
 ### Testing and troubleshooting
@@ -106,13 +111,6 @@ make distclean && make -B deploy
 ```
 
 before [filing an issue][issuetracker].
-
-
-## Bugs and other shortcomings
-
-There is some duplication among `docker.yml`, the `Makefile`, and `site.toml`
-with regard to the local web server port, but this could probably be resolved
-in time.
 
 
 ## Credits
