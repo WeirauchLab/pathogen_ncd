@@ -1,0 +1,4 @@
+# Jinja-templated .js files can make CodeQL barf on syntax errors.
+# https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning#specifying-directories-to-scan
+paths-ignore:
+  - web/templates/js/index.js
