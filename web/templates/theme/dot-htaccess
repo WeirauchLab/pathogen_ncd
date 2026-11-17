@@ -92,9 +92,3 @@
 	HeaderName {{ site.urlbase }}/theme/header.html
 	ReadmeName {{ site.urlbase }}/theme/footer.html
 	IndexStyleSheet {{ site.urlbase }}/theme/style.css
-
-#
-# MIME OVERRIDES
-#
-    AddType text/plain .tsv 
-    AddType text/plain .md 
