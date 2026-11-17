@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="theme/style.css" media="all">
 </head>
 <body>
-{% if site.deployto != 'prod' -%}
+{% if 'prod' not in site.deployto -%}
   <div class="dev-banner">
     <p class="dev-info">
       Deploy target:
