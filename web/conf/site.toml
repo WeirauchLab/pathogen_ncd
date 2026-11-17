@@ -63,6 +63,11 @@ urlbase = "/pubs/{shortname}"
 publicurl = "https://tf.cchmc.org{urlbase}"
 deploydir = "/var/www/html{urlbase}"
 
+[deploy.newprod]
+urlbase = "/pubs/{shortname}"
+publicurl = "https://tf.research.cchmc.org{urlbase}"
+deploydir = "/var/www/html{urlbase}"
+
 [htaccess]
 # currently unused, as the site is public
 #authname = "Pathogenic Organisms and Non-communicable Diseases - Reviewer Access",
